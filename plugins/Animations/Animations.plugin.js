@@ -1,11 +1,11 @@
 /**
- * @name AnimatedDiscord
- * @version 1.1.0
- * @description Animate messages, channels, users and other lists.
+ * @name Animations
+ * @version 1.0.0
+ * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
- * @website https://github.com/Mopsgamer/AnimatedDiscord/
- * @source https://raw.githubusercontent.com/Mopsgamer/AnimatedDiscord/main/AnimatedDiscord.plugin.js
+ * @website https://github.com/Mopsgamer/Animations/
+ * @source https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js
  */
 
 const { clear } = require('console');
@@ -13,7 +13,7 @@ const { clear } = require('console');
 module.exports = (() => {
     const config = {
         info: {
-            name: 'AnimatedDiscord',
+            name: 'Animations',
             authors: [
                 {
                     name: 'Mops',
@@ -21,10 +21,10 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.1.0',
-            description: 'Animate messages, channels, users and other lists.',
-            github: 'https://github.com/Mopsgamer/AnimatedDiscord/blob/main/AnimatedDiscord.plugin.js',
-            github_raw: 'https://raw.githubusercontent.com/Mopsgamer/AnimatedDiscord/main/AnimatedDiscord.plugin.js',
+            version: '1.0.0',
+            description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
+            github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
+            github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         main: 'index.js',
     };
@@ -56,7 +56,7 @@ module.exports = (() => {
         {DiscordSelectors, PluginUtilities, DOMTools, Modals, WebpackModules} = Api,
         {Logger, Patcher, Settings, ReactComponents} = Library;
 
-        return class AnimatedDiscord extends Plugin {
+        return class Animations extends Plugin {
 
             constructor() {
                 super();
