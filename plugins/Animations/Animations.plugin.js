@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.0.2
+ * @version 1.0.3
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,15 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.0.2',
+            version: '1.0.3',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            //{"title": "New Stuff", "items": ["New components have been added for viewing animations."]},
-            {"title": "Improvements", "type": "improved", "items": ["Changed the animation selection component styles, now the selected animation is blurple."]},
-            {"title": "Fixes", "type": "fixed", "items": ["Fixed direction viewing component"]}
+            {"title": "New Stuff", "items": ["Button for resetting settings.", "Option to improve the panel."]},
+            //{"title": "Improvements", "type": "improved", "items": ["Changed the animation selection component styles, now the selected animation is blurple."]},
+            {"title": "Fixes", "type": "fixed", "items": ["Fixed the animation delay setting for messages."]}
         ],
         main: 'index.js',
     };
@@ -67,6 +67,7 @@ module.exports = (() => {
                 super();
                 
                 this.defaultSettings = {
+                    panelFix: true,
                     lists: {
                         enabled: true,
                         name: 'slide-up',
@@ -141,8 +142,6 @@ module.exports = (() => {
                         result += `[data-animation="downwards"] .tempBlock:nth-child(${i}) {animation-delay:${((i-1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                     }
 
-                    console.log(result)
-
                     for (var i = 1; i < this.settings.messages.limit; i++) {
                         result += `li.messageListItem-1-jvGY:nth-last-of-type(${i}) .messageContent-2qWWxC:not(.isSending-9nvak6)
                         {animation-delay:${((i-1) * this.settings.messages.delay).toFixed(2)}s}\n`
@@ -153,7 +152,6 @@ module.exports = (() => {
 
                 this.reqStyles = 
                 `/*own components*/
-
                 .animPreview {
                     width: 20%;
                     height: 100pt;
@@ -192,6 +190,15 @@ module.exports = (() => {
 
                 this.styles = `
                 /*ANIMATED DISCORD*/
+
+                ${this.settings.panelFix?`/*fix panel height*/
+                .root-1gCeng {max-height: 100%}
+
+                /*fix panel spaces*/
+                .marginBottom20-32qID7 {
+                    padding: 0 10px 0 5px;
+                }
+                `:''}
 
                 /*lists limit*/
                 .side-8zPYf6 > :nth-child(n+${this.settings.lists.limit}),
@@ -364,6 +371,10 @@ module.exports = (() => {
                 setTimeout(()=>{PluginUtilities.addStyle(this.getName(), this.styles)}, 500);
                 
             }
+
+            closeSettings() {
+                document.querySelector('.bd-addon-modal-footer > .bd-button').click()
+            }
         
             getSettingsPanel() {
 
@@ -394,11 +405,13 @@ module.exports = (() => {
                             .createElement('button', {
                                 style: {
                                     width: options.width || 'fit-content',
-                                    padding: options.padding || 'unset'
+                                    padding: options.padding || '4px 8px'
                                 },
                                 class: `lookFilled-1Gx00P button-38aScr sizeSmall-2cSMqn ${colorClass}`,
                                 onClick: options.onclick
-                            }, options.label);
+                            },
+                            [BdApi.React.createElement('div', {class: 'contents-18-Yxp', style: {'pointer-events': 'none'}}, options.label)]
+                            );
                         }
                     }
 
@@ -425,7 +438,7 @@ module.exports = (() => {
                                     onclick(option.value)
                                     var sections = document.querySelectorAll('.animPreview');
                                     for (i = 0; i < sections.length; i++) sections[i].classList.remove('active');
-                                    document.querySelectorAll(`.animPreview[data-animation="${option.value}"]`)[0].classList.add('active')
+                                    document.querySelectorAll(`.animPreview[data-animation="${option.value}"]`)[0].classList.add('active');
                                 }
                             },
                             [...tempBlocks, BdApi.React.createElement('div', {
@@ -446,14 +459,30 @@ module.exports = (() => {
                     return Panel;
                 }
 
-                return Settings.SettingPanel.build(this.saveSettings.bind(this),   
+                return Settings.SettingPanel.build(
+                    ()=>{
+                        this.loadSettings;
+                        this.saveSettings.bind(this)
+                    },   
 
-                    /*new Settings.SettingField('Button', 'This is the button.', ()=>{},
+                    new Settings.SettingField('Settings', 'Resets all settings.', ()=>{},
                         Button({
                             color: 'blurple',
-                            label: 'button'
+                            label: 'Reset',
+                            onclick: (e)=>{
+                                this.settings = this.defaultSettings;
+                                this.closeSettings();
+                                this.change();
+                            }
                         }),
-                    ),*/
+                    ),
+
+                    new Settings.Switch('Panel fix', 'Improves the display of this window.', this.settings.fixed,
+                        (e) => {
+                            this.settings.panelFix = e;
+                            this.change();
+                        }
+                    ),
                  
                     new Settings.SettingGroup('Lists').append(
 
