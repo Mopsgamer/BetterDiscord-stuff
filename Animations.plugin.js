@@ -1,11 +1,11 @@
 /**
  * @name Animations
- * @version 1.0.0
+ * @version 1.0.1
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
- * @website https://github.com/Mopsgamer/Animations/
- * @source https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js
+ * @website https://github.com/Mopsgamer/BetterDiscord-codes/tree/Animations
+ * @source https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/Animations/Animations.plugin.js
  */
 
 const { clear } = require('console');
@@ -21,11 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.0.0',
+            version: '1.0.1',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
+        changelog: [
+            {"title": "New Stuff", "items": ["New components have been added for viewing animations."]},
+            {"title": "Improvements", "type": "improved", "items": ["Corrected links"]}
+        ],
         main: 'index.js',
     };
 
@@ -87,25 +91,90 @@ module.exports = (() => {
             getVersion() {return config.info.version}
 
             change() {
+                let animPrevStyles = (()=>{
+                    let result = '';
+
+                    var names = [
+                        'in',
+                        'out',
+                        'slide-right',
+                        'slide-left',
+                        'slide-up',
+                        'slide-up-right',
+                        'slide-up-left',
+                        'slide-down',
+                        'slide-down-right',
+                        'slide-down-left'
+                    ]
+
+                    names.forEach(animName=>{for(var i=1;i<5;i++) {
+                        result+=`.animPreview[data-animation="${animName}"]:hover > .tempBlock:nth-child(${i})`
+                        +` {animation-name: ${animName}; animation-duration: 0.3s; animation-delay: ${(i-1)*0.06}s;}\n`
+                        }
+                    })
+                    
+                    return result;
+                })()
+
                 let nthStyles = (()=>{
                     let result = '';
-                    if(this.settings.lists.direction=='upwards') for (var i = 0; i < this.settings.lists.limit; i++) {
-                        result += `:nth-child(${this.settings.lists.central*2-i}) {animation-delay:${(i * this.settings.lists.delay).toFixed(2)}s}\n\n`
+
+                    if(this.settings.lists.direction=='upwards') for (var i = 1; i < this.settings.lists.limit; i++) {
+                        result += `:nth-child(${this.settings.lists.central*2-i}) {animation-delay:${((i-1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                     }
-                    if(this.settings.lists.direction=='both') for (var i = 0; i < this.settings.lists.limit/2; i++) {
-                        result += `:nth-child(${this.settings.lists.central-i}), :nth-child(${this.settings.lists.central+i}) {animation-delay:${(i * (this.settings.lists.delay)).toFixed(2)}s}\n\n`
+                    if(this.settings.lists.direction=='both') for (var i = 1; i < this.settings.lists.limit/2; i++) {
+                        result += `:nth-child(${this.settings.lists.central-i}), :nth-child(${this.settings.lists.central+i}) {animation-delay:${((i-1) * (this.settings.lists.delay)).toFixed(2)}s}\n\n`
                     }
-                    if(this.settings.lists.direction=='downwards') for (var i = 0; i < this.settings.lists.limit; i++) {
-                        result += `:nth-child(${i}) {animation-delay:${(i * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                    if(this.settings.lists.direction=='downwards') for (var i = 1; i < this.settings.lists.limit; i++) {
+                        result += `:nth-child(${i}) {animation-delay:${((i-1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                     }
 
-                    for (var i = 0; i < this.settings.messages.limit; i++) {
+                    for (var i = 1; i < this.settings.messages.limit; i++) {
                         result += `li.messageListItem-1-jvGY:nth-last-of-type(${i}) .messageContent-2qWWxC:not(.isSending-9nvak6)
-                        {animation-delay:${(i * this.settings.messages.delay).toFixed(2)}s}\n`
+                        {animation-delay:${((i-1) * this.settings.messages.delay).toFixed(2)}s}\n`
                     }
                     
                     return result;
                 })()
+
+                this.reqStyles = 
+                `/*own components*/
+                .animPreview {
+                    width: 20%;
+                    height: 100pt;
+                    padding: 8pt;
+                    padding-left: 4pt;
+                    margin: 2% 1.6% 0 0;
+                    display: inline-block;
+                }
+                
+                .animPreview .tempBlock {
+                    width: 100%;
+                    height: 20pt;
+                    margin: 4px;
+                    border-radius: 3pt;
+                    background-color: var(--interactive-normal);
+                }
+                
+                .animPreview .animPreviewLabel {
+                    position: absolute;
+                    bottom: 5pt;
+                    color: var(--interactive-normal);
+                    font-size: 10pt;
+                }
+
+                .animPreview.active {
+                    background-color: rgb(67, 181, 129);
+                }
+
+                .animPreview.active .tempBlock {
+                    background-color: #fff;
+                }
+                
+                .animPreview.active .animPreviewLabel {
+                    color: #fff;
+                }`
+
                 this.styles = `
                 /*ANIMATED DISCORD*/
 
@@ -167,6 +236,24 @@ module.exports = (() => {
                     animation-duration: ${this.settings.lists.duration}s;
                 }
                 `}
+
+                @keyframes slide-up {
+                    0% {
+                        transform: scaleY(0) translateY(200%);
+                    }
+                    100% {
+                        transform: scale(1) translateY(0);
+                    }
+                }
+
+                @keyframes slide-down {
+                    0% {
+                        transform: scaleY(0) translateY(-200%);
+                    }
+                    100% {
+                        transform: scale(1) translateY(0);
+                    }
+                }
                 
                 @keyframes slide-up-right {
                     0% {
@@ -189,15 +276,6 @@ module.exports = (() => {
                         transform: scale(1) rotate(0deg) translateY(0);
                     }
                 }
-        
-                @keyframes slide-up {
-                    0% {
-                        transform: scaleY(0) translateY(200%);
-                    }
-                    100% {
-                        transform: scale(1) translateY(0);
-                    }
-                }
 
                 @keyframes slide-down-right {
                     0% {
@@ -218,15 +296,6 @@ module.exports = (() => {
                     100% {
                         transform-origin: 100% 50%;
                         transform: scale(1) rotate(0deg) translateY(0);
-                    }
-                }
-        
-                @keyframes slide-down {
-                    0% {
-                        transform: scaleY(0) translateY(-200%);
-                    }
-                    100% {
-                        transform: scale(1) translateY(0);
                     }
                 }
         
@@ -273,15 +342,103 @@ module.exports = (() => {
                         transform: scale(1);
                     }
                 }
+                \n${animPrevStyles}
                 \n${nthStyles}`;
 
                 PluginUtilities.removeStyle(this.getName());
-                setTimeout(()=>{PluginUtilities.addStyle(this.getName(), this.styles)},500);
+                setTimeout(()=>{PluginUtilities.addStyle(this.getName(), this.styles)}, 500);
                 
             }
         
             getSettingsPanel() {
-                return Settings.SettingPanel.build(this.saveSettings.bind(this),                    
+
+                var Button = function(options={}) {
+                    var colorClass;
+                    switch (options.color) {
+                        case 'blurple':
+                            colorClass = 'colorBrand-3pXr91'
+                            break;
+                        case 'red':
+                            colorClass = 'colorRed-1TFJan'
+                            break;
+                        case 'gray': case 'grey':
+                            colorClass = 'colorPrimary-3b3xI6'
+                            break;
+                        case 'green':
+                            colorClass = 'colorGreen-29iAKY'
+                            break;
+                    
+                        default:
+                            colorClass = 'colorBrand-3pXr91'
+                            break;
+                    }
+                    
+                    class Button extends BdApi.React.Component {
+                        render() {
+                            return BdApi.React
+                            .createElement('button', {
+                                style: {
+                                    width: options.width || 'fit-content',
+                                    padding: options.padding || 'unset'
+                                },
+                                class: `lookFilled-1Gx00P button-38aScr sizeSmall-2cSMqn ${colorClass}`,
+                                onClick: options.onclick
+                            }, options.label);
+                        }
+                    }
+
+                    return Button;
+                }
+
+                var PreviewsPanel = function(options=[], value, onclick) {
+
+                    var previews = []
+                    options.forEach(option=>{
+                        var tempBlocks = []
+                            for (var i = 0; i < 4; i++) {
+                                tempBlocks[i] = BdApi.React.createElement('div', {
+                                    class: 'tempBlock'
+                                })
+                            }
+
+                        previews.push(
+                            BdApi.React
+                            .createElement('div', {
+                                'data-animation': option.value,
+                                class: `animPreview${value==option.value?' active':''} preview-2nSL_2 group-spacing-16 cardPrimaryOutline-29Ujqw card-3Qj_Yx`,
+                                onClick: ()=>{
+                                    onclick(option.value)
+                                    var sections = document.querySelectorAll('.animPreview');
+                                    for (i = 0; i < sections.length; i++) sections[i].classList.remove('active');
+                                    document.querySelectorAll(`.animPreview[data-animation="${option.value}"]`)[0].classList.add('active')
+                                }
+                            },
+                            [...tempBlocks, BdApi.React.createElement('div', {
+                                class: 'animPreviewLabel'
+                                }, option.label
+                            )]
+                            )
+                        )
+                    })
+                    
+                    class Panel extends BdApi.React.Component {
+                        render() {
+                            return BdApi.React
+                            .createElement('div', null, previews )
+                        }
+                    }
+
+                    return Panel;
+                }
+
+                return Settings.SettingPanel.build(this.saveSettings.bind(this),   
+
+                    /*new Settings.SettingField('Button', 'This is the button.', ()=>{},
+                        Button({
+                            color: 'blurple',
+                            label: 'button'
+                        }),
+                    ),*/
                  
                     new Settings.SettingGroup('Lists').append(
 
@@ -292,33 +449,35 @@ module.exports = (() => {
                             }
                         ),
 
-                        new Settings.Dropdown('Name', `[default ${this.defaultSettings.lists.name}] The name of the animation of the list items when they appear.`, this.settings.lists.name,
-                            [
-                                {label: 'In', value: 'in'},
-                                {label: 'Out', value: 'out'},
-                                {label: 'Slide right', value: 'slide-right'},
-                                {label: 'Slide left', value: 'slide-left'},
-                                {label: 'Slide up', value: 'slide-up'},
-                                {label: 'Slide up (right)', value: 'slide-up-right'},
-                                {label: 'Slide up (left)', value: 'slide-up-left'},
-                                {label: 'Slide down', value: 'slide-down'},
-                                {label: 'Slide down (right)', value: 'slide-down-right'},
-                                {label: 'Slide down (left)', value: 'slide-down-left'}
-                            ], (e) => {
+                        new Settings.SettingField('Name', `[default ${this.defaultSettings.lists.name}] The name of the animation of the list items when they appear.`, ()=>{},
+                            PreviewsPanel([
+                                { label: 'In', value: 'in' },
+                                { label: 'Out', value: 'out' },
+                                { label: 'Slide right', value: 'slide-right' },
+                                { label: 'Slide left', value: 'slide-left' },
+                                { label: 'Slide up', value: 'slide-up' },
+                                { label: 'Slide down', value: 'slide-down' },
+                                { label: 'Slide up (right)', value: 'slide-up-right' },
+                                { label: 'Slide up (left)', value: 'slide-up-left' },
+                                { label: 'Slide down (right)', value: 'slide-down-right' },
+                                { label: 'Slide down (left)', value: 'slide-down-left' }
+                            ], this.settings.lists.name, (e)=>{
                                 this.settings.lists.name = e;
                                 this.change()
-                            }
+                            }),
+                            {noteOnTop: true}
                         ),
 
-                        new Settings.Dropdown('Direction', `[default ${this.defaultSettings.lists.direction}] The direction in which the list items are built.`, this.settings.lists.direction,
-                            [
-                                {label: 'Downwards', value: 'downwards'},
-                                {label: 'Upwards', value: 'upwards'},
-                                {label: 'Both', value: 'both'}
-                            ], (e) => {
+                        new Settings.SettingField('Direction [unstable]', `[default ${this.defaultSettings.lists.direction}] The direction in which the list items are built.`, ()=>{},
+                            PreviewsPanel([
+                                { label: 'Downwards', value: 'downwards' },
+                                { label: 'Upwards', value: 'upwards' },
+                                { label: 'Both', value: 'both' }
+                            ], this.settings.lists.direction, (e)=>{
                                 this.settings.lists.direction = e;
                                 this.change()
-                            }
+                            }),
+                            {noteOnTop: true}
                         ),
 
                         new Settings.Slider('Central element', `[default ${this.defaultSettings.lists.central}] The number of the list item from which the lists will be built if the direction is "Both" or "Upwards".`, 6, 54, this.settings.lists.central,
@@ -372,22 +531,23 @@ module.exports = (() => {
                             }
                         ),
 
-                        new Settings.Dropdown('Name', `[default ${this.defaultSettings.messages.name}] The name of the animation of the messages when they appear.`, this.settings.messages.name,
-                            [
-                                {label: 'In', value: 'in'},
-                                {label: 'Out', value: 'out'},
-                                {label: 'Slide right', value: 'slide-right'},
-                                {label: 'Slide left', value: 'slide-left'},
-                                {label: 'Slide up', value: 'slide-up'},
-                                {label: 'Slide up (right)', value: 'slide-up-right'},
-                                {label: 'Slide up (left)', value: 'slide-up-left'},
-                                {label: 'Slide down', value: 'slide-down'},
-                                {label: 'Slide down (right)', value: 'slide-down-right'},
-                                {label: 'Slide down (left)', value: 'slide-down-left'}
-                            ], (e) => {
+                        new Settings.SettingField('Name', `[default ${this.defaultSettings.messages.name}] The name of the animation of the messages when they appear.`, ()=>{},
+                            PreviewsPanel([
+                                { label: 'In', value: 'in' },
+                                { label: 'Out', value: 'out' },
+                                { label: 'Slide right', value: 'slide-right' },
+                                { label: 'Slide left', value: 'slide-left' },
+                                { label: 'Slide up', value: 'slide-up' },
+                                { label: 'Slide down', value: 'slide-down' },
+                                { label: 'Slide up (right)', value: 'slide-up-right' },
+                                { label: 'Slide up (left)', value: 'slide-up-left' },
+                                { label: 'Slide down (right)', value: 'slide-down-right' },
+                                { label: 'Slide down (left)', value: 'slide-down-left' }
+                            ], this.settings.messages.name, (e)=>{
                                 this.settings.messages.name = e;
                                 this.change()
-                            }
+                            }),
+                            {noteOnTop: true}
                         ),
 
                         new Settings.Slider('Delay', `[default ${this.defaultSettings.messages.delay}] Delay before appearing for each message in seconds.`, 1, 10, this.settings.messages.delay,
@@ -426,12 +586,15 @@ module.exports = (() => {
             }
         
             start() {
+                PluginUtilities.removeStyle('REQ Animated Discord');
+                setTimeout(()=>{PluginUtilities.addStyle('REQ Animated Discord', this.reqStyles)}, 500);
                 this.settings = this.loadSettings(this) || this.defaultSettings
 
                 this.change()
             }
             
             stop(){
+                PluginUtilities.removeStyle('REQ Animated Discord');
                 PluginUtilities.removeStyle(this.getName());
             }
     
