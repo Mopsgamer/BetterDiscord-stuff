@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.0.0
+ * @version 1.0.2
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,14 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.0.0',
+            version: '1.0.2',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
             //{"title": "New Stuff", "items": ["New components have been added for viewing animations."]},
-            {"title": "Improvements", "type": "improved", "items": ["Fixed direction viewing component"]}
+            {"title": "Improvements", "type": "improved", "items": ["Changed the animation selection component styles, now the selected animation is blurple."]},
+            {"title": "Fixes", "type": "fixed", "items": ["Fixed direction viewing component"]}
         ],
         main: 'index.js',
     };
@@ -79,7 +80,7 @@ module.exports = (() => {
                         enabled: true,
                         name: 'slide-right',
                         duration: 0.4,
-                        delay: 2,
+                        delay: 0.2,
                         limit: 50
                     }
                 }
@@ -152,6 +153,7 @@ module.exports = (() => {
 
                 this.reqStyles = 
                 `/*own components*/
+
                 .animPreview {
                     width: 20%;
                     height: 100pt;
@@ -170,13 +172,14 @@ module.exports = (() => {
                 
                 .animPreview .animPreviewLabel {
                     position: absolute;
+                    padding-left: 4px;
                     bottom: 5pt;
                     color: var(--interactive-normal);
                     font-size: 10pt;
                 }
 
                 .animPreview.active {
-                    background-color: rgb(67, 181, 129);
+                    background-color: var(--brand-experiment);
                 }
 
                 .animPreview.active .tempBlock {
@@ -436,7 +439,7 @@ module.exports = (() => {
                     class Panel extends BdApi.React.Component {
                         render() {
                             return BdApi.React
-                            .createElement('div', null, previews )
+                            .createElement('div', {class: 'animPreviewsPanel'}, previews )
                         }
                     }
 
