@@ -477,7 +477,7 @@ module.exports = (() => {
                         }),
                     ),
 
-                    new Settings.Switch('Panel fix', 'Improves the display of this window.', this.settings.fixed,
+                    new Settings.Switch('Panel fix', 'Improves the display of this window.', this.settings.panelFix,
                         (e) => {
                             this.settings.panelFix = e;
                             this.change();
