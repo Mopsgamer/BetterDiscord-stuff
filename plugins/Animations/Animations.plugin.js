@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.0.1
+ * @version 1.0.0
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,14 +21,14 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.0.1',
+            version: '1.0.0',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            {"title": "New Stuff", "items": ["New components have been added for viewing animations."]},
-            {"title": "Improvements", "type": "improved", "items": ["Corrected links"]}
+            //{"title": "New Stuff", "items": ["New components have been added for viewing animations."]},
+            {"title": "Improvements", "type": "improved", "items": ["Fixed direction viewing component"]}
         ],
         main: 'index.js',
     };
@@ -119,15 +119,28 @@ module.exports = (() => {
                 let nthStyles = (()=>{
                     let result = '';
 
-                    if(this.settings.lists.direction=='upwards') for (var i = 1; i < this.settings.lists.limit; i++) {
-                        result += `:nth-child(${this.settings.lists.central*2-i}) {animation-delay:${((i-1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                    if(this.settings.lists.direction=='upwards') for (var i = 1; i < this.settings.lists.limit+1; i++) {
+                        result += `:nth-child(${this.settings.lists.central*2+1-i}) {animation-delay:${((i-1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                     }
-                    if(this.settings.lists.direction=='both') for (var i = 1; i < this.settings.lists.limit/2; i++) {
-                        result += `:nth-child(${this.settings.lists.central-i}), :nth-child(${this.settings.lists.central+i}) {animation-delay:${((i-1) * (this.settings.lists.delay)).toFixed(2)}s}\n\n`
+                    if(this.settings.lists.direction=='both') for (var i = 1; i < Math.ceil(this.settings.lists.limit/2)+1; i++) {
+                        result += `:nth-child(${this.settings.lists.central+(i-1)}), :nth-child(${this.settings.lists.central-(i-1)}) {animation-delay:${((i-1) * (this.settings.lists.delay)).toFixed(2)}s}\n\n`
                     }
-                    if(this.settings.lists.direction=='downwards') for (var i = 1; i < this.settings.lists.limit; i++) {
+                    if(this.settings.lists.direction=='downwards') for (var i = 1; i < this.settings.lists.limit+1; i++) {
                         result += `:nth-child(${i}) {animation-delay:${((i-1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                     }
+
+                    result+=`[data-animation="upwards"]:hover .tempBlock, [data-animation="both"]:hover .tempBlock, [data-animation="downwards"]:hover .tempBlock {animation-name: out; animation-duration: 0.3s;}\n\n`
+                    for (var i = 1; i < 5; i++) {
+                        result += `[data-animation="upwards"] .tempBlock:nth-child(${2*2+1-i}) {animation-delay:${((i-1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                    }
+                    for (var i = 1; i < Math.ceil(5/2)+1; i++) {
+                        result += `[data-animation="both"] .tempBlock:nth-child(${2+(i-1)}), [data-animation="both"] .tempBlock:nth-child(${2-(i-1)}) {animation-delay:${((i-1) * (this.settings.lists.delay)).toFixed(2)}s}\n\n`
+                    }
+                    for (var i = 1; i < 5; i++) {
+                        result += `[data-animation="downwards"] .tempBlock:nth-child(${i}) {animation-delay:${((i-1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                    }
+
+                    console.log(result)
 
                     for (var i = 1; i < this.settings.messages.limit; i++) {
                         result += `li.messageListItem-1-jvGY:nth-last-of-type(${i}) .messageContent-2qWWxC:not(.isSending-9nvak6)
@@ -142,15 +155,14 @@ module.exports = (() => {
                 .animPreview {
                     width: 20%;
                     height: 100pt;
-                    padding: 8pt;
-                    padding-left: 4pt;
-                    margin: 2% 1.6% 0 0;
+                    margin: 6px 8px;
+                    padding: 4px;
                     display: inline-block;
                 }
                 
                 .animPreview .tempBlock {
-                    width: 100%;
-                    height: 20pt;
+                    width: auto;
+                    height: 18pt;
                     margin: 4px;
                     border-radius: 3pt;
                     background-color: var(--interactive-normal);
@@ -586,15 +598,15 @@ module.exports = (() => {
             }
         
             start() {
-                PluginUtilities.removeStyle('REQ Animated Discord');
-                setTimeout(()=>{PluginUtilities.addStyle('REQ Animated Discord', this.reqStyles)}, 500);
+                PluginUtilities.removeStyle('REQ Animations');
+                setTimeout(()=>{PluginUtilities.addStyle('REQ Animations', this.reqStyles)}, 500);
                 this.settings = this.loadSettings(this) || this.defaultSettings
 
                 this.change()
             }
             
             stop(){
-                PluginUtilities.removeStyle('REQ Animated Discord');
+                PluginUtilities.removeStyle('REQ Animations');
                 PluginUtilities.removeStyle(this.getName());
             }
     
