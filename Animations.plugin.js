@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.0.4
+ * @version 1.0.4.1
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -19,15 +19,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.0.4',
+            version: '1.0.4.1',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            {"title": "New Stuff", "items": ["Absolute message animation."]},
-            {"title": "Improvements", "type": "improved", "items": ["Changed the message animation delay values.", "The default values have been changed.", "Now the threads are animated in one piece together with the channels."]},
-            {"title": "Fixes", "type": "fixed", "items": ["Fixed bug with saving settings.", "Removed the \"Both\" direction."]}
+            //{"title": "New Stuff", "items": ["Absolute message animation."]},
+            //{"title": "Improvements", "type": "improved", "items": ["Changed the message animation delay values.", "The default values have been changed.", "Now the threads are animated in one piece together with the channels."]},
+            {"title": "Fixes", "type": "fixed", "items": ["Animations could not be started. (probably)"]}
         ],
         main: 'index.js',
     };
@@ -507,7 +507,7 @@ module.exports = (() => {
                             }
                         },
                         {
-                            color: this.settings.panelFix?'red':'green', label: 'Fix this window', id: 'fix-this-window', onclick: (e) => {
+                            color: this.settings.panelFix?'red':'green', label: this.settings.panelFix?'Take it back':'Fix this window', id: 'fix-this-window', onclick: (e) => {
                             this.settings.panelFix = !this.settings.panelFix;
                             let button = document.getElementById('fix-this-window')
                             if (this.settings.panelFix) {
@@ -707,7 +707,6 @@ module.exports = (() => {
                 setTimeout(()=>{
                     PluginUtilities.addStyle('Animations-req', this.reqStyles)
                 }, 100);
-                console.log(PluginUtilities.loadSettings("Animations").lists.direction);
                 this.settings = PluginUtilities.loadSettings("Animations")// ?? this.defaultSettings;
 
                 this.changeStyles()
