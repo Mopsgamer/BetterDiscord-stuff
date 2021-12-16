@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.0.4.1
+ * @version 1.0.4.2
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -19,7 +19,7 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.0.4.1',
+            version: '1.0.4.2',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
@@ -27,7 +27,7 @@ module.exports = (() => {
         changelog: [
             //{"title": "New Stuff", "items": ["Absolute message animation."]},
             //{"title": "Improvements", "type": "improved", "items": ["Changed the message animation delay values.", "The default values have been changed.", "Now the threads are animated in one piece together with the channels."]},
-            {"title": "Fixes", "type": "fixed", "items": ["Animations could not be started. (probably)"]}
+            {"title": "Fixes", "type": "fixed", "items": ["Animations could not be started. (probably №2)"]}
         ],
         main: 'index.js',
     };
@@ -82,6 +82,8 @@ module.exports = (() => {
                         limit: 30
                     }
                 }
+
+                this.settings = PluginUtilities.loadSettings("Animations");
             }
         
             getName() {return config.info.name}
@@ -707,7 +709,6 @@ module.exports = (() => {
                 setTimeout(()=>{
                     PluginUtilities.addStyle('Animations-req', this.reqStyles)
                 }, 100);
-                this.settings = PluginUtilities.loadSettings("Animations")// ?? this.defaultSettings;
 
                 this.changeStyles()
             }
