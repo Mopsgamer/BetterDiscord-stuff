@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.0.5
+ * @version 1.0.6
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -19,15 +19,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.0.5',
+            version: '1.0.6',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
             //{"title": "New Stuff", "items": ["Absolute message animation."]},
-            { "title": "Improvements", "type": "improved", "items": ["Slider for previewing."] },
-            { "title": "Fixes", "type": "fixed", "items": ["Animations could not be started."] }
+            //{ "title": "Improvements", "type": "improved", "items": ["Slider for previewing."] },
+            { "title": "Fixes", "type": "fixed", "items": ["Can only click top half of pfps in chat."] }
         ],
         main: 'index.js',
     };
@@ -236,12 +236,14 @@ module.exports = (() => {
                 /*blocked*/
                 .groupStart-23k01U
                 {
-                    z-index: 0;
                     transform: scale(0);
                     animation-fill-mode: forwards;
                     animation-name: ${this.settings.messages.name};
                     animation-duration: ${this.settings.messages.duration}s;
                 }
+
+                /*lines-forward-messages fix*/
+                .divider-JfaTT5 {z-index: 0}
                 `}
                 
                 ${!this.settings.lists.enabled ? '' : `
