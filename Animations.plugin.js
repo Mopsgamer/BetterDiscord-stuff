@@ -84,8 +84,6 @@ module.exports = (() => {
                     }
 
                     this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
-                    console.clear()
-                    console.log(PluginUtilities.loadSettings("Animations", this.defaultSettings))
                 }
 
                 getName() { return config.info.name }
