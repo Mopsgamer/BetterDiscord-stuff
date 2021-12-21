@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.0.6
+ * @version 1.0.7
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -19,7 +19,7 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.0.6',
+            version: '1.0.7',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
@@ -27,7 +27,7 @@ module.exports = (() => {
         changelog: [
             //{"title": "New Stuff", "items": ["Absolute message animation."]},
             //{ "title": "Improvements", "type": "improved", "items": ["Slider for previewing."] },
-            { "title": "Fixes", "type": "fixed", "items": ["Can only click top half of pfps in chat."] }
+            { "title": "Fixes", "type": "fixed", "items": ["Settings are not saved when you restart Discord. Finally."] }
         ],
         main: 'index.js',
     };
@@ -84,6 +84,8 @@ module.exports = (() => {
                     }
 
                     this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
+                    console.clear()
+                    console.log(PluginUtilities.loadSettings("Animations", this.defaultSettings))
                 }
 
                 getName() { return config.info.name }
@@ -169,7 +171,7 @@ module.exports = (() => {
 
                         names.forEach(animName => {
                             for (var i = 1; i < 5; i++) {
-                                result += `.animPreview[data-animation="${animName}"]:hover > .tempBlock:nth-child(${i})`
+                                result += `.animPreview[data-animation="${animName}"]:hover > .animTempBlock:nth-child(${i})`
                                     + ` {transform: scale(0); animation-name: ${animName}; animation-fill-mode: forwards; animation-duration: 0.3s; animation-delay: ${(i - 1) * 0.06}s;}\n`
                             }
                         })
@@ -180,12 +182,12 @@ module.exports = (() => {
                     let nthStyles = (() => {
                         let result = '';
 
-                        result += `[data-animation="downwards"]:hover .tempBlock, [data-animation="upwards"]:hover .tempBlock {animation-name: out; animation-duration: 0.3s;}\n\n`;
+                        result += `[data-animation="downwards"]:hover .animTempBlock, [data-animation="upwards"]:hover .animTempBlock {animation-name: out; animation-duration: 0.3s;}\n\n`;
                         for (var i = 1; i < 5; i++) {
-                            result += `[data-animation="downwards"] .tempBlock:nth-child(${i}) {animation-delay:${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                            result += `[data-animation="downwards"] .animTempBlock:nth-child(${i}) {animation-delay:${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                         }
                         for (var i = 1; i < 5; i++) {
-                            result += `[data-animation="upwards"] .tempBlock:nth-child(${2 * 2 + 1 - i}) {animation-delay:${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                            result += `[data-animation="upwards"] .animTempBlock:nth-child(${2 * 2 + 1 - i}) {animation-delay:${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                         }
 
                         for (var i = 1; i < this.settings.messages.limit; i++) {
@@ -511,7 +513,7 @@ module.exports = (() => {
                             var tempBlocks = []
                             for (var i = 0; i < 4; i++) {
                                 tempBlocks[i] = BdApi.React.createElement('div', {
-                                    class: 'tempBlock'
+                                    class: 'animTempBlock'
                                 })
                             }
 
@@ -601,9 +603,7 @@ module.exports = (() => {
                     }
 
                     return Settings.SettingPanel.build(
-                        () => {
-                            this.saveSettings.bind(this)
-                        },
+                        this.saveSettings.bind(this),
 
                         new Settings.SettingField(null, null, () => { },
                             ButtonsPanel(null, [
@@ -669,7 +669,7 @@ module.exports = (() => {
                                 { noteOnTop: true }
                             ),
 
-                            new Settings.SettingField('Direction [unstable]', `[default ${this.defaultSettings.lists.direction}] The direction in which the list items are built.`, () => { },
+                            new Settings.SettingField('Direction', `[default ${this.defaultSettings.lists.direction}] The direction in which the list items are built.`, () => { },
                                 PreviewsPanel([
                                     { label: 'Downwards', value: 'downwards' },
                                     { label: 'Upwards', value: 'upwards' }
@@ -800,7 +800,7 @@ module.exports = (() => {
                         display: inline-block;
                     }
                     
-                    .animPreview .tempBlock {
+                    .animPreview .animTempBlock {
                         width: auto;
                         height: 18pt;
                         margin: 4px;
@@ -869,7 +869,7 @@ module.exports = (() => {
                         background-color: var(--brand-experiment);
                     }
 
-                    .animPreview.enabled .tempBlock {
+                    .animPreview.enabled .animTempBlock {
                         background-color: #fff;
                     }
                     
@@ -881,8 +881,6 @@ module.exports = (() => {
                     setTimeout(() => {
                         PluginUtilities.addStyle('Animations-req', this.reqStyles)
                     }, 100);
-
-                    this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
                     this.changeStyles()
                 }
 
