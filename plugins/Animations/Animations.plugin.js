@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.0.7
+ * @version 1.0.8
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -19,15 +19,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.0.7',
+            version: '1.0.8',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            //{"title": "New Stuff", "items": ["Absolute message animation."]},
-            //{ "title": "Improvements", "type": "improved", "items": ["Slider for previewing."] },
-            { "title": "Fixes", "type": "fixed", "items": ["Settings are not saved when you restart Discord. Finally."] }
+            {"title": "New Stuff", "items": ["Button animations.", "Animation of elements in pop-up windows (except plugin settings windows)."]},
+            { "title": "Improvements", "type": "improved", "items": ["Improved display of settings."] },
+            //{ "title": "Fixes", "type": "fixed", "items": [""] }
         ],
         main: 'index.js',
     };
@@ -69,9 +69,9 @@ module.exports = (() => {
                         lists: {
                             enabled: true,
                             name: 'slide-up',
+                            direction: 'downwards',
                             duration: 0.3,
                             delay: 0.06,
-                            direction: 'downwards',
                             limit: 60
                         },
                         messages: {
@@ -80,6 +80,13 @@ module.exports = (() => {
                             duration: 0.4,
                             delay: 0.06,
                             limit: 30
+                        },
+                        buttons: {
+                            enabled: true,
+                            name: 'in',
+                            direction: 'right',
+                            duration: 0.3,
+                            delay: 0.1
                         }
                     }
 
@@ -96,7 +103,7 @@ module.exports = (() => {
 
                     let notSelector = '.container-3JKcAb > .containerDefault--pIXnN';
 
-                    var selectors = [
+                    var selectorsLists = [
                         '.containerDefault-3tr_sE',
                         '.container-3JKcAb',
                         '.containerDefault--pIXnN',
@@ -106,20 +113,45 @@ module.exports = (() => {
                         '.membersGroup-v9BXpm[data-index]',
                         '.peopleListItem-2nzedh',
                         '.header-2RyJ0Y',
+                        '.side-8zPYf6 .item-PXvHYJ',
+                        '.privateChannelsHeaderContainer-3NB1K1',
+                        '.focusLock-Ns3yie .scrollerBase-289Jih:not(.bd-addon-modal-settings) > div'
+                    ]
+
+                    var selectorsButtons = [
+                        '.actionButtons-14eAc_ button',
+                        '.buttonContainer-2jgQ7w button',
+                        '.toolbar-1t6TWx > *',
                         '.item-PXvHYJ'
                     ]
 
-                    selectors.forEach(selector => {
-                        let min = function (a, b) { return a > b ? a : b }
+                    let min = function (a, b) { return a > b ? a : b }
+
+                    selectorsLists.forEach(selector => {
                         let count = min(document.querySelectorAll(selector).length, this.settings.lists.limit)
 
                         if (this.settings.lists.direction == 'downwards') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-child(${i}):not(${notSelector}) `
-                                + `{animation-delay: ${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                            + `{animation-delay: ${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                         }
                         if (this.settings.lists.direction == 'upwards') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-last-child(${i}):not(${notSelector}) `
-                                + `{animation-delay: ${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                            + `{animation-delay: ${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                        }
+
+                    })
+
+                    selectorsButtons.forEach(selector => {
+
+                        let count = document.querySelectorAll(selector).length
+
+                        if (this.settings.buttons.direction == 'right') for (var i = 1; i < count + 1; i++) {
+                            result += `${selector}:nth-child(${i}) `
+                            + `{animation-delay: ${((i - 1) * this.settings.buttons.delay).toFixed(2)}s}\n\n`
+                        }
+                        if (this.settings.buttons.direction == 'left') for (var i = 1; i < count + 1; i++) {
+                            result += `${selector}:nth-last-child(${i}) `
+                            + `{animation-delay: ${((i - 1) * this.settings.buttons.delay).toFixed(2)}s}\n\n`
                         }
 
                     })
@@ -149,28 +181,40 @@ module.exports = (() => {
 
                         var directions = [
                             'downwards',
-                            'upwards'
+                            'upwards',
+                            'right',
+                            'left'
                         ]
 
                         if(!names.includes(this.settings.lists.name)) {
                             this.settings.lists.name = this.defaultSettings.lists.name;
-                            PluginUtilities.saveSettings("Animations", this.settings)
+                            PluginUtilities.saveSettings("Animations", this.settings);
                         }
 
                         if(!directions.includes(this.settings.lists.direction)) {
                             this.settings.lists.direction = this.defaultSettings.lists.direction;
-                            PluginUtilities.saveSettings("Animations", this.settings)
+                            PluginUtilities.saveSettings("Animations", this.settings);
                         }
 
                         if(!names.includes(this.settings.messages.name)) {
                             this.settings.messages.name = this.defaultSettings.messages.name;
-                            PluginUtilities.saveSettings("Animations", this.settings)
+                            PluginUtilities.saveSettings("Animations", this.settings);
+                        }
+
+                        if(!names.includes(this.settings.buttons.name)) {
+                            this.settings.buttons.name = this.defaultSettings.buttons.name;
+                            PluginUtilities.saveSettings("Animations", this.settings);
+                        }
+
+                        if(!directions.includes(this.settings.buttons.direction)) {
+                            this.settings.buttons.direction = this.defaultSettings.buttons.direction;
+                            PluginUtilities.saveSettings("Animations", this.settings);
                         }
 
                         names.forEach(animName => {
                             for (var i = 1; i < 5; i++) {
                                 result += `.animPreview[data-animation="${animName}"]:hover > .animTempBlock:nth-child(${i})`
-                                    + ` {transform: scale(0); animation-name: ${animName}; animation-fill-mode: forwards; animation-duration: 0.3s; animation-delay: ${(i - 1) * 0.06}s;}\n`
+                                + ` {transform: scale(0); animation-name: ${animName}; animation-fill-mode: forwards; animation-duration: 0.3s; animation-delay: ${(i - 1) * 0.06}s;}\n`
                             }
                         })
 
@@ -180,17 +224,22 @@ module.exports = (() => {
                     let nthStyles = (() => {
                         let result = '';
 
-                        result += `[data-animation="downwards"]:hover .animTempBlock, [data-animation="upwards"]:hover .animTempBlock {animation-name: out; animation-duration: 0.3s;}\n\n`;
+                        result +=
+                         `[data-animation="downwards"]:hover .animTempBlock, [data-animation="upwards"]:hover .animTempBlock,`
+                        +`[data-animation="right"]:hover .animTempBlock, [data-animation="left"]:hover .animTempBlock`
+                        +`{animation-name: out; animation-duration: 0.3s;}\n\n`;
                         for (var i = 1; i < 5; i++) {
-                            result += `[data-animation="downwards"] .animTempBlock:nth-child(${i}) {animation-delay:${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                            result += `[data-animation="downwards"] .animTempBlock:nth-child(${i}), [data-animation="right"] .animTempBlock:nth-child(${i})
+                            {animation-delay:${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                         }
                         for (var i = 1; i < 5; i++) {
-                            result += `[data-animation="upwards"] .animTempBlock:nth-child(${2 * 2 + 1 - i}) {animation-delay:${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                            result += `[data-animation="upwards"] .animTempBlock:nth-child(${2 * 2 + 1 - i}), [data-animation="left"] .animTempBlock:nth-child(${2 * 2 + 1 - i})
+                            {animation-delay:${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                         }
 
                         for (var i = 1; i < this.settings.messages.limit; i++) {
                             result += `.scrollerInner-2YIMLh > :nth-last-child(${i})
-                        {animation-delay:${((i - 1) * this.settings.messages.delay).toFixed(2)}s}\n`
+                            {animation-delay:${((i - 1) * this.settings.messages.delay).toFixed(2)}s}\n`
                         }
 
                         return result;
@@ -201,9 +250,9 @@ module.exports = (() => {
 
                 /*fix panel*/
                 ${this.settings.panelFix ?
-                            `.root-1gCeng {max-height: 100%}
-                .marginBottom20-32qID7 {padding: 0 10px 0 5px}`
-                            : '/*disabled*/'}
+                `.root-1gCeng {max-height: 100%}
+                .root-1gCeng .marginBottom20-32qID7 {padding: 0 10px 0 5px}`
+                : '/*disabled*/'}
 
                 /*lists limit*/
                 .side-8zPYf6 > :nth-child(n+${this.settings.lists.limit}),
@@ -261,7 +310,11 @@ module.exports = (() => {
                 /*friends*/
                 .peopleListItem-2nzedh,
                 /*left-lists*/
-                .header-2RyJ0Y, .item-PXvHYJ
+                .header-2RyJ0Y, .channel-2QD9_O, .privateChannelsHeaderContainer-3NB1K1,
+                /*discord settings list*/
+                .side-8zPYf6 .item-PXvHYJ,
+                /*alert elements*/
+                .focusLock-Ns3yie .scrollerBase-289Jih:not(.bd-addon-modal-settings) > div
                 {
                     transform: scaleX(0);
                     animation-name: ${this.settings.lists.name};
@@ -270,7 +323,23 @@ module.exports = (() => {
                 }
                 `}
 
-                /**Keyframes**/
+                ${!this.settings.buttons.enabled ? '' : `
+                /*actions buttons*/
+                .actionButtons-14eAc_ button,
+                /*voice opened buttons*/
+                .buttonContainer-2jgQ7w button,
+                /*toolbar*/
+                .toolbar-1t6TWx > *,
+                .item-PXvHYJ
+                {
+                    transform: scaleX(0);
+                    animation-name: ${this.settings.buttons.name};
+                    animation-fill-mode: forwards;
+                    animation-duration: ${this.settings.buttons.duration}s;
+                }
+                `}
+
+                /**No custom**/
 
                 .container-3JKcAb > svg {
                     transform: scale(0);
@@ -283,7 +352,11 @@ module.exports = (() => {
                     animation-fill-mode: forwards;
                 }
 
-                /****/
+                .video-1ptUNw {
+                    animation-name: out !important;
+                }
+
+                /**Keyframes**/
 
                 @keyframes out {
                     0% {
@@ -505,9 +578,10 @@ module.exports = (() => {
                         var containers = [];
                         var openedPage = 1;
                         var containersCount = 0;
+                        var previewsCountOnPage = (options.horizontal?6:8);
 
                         previewsTemp.forEach((template, index) => {
-                            if(value == template.value) openedPage = Math.ceil((index+1)/8);
+                            if(value == template.value) openedPage = Math.ceil((index+1)/previewsCountOnPage);
                             var tempBlocks = []
                             for (var i = 0; i < 4; i++) {
                                 tempBlocks[i] = BdApi.React.createElement('div', {
@@ -536,7 +610,7 @@ module.exports = (() => {
                             )
                         })
 
-                        for(containersCount=1; containersCount<=Math.ceil(previewsTemp.length/8); containersCount++) {
+                        for(containersCount=1; containersCount<=Math.ceil(previewsTemp.length/previewsCountOnPage); containersCount++) {
                             swipeButtons.push(
                                 BdApi.React
                                 .createElement('div',
@@ -559,8 +633,8 @@ module.exports = (() => {
                             var pages = [];
 
                             var i=0;
-                            while(i<8) {
-                                pages.push(previews[(containersCount-1)*8+i])
+                            while(i<previewsCountOnPage) {
+                                pages.push(previews[(containersCount-1)*previewsCountOnPage+i])
                                 i++
                             }
 
@@ -568,7 +642,7 @@ module.exports = (() => {
                                 BdApi.React
                                 .createElement('div',
                                     {
-                                        class: `animPreviewsContainer ${openedPage==containersCount?'show':''} ${previewsTemp.length<9?'compact':''}`,
+                                        class: `animPreviewsContainer ${openedPage==containersCount?'show':''} ${previewsTemp.length<previewsCountOnPage+1?'compact':''}`,
                                     },
                                     pages
                                 )
@@ -581,7 +655,7 @@ module.exports = (() => {
                                 return BdApi.React
                                     .createElement('div',
                                         {
-                                            class: 'animPreviewsPanel',
+                                            class: `animPreviewsPanel ${options.horizontal?'horizontal':'vertical'}`,
                                             'data-type': options.type
                                         },
                                         [
@@ -601,32 +675,36 @@ module.exports = (() => {
                     }
 
                     return Settings.SettingPanel.build(
-                        this.saveSettings.bind(this),
+                        this.saveSettings.bind(this),                    
 
                         new Settings.SettingField(null, null, () => { },
                             ButtonsPanel(null, [
                                 {
-                                    color: 'blurple', label: 'Reset settings', id: 'reset-animations-settings', onclick: (e) => {
-                                        this.settings = this.defaultSettings;
-                                        PluginUtilities.saveSettings("Animations", this.defaultSettings)
+                                    color: 'blurple', label: 'Reset settings', id: 'reset-animations-settings', onclick: (e)=>{
+                                        let button = document.getElementById('reset-animations-settings');
+                                        PluginUtilities.saveSettings("Animations", this.defaultSettings);
+                                        this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
                                         this.changeStyles();
+                                        button.innerText = 'Reseting...';
                                         this.closeSettings();
                                     }
                                 },
                                 {
-                                    color: this.settings.panelFix ? 'red' : 'green', label: this.settings.panelFix ? 'Take it back' : 'Fix this window', id: 'fix-this-window', onclick: (e) => {
-                                        this.settings.panelFix = !this.settings.panelFix;
+                                    color: this.settings.panelFix ? 'red' : 'green', label: this.settings.panelFix ? 'Take this window back' : 'Fix this window', id: 'fix-this-window', onclick: (e) => {
+                                        
                                         let button = document.getElementById('fix-this-window')
+
+                                        this.settings.panelFix = !this.settings.panelFix;
                                         if (this.settings.panelFix) {
                                             button.classList.remove('colorGreen-29iAKY')
                                             button.classList.add('colorRed-1TFJan')
-                                            button.innerText = 'Take it back'
+                                            button.innerText = 'Take this window back'
                                         } else {
                                             button.classList.remove('colorRed-1TFJan')
                                             button.classList.add('colorGreen-29iAKY')
                                             button.innerText = 'Fix this window'
                                         }
-                                        PluginUtilities.saveSettings("Animations", this.settings)
+                                        PluginUtilities.saveSettings("Animations", this.settings);
                                         this.changeStyles();
                                     }
                                 }
@@ -776,6 +854,77 @@ module.exports = (() => {
                             }
                             )
 
+                        ),
+
+                        new Settings.SettingGroup('Buttons').append(
+
+                            new Settings.Switch('Using', 'Enabling and disabling animations.', this.settings.buttons.enabled,
+                                (e) => {
+                                    this.settings.buttons.enabled = e;
+                                    this.changeStyles();
+                                }
+                            ),
+
+                            new Settings.SettingField('Name', `[default ${this.defaultSettings.buttons.name}] The name of the animation of the buttons when they appear.`, () => { },
+                                PreviewsPanel([
+                                    { label: 'In', value: 'in' },
+                                    { label: 'Out', value: 'out' },
+                                    { label: 'Slide right', value: 'slide-right' },
+                                    { label: 'Slide left', value: 'slide-left' },
+                                    { label: 'Slide up', value: 'slide-up' },
+                                    { label: 'Slide down', value: 'slide-down' },
+                                    { label: 'Slide up (right)', value: 'slide-up-right' },
+                                    { label: 'Slide up (left)', value: 'slide-up-left' },
+                                    { label: 'Slide down (right)', value: 'slide-down-right' },
+                                    { label: 'Slide down (left)', value: 'slide-down-left' },
+                                    { label: 'Skew right', value: 'skew-right' },
+                                    { label: 'Skew left', value: 'skew-left' },
+                                ], {
+                                    type: 'buttons-name',
+                                    horizontal: true
+                                },
+                                this.settings.buttons.name, (e) => {
+                                    this.settings.buttons.name = e;
+                                    PluginUtilities.saveSettings("Animations", this.settings);
+                                    this.changeStyles()
+                                }),
+                                { noteOnTop: true }
+                            ),
+
+                            new Settings.SettingField('Direction', `[default ${this.defaultSettings.buttons.direction}] The direction in which the buttons are built.`, () => { },
+                                PreviewsPanel([
+                                    { label: 'Right', value: 'right' },
+                                    { label: 'Left', value: 'left' }
+                                ], {
+                                    type: 'lists-direction',
+                                    horizontal: true
+                                }, this.settings.buttons.direction, (e) => {
+                                    this.settings.buttons.direction = e;
+                                    PluginUtilities.saveSettings("Animations", this.settings);
+                                    this.changeStyles()
+                                }),
+                                { noteOnTop: true }
+                            ),
+
+                            new Settings.Slider('Delay', `[default ${this.defaultSettings.buttons.delay}] Delay before appearing for each button in seconds.`, 1, 10, this.settings.buttons.delay,
+                                (e) => {
+                                    this.settings.messages.delay = e;
+                                    this.changeStyles()
+                                }, {
+                                markers: [0, 0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.15, 0.2],
+                                stickToMarkers: true
+                            }
+                            ),
+
+                            new Settings.Slider('Duration', `[default ${this.defaultSettings.buttons.duration}] Animation playback speed in seconds for each button after the delay.`, 1, 10, this.settings.buttons.duration,
+                                (e) => {
+                                    this.settings.buttons.duration = e;
+                                    this.changeStyles()
+                                }, {
+                                markers: [0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1, 1.2, 1.5, 2],
+                                stickToMarkers: true
+                            }
+                            )
                         )
 
                     )
@@ -789,41 +938,23 @@ module.exports = (() => {
 
                     }*/
 
-                    .animPreview {
-                        box-sizing: border-box;
-                        width: 22%;
-                        height: 110pt;
-                        margin: 6px 8px;
-                        padding: 5px;
-                        display: inline-block;
-                    }
-                    
-                    .animPreview .animTempBlock {
-                        width: auto;
-                        height: 18pt;
-                        margin: 4px;
-                        border-radius: 3pt;
-                        background-color: var(--interactive-normal);
-                    }
-                    
-                    .animPreview .animPreviewLabel {
-                        position: absolute;
-                        padding-left: 4px;
-                        bottom: 5pt;
-                        color: var(--interactive-normal);
-                        font-size: 10pt;
-                    }
-
                     .animPreviewsContainer {
-                        display: none;
-                        border: 1px solid rgb(32, 34, 37);
-                        border-radius: 3pt;
-                        height: calc((110pt + 6px + (5px)*2)*2);
+                        display: flex;
+                        flex-wrap: wrap;
+                        justify-content: space-evenly; 
+                        align-content: space-evenly;
+                        height: 0;
+                        opacity: 0;
+                        box-sizing: border-box;
+                        border-radius: 3px;
                         overflow: hidden;
+                        transition: 0.5s opacity;
                     }
 
                     .animPreviewsContainer.show {
-                        display: block;
+                        opacity: 1;
+                        border: 1px solid rgb(32, 34, 37);
+                        height: 335px;
                     }
 
                     .animPreviewsContainer.compact {
@@ -849,13 +980,19 @@ module.exports = (() => {
                         border: 1px solid rgb(32, 34, 37);
                         border-radius: 100px;
                         margin: 5px 5px;
+                        transition: 0.2s;
                     }
 
                     .animPreviewSwipeButton:first-child {
                         margin: 5px 5px 5px auto;
                     }
+
                     .animPreviewSwipeButton:last-child {
                         margin: 5px auto 5px 5px;
+                    }
+
+                    .animPreviewSwipeButton:hover {
+                        border-color: black;
                     }
 
                     .animPreviewSwipeButton.enabled {
@@ -863,14 +1000,74 @@ module.exports = (() => {
                         background-color: var(--brand-experiment);
                     }
 
+                    .vertical .animPreview {
+                        box-sizing: border-box;
+                        width: 120px;
+                        height: 145px;
+                        padding: 5px;
+                        display: inline-block;
+                        transition: 0.2s;
+                    }
+
+                    .horizontal .animPreview {
+                        box-sizing: border-box;
+                        width: calc(100% - 16px);
+                        height: 45px;
+                        padding: 5px;
+                        display: inline-block;
+                        transition: 0.2s;
+                    }
+
+                    .horizontal .compact .animPreview {
+                        margin: 5px 0;
+                    }
+
+                    .animPreview:hover {
+                        border-color: black;
+                    }
+
                     .animPreview.enabled {
                         background-color: var(--brand-experiment);
+                    }
+                    
+                    .vertical .animPreview .animTempBlock {
+                        width: auto;
+                        height: 18%;
+                        margin: 4px;
+                        border-radius: 3pt;
+                        background-color: var(--interactive-normal);
+                    }
+
+                    .horizontal .animPreview .animTempBlock {
+                        width: 15%;
+                        height: 26px;
+                        margin: 4px;
+                        border-radius: 3pt;
+                        background-color: var(--interactive-normal);
+                        display: inline-block;
                     }
 
                     .animPreview.enabled .animTempBlock {
                         background-color: #fff;
                     }
                     
+                    .vertical .animPreview .animPreviewLabel {
+                        position: absolute;
+                        padding-left: 4px;
+                        bottom: 6pt;
+                        color: var(--interactive-normal);
+                        font-size: 10pt;
+                    }
+
+                    .horizontal .animPreview .animPreviewLabel {
+                        position: absolute;
+                        padding-left: 4px;
+                        bottom: 11pt;
+                        right: 11pt;
+                        color: var(--interactive-normal);
+                        font-size: 10pt;
+                    }
+
                     .animPreview.enabled .animPreviewLabel {
                         color: #fff;
                     }`
