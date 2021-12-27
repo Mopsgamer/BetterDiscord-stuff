@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.0.8
+ * @version 1.0.9
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -19,14 +19,14 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.0.8',
+            version: '1.0.9',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            {"title": "New Stuff", "items": ["Button animations.", "Animation of elements in pop-up windows (except plugin settings windows)."]},
-            { "title": "Improvements", "type": "improved", "items": ["Improved display of settings."] },
+            { "title": "New Stuff", "items": ["Animation editing mode."] },
+            //{ "title": "Improvements", "type": "improved", "items": ["Improved display of settings."] },
             //{ "title": "Fixes", "type": "fixed", "items": [""] }
         ],
         main: 'index.js',
@@ -69,7 +69,13 @@ module.exports = (() => {
                         lists: {
                             enabled: true,
                             name: 'slide-up',
+                            page: 0,
                             direction: 'downwards',
+                            custom: {
+                                enabled: false,
+                                frames: ['', '', '', ''],
+                                page: 0,
+                            },
                             duration: 0.3,
                             delay: 0.06,
                             limit: 60
@@ -77,6 +83,12 @@ module.exports = (() => {
                         messages: {
                             enabled: true,
                             name: 'slide-right',
+                            page: 0,
+                            custom: {
+                                enabled: false,
+                                frames: ['', '', '', ''],
+                                page: 0,
+                            },
                             duration: 0.4,
                             delay: 0.06,
                             limit: 30
@@ -84,7 +96,13 @@ module.exports = (() => {
                         buttons: {
                             enabled: true,
                             name: 'in',
+                            page: 0,
                             direction: 'right',
+                            custom: {
+                                enabled: false,
+                                frames: ['', '', '', ''],
+                                page: 0,
+                            },
                             duration: 0.3,
                             delay: 0.1
                         }
@@ -132,11 +150,11 @@ module.exports = (() => {
 
                         if (this.settings.lists.direction == 'downwards') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-child(${i}):not(${notSelector}) `
-                            + `{animation-delay: ${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                                + `{animation-delay: ${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                         }
                         if (this.settings.lists.direction == 'upwards') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-last-child(${i}):not(${notSelector}) `
-                            + `{animation-delay: ${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                                + `{animation-delay: ${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                         }
 
                     })
@@ -147,11 +165,11 @@ module.exports = (() => {
 
                         if (this.settings.buttons.direction == 'right') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-child(${i}) `
-                            + `{animation-delay: ${((i - 1) * this.settings.buttons.delay).toFixed(2)}s}\n\n`
+                                + `{animation-delay: ${((i - 1) * this.settings.buttons.delay).toFixed(2)}s}\n\n`
                         }
                         if (this.settings.buttons.direction == 'left') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-last-child(${i}) `
-                            + `{animation-delay: ${((i - 1) * this.settings.buttons.delay).toFixed(2)}s}\n\n`
+                                + `{animation-delay: ${((i - 1) * this.settings.buttons.delay).toFixed(2)}s}\n\n`
                         }
 
                     })
@@ -186,27 +204,27 @@ module.exports = (() => {
                             'left'
                         ]
 
-                        if(!names.includes(this.settings.lists.name)) {
+                        if (!names.includes(this.settings.lists.name)) {
                             this.settings.lists.name = this.defaultSettings.lists.name;
                             PluginUtilities.saveSettings("Animations", this.settings);
                         }
 
-                        if(!directions.includes(this.settings.lists.direction)) {
+                        if (!directions.includes(this.settings.lists.direction)) {
                             this.settings.lists.direction = this.defaultSettings.lists.direction;
                             PluginUtilities.saveSettings("Animations", this.settings);
                         }
 
-                        if(!names.includes(this.settings.messages.name)) {
+                        if (!names.includes(this.settings.messages.name)) {
                             this.settings.messages.name = this.defaultSettings.messages.name;
                             PluginUtilities.saveSettings("Animations", this.settings);
                         }
 
-                        if(!names.includes(this.settings.buttons.name)) {
+                        if (!names.includes(this.settings.buttons.name)) {
                             this.settings.buttons.name = this.defaultSettings.buttons.name;
                             PluginUtilities.saveSettings("Animations", this.settings);
                         }
 
-                        if(!directions.includes(this.settings.buttons.direction)) {
+                        if (!directions.includes(this.settings.buttons.direction)) {
                             this.settings.buttons.direction = this.defaultSettings.buttons.direction;
                             PluginUtilities.saveSettings("Animations", this.settings);
                         }
@@ -214,7 +232,7 @@ module.exports = (() => {
                         names.forEach(animName => {
                             for (var i = 1; i < 5; i++) {
                                 result += `.animPreview[data-animation="${animName}"]:hover > .animTempBlock:nth-child(${i})`
-                                + ` {transform: scale(0); animation-name: ${animName}; animation-fill-mode: forwards; animation-duration: 0.3s; animation-delay: ${(i - 1) * 0.06}s;}\n`
+                                    + ` {transform: scale(0); animation-name: ${animName}; animation-fill-mode: forwards; animation-duration: 0.3s; animation-delay: ${(i - 1) * 0.06}s;}\n`
                             }
                         })
 
@@ -225,9 +243,9 @@ module.exports = (() => {
                         let result = '';
 
                         result +=
-                         `[data-animation="downwards"]:hover .animTempBlock, [data-animation="upwards"]:hover .animTempBlock,`
-                        +`[data-animation="right"]:hover .animTempBlock, [data-animation="left"]:hover .animTempBlock`
-                        +`{animation-name: out; animation-duration: 0.3s;}\n\n`;
+                            `[data-animation="downwards"]:hover .animTempBlock, [data-animation="upwards"]:hover .animTempBlock,`
+                            + `[data-animation="right"]:hover .animTempBlock, [data-animation="left"]:hover .animTempBlock`
+                            + `{animation-name: out; animation-duration: 0.3s;}\n\n`;
                         for (var i = 1; i < 5; i++) {
                             result += `[data-animation="downwards"] .animTempBlock:nth-child(${i}), [data-animation="right"] .animTempBlock:nth-child(${i})
                             {animation-delay:${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
@@ -250,9 +268,9 @@ module.exports = (() => {
 
                 /*fix panel*/
                 ${this.settings.panelFix ?
-                `.root-1gCeng {max-height: 100%}
+                            `.root-1gCeng {max-height: 100%}
                 .root-1gCeng .marginBottom20-32qID7 {padding: 0 10px 0 5px}`
-                : '/*disabled*/'}
+                            : '/*disabled*/'}
 
                 /*lists limit*/
                 .side-8zPYf6 > :nth-child(n+${this.settings.lists.limit}),
@@ -272,29 +290,6 @@ module.exports = (() => {
                 :nth-last-child(n+${this.settings.messages.limit}) .groupStart-23k01U
                 {animation: none !important; transform: none !important}
 
-                ${!this.settings.messages.enabled ? '' : `
-                /* messages */
-                /*nickname, date*/
-                .header-23xsNx,
-                /*avatar*/
-                .avatar-1BDn8e,
-                /*text*/
-                .scrollerInner-2YIMLh > *,
-                /*embed*/
-                .container-1ov-mD,
-                /*blocked*/
-                .groupStart-23k01U
-                {
-                    transform: scale(0);
-                    animation-fill-mode: forwards;
-                    animation-name: ${this.settings.messages.name};
-                    animation-duration: ${this.settings.messages.duration}s;
-                }
-
-                /*lines-forward-messages fix*/
-                .divider-JfaTT5 {z-index: 0}
-                `}
-                
                 ${!this.settings.lists.enabled ? '' : `
                 /* wawes */
                 /*channels*/
@@ -317,10 +312,33 @@ module.exports = (() => {
                 .focusLock-Ns3yie .scrollerBase-289Jih:not(.bd-addon-modal-settings) > div
                 {
                     transform: scaleX(0);
-                    animation-name: ${this.settings.lists.name};
+                    animation-name: ${this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name};
                     animation-fill-mode: forwards;
                     animation-duration: ${this.settings.lists.duration}s;
                 }
+                `}
+
+                ${!this.settings.messages.enabled ? '' : `
+                /* messages */
+                /*nickname, date*/
+                .header-23xsNx,
+                /*avatar*/
+                .avatar-1BDn8e,
+                /*text*/
+                .scrollerInner-2YIMLh > *,
+                /*embed*/
+                .container-1ov-mD,
+                /*blocked*/
+                .groupStart-23k01U
+                {
+                    transform: scale(0);
+                    animation-fill-mode: forwards;
+                    animation-name: ${this.settings.messages.custom.enabled && this.settings.messages.custom.frames[this.settings.messages.custom.page].trim() != '' ? 'custom-messages' : this.settings.messages.name};
+                    animation-duration: ${this.settings.messages.duration}s;
+                }
+
+                /*lines-forward-messages fix*/
+                .divider-JfaTT5 {z-index: 0}
                 `}
 
                 ${!this.settings.buttons.enabled ? '' : `
@@ -333,7 +351,7 @@ module.exports = (() => {
                 .item-PXvHYJ
                 {
                     transform: scaleX(0);
-                    animation-name: ${this.settings.buttons.name};
+                    animation-name: ${this.settings.buttons.custom.enabled && this.settings.buttons.custom.frames[this.settings.buttons.custom.page].trim() != '' ? 'custom-buttons' : this.settings.buttons.name};
                     animation-fill-mode: forwards;
                     animation-duration: ${this.settings.buttons.duration}s;
                 }
@@ -487,7 +505,22 @@ module.exports = (() => {
                 }
 
                 \n${animPrevStyles}
-                \n${nthStyles}`;
+                \n${nthStyles}
+
+                /*Custom keyframes*/
+                
+                @keyframes custom-lists {
+                    ${this.settings.lists.custom.frames[this.settings.lists.custom.page]}
+                }
+
+                @keyframes custom-messages {
+                    ${this.settings.messages.custom.frames[this.settings.messages.custom.page]}
+                }
+
+                @keyframes custom-buttons {
+                    ${this.settings.buttons.custom.frames[this.settings.buttons.custom.page]}
+                }
+                `;
 
                     PluginUtilities.removeStyle('Animations-main');
                     PluginUtilities.addStyle('Animations-main', this.styles);
@@ -501,9 +534,19 @@ module.exports = (() => {
                     document.querySelector('.bd-addon-modal-footer > .bd-button').click()
                 }
 
+                isValidCSS(text){
+                    if(text.trim()=='') return false;
+                    var id = 'CSSValidChecker';
+                    var css = `@keyframes KEYFRAME_VALIDATOR {\n${text}\n}`
+                    BdApi.injectCSS(id, css)
+                    var isValid = document.querySelector("head > bd-head > bd-styles > #" + id).sheet.rules[0]?.cssText.replace(/;| |\n/g, "") === css.replace(/;| |\n/g, "")
+                    BdApi.clearCSS(id)
+                    return isValid
+                }
+
                 getSettingsPanel() {
 
-                    var ButtonsPanel = function (label, options = []) {
+                    var ButtonsPanel = (label, options = []) => {
                         var buttons = [];
                         options.forEach(option => {
                             var colorClass;
@@ -530,33 +573,32 @@ module.exports = (() => {
                             }
 
                             buttons.push([
-                                BdApi.React
-                                    .createElement('button', {
-                                        style: {
-                                            display: 'inline-block',
-                                            width: option.width ?? 'fit-content',
-                                            padding: option.padding ?? '4px 8px',
-                                            margin: '4px 8px'
+                                BdApi.React.createElement('button', {
+                                    style: {
+                                        display: 'inline-block',
+                                        width: option.width ?? 'fit-content',
+                                        padding: option.padding ?? '4px 8px',
+                                        margin: '4px 8px'
 
-                                        },
-                                        id: option.id,
-                                        class: `lookFilled-1Gx00P button-38aScr sizeSmall-2cSMqn ${colorClass}`,
-                                        onClick: option.onclick
                                     },
-                                        BdApi.React.createElement('div', {
-                                            class: 'contents-18-Yxp',
-                                            style: { 'pointer-events': 'none' }
-                                        },
-                                            option.label
-                                        )
+                                    id: option.id,
+                                    class: `lookFilled-1Gx00P button-38aScr sizeSmall-2cSMqn ${colorClass}`,
+                                    onClick: option.onclick
+                                },
+                                    BdApi.React.createElement('div', {
+                                        class: 'contents-18-Yxp',
+                                        style: { 'pointer-events': 'none' }
+                                    },
+                                        option.label
                                     )
+                                )
                             ])
                         })
 
                         class Panel extends BdApi.React.Component {
                             render() {
                                 return BdApi.React.createElement('div', {
-                                    class: 'btnsPanel'
+                                    class: 'buttonsPanel'
                                 },
                                     [
                                         label ? BdApi.React.createElement('label', {
@@ -571,17 +613,19 @@ module.exports = (() => {
                         return Panel;
                     }
 
-                    var PreviewsPanel = function (previewsTemp = [], options = {}, value, onclick) {
+                    var PreviewsPanel = (previewsTemp = [], options = {}, value, onclick) => {
 
-                        var swipeButtons = [];
+                        var swipeButtonsDefault = [];
+                        var swipeButtonsCustom = [];
                         var previews = [];
                         var containers = [];
-                        var openedPage = 1;
+                        var textareas = [];
+                        var openedPage = 0;
                         var containersCount = 0;
-                        var previewsCountOnPage = (options.horizontal?6:8);
+                        var previewsCountOnPage = (options.horizontal ? 6 : 8);
 
                         previewsTemp.forEach((template, index) => {
-                            if(value == template.value) openedPage = Math.ceil((index+1)/previewsCountOnPage);
+                            if (value == template.value) openedPage = Math.ceil((index + 1) / previewsCountOnPage)-1;
                             var tempBlocks = []
                             for (var i = 0; i < 4; i++) {
                                 tempBlocks[i] = BdApi.React.createElement('div', {
@@ -590,84 +634,160 @@ module.exports = (() => {
                             }
 
                             previews.push(
-                                BdApi.React
-                                    .createElement('div', {
-                                        'data-animation': template.value,
-                                        class: `animPreview ${value == template.value ? 'enabled' : ''} preview-2nSL_2 group-spacing-16 cardPrimaryOutline-29Ujqw card-3Qj_Yx`,
-                                        onClick: (e) => {
-                                            onclick(template.value);
+                                BdApi.React.createElement('div', {
+                                    'data-animation': template.value,
+                                    class: `animPreview ${value == template.value ? 'enabled' : ''} preview-2nSL_2 group-spacing-16 cardPrimaryOutline-29Ujqw card-3Qj_Yx`,
+                                    onClick: (e) => {
+                                        onclick({value: template.value, page: openedPage});
 
-                                            var sections = document.querySelectorAll(`[data-type="${options.type}"] .animPreview`);
-                                            for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
-                                            e.target.classList.add('enabled');
-                                        }
-                                    },
-                                        [...tempBlocks, BdApi.React.createElement('div', {
-                                            class: 'animPreviewLabel'
-                                        }, template.label
-                                        )]
-                                    )
-                            )
-                        })
-
-                        for(containersCount=1; containersCount<=Math.ceil(previewsTemp.length/previewsCountOnPage); containersCount++) {
-                            swipeButtons.push(
-                                BdApi.React
-                                .createElement('div',
-                                {
-                                    class: `animPreviewSwipeButton ${openedPage==containersCount?'enabled ':''}title-3sZWYQ`,
-                                    'data-page': containersCount,
-                                    onClick: (e)=>{
-                                        for(var i=0, len=e.target.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer`).length;i<len;i++)
-                                            e.target.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer`)[i].classList.remove('show');
-                                        e.target.closest('.animPreviewsPanel').querySelector(`.animPreviewsContainer:nth-child(${e.target.getAttribute('data-page')})`).classList.add('show');
-
-                                        var sections = document.querySelectorAll(`[data-type="${options.type}"] .animPreviewSwipeButton`);
+                                        var sections = document.querySelectorAll(`[data-type="${options.type}"] .animPreview`);
                                         for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
                                         e.target.classList.add('enabled');
                                     }
                                 },
-                                containersCount)
+                                    [...tempBlocks, BdApi.React.createElement('div', {
+                                        class: 'animPreviewLabel'
+                                    }, template.label
+                                    )]
+                                )
+                            )
+                        })
+
+                        for (containersCount = 0; containersCount+1 <= Math.ceil(previewsTemp.length / previewsCountOnPage); containersCount++) {
+                            swipeButtonsDefault.push(
+                                BdApi.React.createElement('div',
+                                    {
+                                        class: `animPageCircleButton ${openedPage == containersCount ? 'enabled' : ''} title-3sZWYQ`,
+                                        'data-page': containersCount,
+                                        onClick: (e) => {
+                                            for (var i = 0, len = e.target.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .customTextArea`).length; i < len; i++)
+                                                e.target.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .customTextArea`)[i].classList.remove('show');
+                                            e.target.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer`)[e.target.getAttribute('data-page')].classList.add('show');
+
+                                            var sections = document.querySelectorAll(`[data-type="${options.type}"] .default .animPageCircleButton`);
+                                            for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
+                                            e.target.classList.add('enabled');
+
+                                            this.settings[options.class].page = e.target.getAttribute('data-page')
+                                        }
+                                    },
+                                    containersCount+1)
                             );
 
                             var pages = [];
 
-                            var i=0;
-                            while(i<previewsCountOnPage) {
-                                pages.push(previews[(containersCount-1)*previewsCountOnPage+i])
+                            var i = 0;
+                            while (i < previewsCountOnPage) {
+                                pages.push(previews[(containersCount) * previewsCountOnPage + i])
                                 i++
                             }
 
                             containers.push(
-                                BdApi.React
-                                .createElement('div',
+                                BdApi.React.createElement('div',
                                     {
-                                        class: `animPreviewsContainer ${openedPage==containersCount?'show':''} ${previewsTemp.length<previewsCountOnPage+1?'compact':''}`,
+                                        class: `animPreviewsContainer ${(options.custom)?(!this.settings[options.class].custom.enabled && openedPage == containersCount ?'show':''):(openedPage == containersCount?'show':'')} ${previewsTemp.length < previewsCountOnPage + 1 ? 'compact' : ''}`,
                                     },
                                     pages
                                 )
-                            )
-                            
+                            );
+
                         }
+
+                        if (options.custom) for (var i = 0; i < 4; i++) {
+                            textareas.push(
+                                BdApi.React.createElement('textarea',
+                                    {
+                                        type: 'text',
+                                        placeholder: '0% {\n\ttransform: translate(0, 100%)\n}\n\n100% {\n\ttransform: translate(0, 0)\n}',
+                                        class: `customTextArea inputDefault-_djjkz input-cIJ7To textArea-1Lj-Ns scrollbarDefault-3COgCQ scrollbar-3dvm_9 ${this.settings[options.class].custom.enabled && i == this.settings[options.class].custom.page ?'show':''}`,
+                                        onChange: options.custom.onchange
+                                    }
+                                )
+                            );
+
+                            if(this.settings[options.class].custom.enabled && !this.isValidCSS(this.settings[options.class].custom.frames[this.settings[options.class].custom.page])) {
+                                this.settings.lists.custom.enabled = false;
+                                PluginUtilities.saveSettings("Animations", this.settings);
+                            }
+
+                            swipeButtonsCustom.push(
+                                BdApi.React.createElement('div',
+                                    {
+                                        class: `animPageCircleButton ${this.settings[options.class].custom.page == i ? 'enabled' : ''} title-3sZWYQ`,
+                                        'data-page': i,
+                                        onClick: (e) => {
+                                            for (var i = 0; i < e.target.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .customTextArea`).length; i++)
+                                                e.target.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .customTextArea`)[i].classList.remove('show');
+                                            e.target.closest('.animPreviewsPanel').querySelectorAll(`.customTextArea`)[e.target.getAttribute('data-page')].classList.add('show');
+
+                                            var sections = document.querySelectorAll(`[data-type="${options.type}"] .custom .animPageCircleButton`);
+                                            for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
+                                            e.target.classList.add('enabled');
+
+                                            this.settings[options.class].custom.page = e.target.getAttribute('data-page');
+                                        }
+                                    },
+                                    i+1)
+                            );
+                        }
+
+                        var build = BdApi.React.createElement('div',
+                            {
+                                class: `animPreviewsPanel ${options.horizontal ? 'horizontal' : 'vertical'}`,
+                                'data-type': options.type
+                            },
+                            [
+                                options.custom ? BdApi.React.createElement('div',
+                                    {
+                                        class: 'animPreviewsActions'
+                                    },
+                                    BdApi.React.createElement('div',
+                                        {
+                                            class: `animPreviewActionButton ${openedPage == containersCount ? 'enabled' : ''} title-3sZWYQ`,
+                                            onClick: (e) => {
+                                                this.settings[options.class].custom.enabled = !this.settings[options.class].custom.enabled;
+                                                PluginUtilities.saveSettings("Animations", this.settings);
+                                                this.changeStyles();
+
+                                                var panel = e.target.closest('.animPreviewsPanel');
+                                                var all = panel.querySelectorAll(`.animPreviewsContainer, .customTextArea`)
+                                                all.forEach(elem => elem.classList.remove('show'));
+                                                if (this.settings[options.class].custom.enabled) {
+                                                    panel.querySelectorAll(`.customTextArea`)[this.settings[options.class].custom.page].classList.add('show');
+                                                    panel.querySelector('.animPageButtons.default').classList.remove('show');
+                                                    panel.querySelector('.animPageButtons.custom').classList.add('show');
+                                                } else {
+                                                    panel.querySelectorAll(`.animPreviewsContainer`)[this.settings[options.class].page].classList.add('show');
+                                                    panel.querySelector('.animPageButtons.default').classList.add('show');
+                                                    panel.querySelector('.animPageButtons.custom').classList.remove('show');
+                                                }
+
+                                                e.target.innerText = this.settings[options.class].custom.enabled ? 'Editing' : 'Selecting'
+
+                                            }
+                                        }, this.settings[options.class].custom.enabled ? 'Editing' : 'Selecting')
+                                ) : null,
+                                ...containers,
+                                ...textareas,
+                                containers.length > 1 ?
+                                    BdApi.React.createElement('div',
+                                        {
+                                            class: `animPageButtons default ${options.custom?(!this.settings[options.class].custom.enabled?'show':''):'show'}`,
+                                        },
+                                        swipeButtonsDefault
+                                    ) : null,
+                                    BdApi.React.createElement('div',
+                                        {
+                                            class: `animPageButtons custom ${options.custom?(this.settings[options.class].custom.enabled?'show':''):'show'}`,
+                                        },
+                                        swipeButtonsCustom
+                                    ),
+                            ])
+
 
                         class Panel extends BdApi.React.Component {
                             render() {
-                                return BdApi.React
-                                    .createElement('div',
-                                        {
-                                            class: `animPreviewsPanel ${options.horizontal?'horizontal':'vertical'}`,
-                                            'data-type': options.type
-                                        },
-                                        [
-                                            ...containers,
-                                            containers.length>1?BdApi.React
-                                            .createElement('div',
-                                                {
-                                                    class: 'animPreviewsButtons',
-                                                },
-                                                swipeButtons
-                                            ):null
-                                        ])
+                                return build
                             }
                         }
 
@@ -675,12 +795,12 @@ module.exports = (() => {
                     }
 
                     return Settings.SettingPanel.build(
-                        this.saveSettings.bind(this),                    
+                        this.saveSettings.bind(this),
 
                         new Settings.SettingField(null, null, () => { },
                             ButtonsPanel(null, [
                                 {
-                                    color: 'blurple', label: 'Reset settings', id: 'reset-animations-settings', onclick: (e)=>{
+                                    color: 'blurple', label: 'Reset settings', id: 'reset-animations-settings', onclick: (e) => {
                                         let button = document.getElementById('reset-animations-settings');
                                         PluginUtilities.saveSettings("Animations", this.defaultSettings);
                                         this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
@@ -691,7 +811,7 @@ module.exports = (() => {
                                 },
                                 {
                                     color: this.settings.panelFix ? 'red' : 'green', label: this.settings.panelFix ? 'Take this window back' : 'Fix this window', id: 'fix-this-window', onclick: (e) => {
-                                        
+
                                         let button = document.getElementById('fix-this-window')
 
                                         this.settings.panelFix = !this.settings.panelFix;
@@ -735,13 +855,30 @@ module.exports = (() => {
                                     { label: 'Skew right', value: 'skew-right' },
                                     { label: 'Skew left', value: 'skew-left' },
                                 ], {
-                                    type: 'lists-name'
+                                    type: 'lists-name',
+                                    class: 'lists',
+                                    custom: {
+                                        enabled: this.settings.lists.custom.enabled,
+                                        onchange: (e) => {
+                                            if(this.isValidCSS(e.target.value)) {
+                                                e.target.classList.add('valid');
+                                                e.target.classList.remove('invalid');
+                                                this.settings.lists.custom.frames[this.settings.lists.custom.page] = e.target.value;
+                                                PluginUtilities.saveSettings("Animations", this.settings);
+                                                this.changeStyles()
+                                            } else {
+                                                e.target.classList.add('invalid');
+                                                e.target.classList.remove('valid')
+                                            }
+                                        }
+                                    }
                                 },
-                                this.settings.lists.name, (e) => {
-                                    this.settings.lists.name = e;
-                                    PluginUtilities.saveSettings("Animations", this.settings);
-                                    this.changeStyles()
-                                }),
+                                    this.settings.lists.name, (e) => {
+                                        this.settings.lists.name = e.value;
+                                        this.settings.lists.page = e.page;
+                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        this.changeStyles()
+                                    }),
                                 { noteOnTop: true }
                             ),
 
@@ -817,7 +954,7 @@ module.exports = (() => {
                                 ], {
                                     type: 'messages-name'
                                 }, this.settings.messages.name, (e) => {
-                                    this.settings.messages.name = e;
+                                    this.settings.messages.name = e.value;
                                     PluginUtilities.saveSettings("Animations", this.settings);
                                     this.changeStyles()
                                 }),
@@ -883,11 +1020,11 @@ module.exports = (() => {
                                     type: 'buttons-name',
                                     horizontal: true
                                 },
-                                this.settings.buttons.name, (e) => {
-                                    this.settings.buttons.name = e;
-                                    PluginUtilities.saveSettings("Animations", this.settings);
-                                    this.changeStyles()
-                                }),
+                                    this.settings.buttons.name, (e) => {
+                                        this.settings.buttons.name = e.value;
+                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        this.changeStyles()
+                                    }),
                                 { noteOnTop: true }
                             ),
 
@@ -926,13 +1063,12 @@ module.exports = (() => {
                             }
                             )
                         )
-
                     )
                 }
 
                 start() {
                     this.reqStyles =
-                    `/*own components*/
+                    `/*components*/
 
                     /*.animPreviewsPanel {
 
@@ -951,9 +1087,34 @@ module.exports = (() => {
                         transition: 0.5s opacity;
                     }
 
+                    .customTextArea {
+                        opacity: 0;
+                        display: block;
+                        padding: 0;
+                        height: 0;
+                        border: none;
+                        transition: 0.2s opacity;
+                    }
+
+                    .customTextArea.show {
+                        opacity: 1;
+                        padding: 10px;
+                        height: 335px;
+                        border: 1px solid var(--background-tertiary);
+                    }
+
+                    .customTextArea.show:hover {
+                        border-color: black;
+                        transition: 0.2s border;
+                    }
+
+                    .customTextArea.invalid {
+                        color: #ed4245;
+                    }
+
                     .animPreviewsContainer.show {
                         opacity: 1;
-                        border: 1px solid rgb(32, 34, 37);
+                        border: 1px solid var(--background-tertiary);
                         height: 335px;
                     }
 
@@ -962,40 +1123,71 @@ module.exports = (() => {
                         height: fit-content;
                     }
 
-                    .animPreviewsButtons {
-                        margin: 0 auto;
+                    .animPreviewsActions {
                         width: fit-content;
+                        margin: 0 auto;
                     }
 
-                    .animPreviewSwipeButton {
+                    .animPreviewActionButton {
                         display: inline-block;
                         min-width: 10px;
                         width: fit-content;
                         height: 0;
+                        margin: 5px auto 5px auto;
+                        padding: 5px 10px 25px 10px;
+                        color: var(--interactive-normal);
+                        text-align: center;
+                        text-transform: capitalize;
+                        font-size: 18px;
+                        background-color: var(--background-secondary);
+                        border: 1px solid var(--background-tertiary);
+                        border-radius: 3px;
+                        transition: 0.2s;
+                    }
+
+                    .animPreviewActionButton:hover {
+                        border-color: black;
+                    }
+
+                    .animPageButtons {
+                        margin: 0 auto;
+                        width: fit-content;
+                        display: none;
+                    }
+
+                    .animPageButtons.show {
+                        display: block;
+                    }
+
+                    .animPageCircleButton {
+                        display: inline-block;
+                        min-width: 10px;
+                        width: fit-content;
+                        height: 0;
+                        margin: 5px 5px;
                         padding: 5px 10px 25px 10px;
                         color: var(--interactive-normal);
                         text-align: center;
                         font-size: 18px;
-                        background-color: rgb(47, 49, 54);
-                        border: 1px solid rgb(32, 34, 37);
+                        background-color: var(--background-secondary);
+                        border: 1px solid var(--background-tertiary);
                         border-radius: 100px;
-                        margin: 5px 5px;
                         transition: 0.2s;
                     }
 
-                    .animPreviewSwipeButton:first-child {
+                    .animPageCircleButton:first-child {
                         margin: 5px 5px 5px auto;
                     }
 
-                    .animPreviewSwipeButton:last-child {
+                    .animPageCircleButton:last-child {
                         margin: 5px auto 5px 5px;
                     }
 
-                    .animPreviewSwipeButton:hover {
+                    .animPageCircleButton:hover {
                         border-color: black;
                     }
 
-                    .animPreviewSwipeButton.enabled {
+                    .animPageCircleButton.enabled {
                         color: white;
                         background-color: var(--brand-experiment);
                     }
