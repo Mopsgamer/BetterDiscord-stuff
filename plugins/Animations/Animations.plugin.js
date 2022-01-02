@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.0.10
+ * @version 1.0.11
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -19,15 +19,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.0.10',
+            version: '1.0.11',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
             //{ "title": "New Stuff", "items": ["Animation editing mode."] },
-            { "title": "Improvements", "type": "improved", "items": ["Animation editing is now available for messages and buttons."] },
-            { "title": "Fixes", "type": "fixed", "items": ["No selection panel after exiting the settings with bad code in the edit panel."] }
+            { "title": "Improvements", "type": "improved", "items": ["Now there will be no animation for messages that have not been sent. That is, your messages will not be animated twice."] },
+            //{ "title": "Fixes", "type": "fixed", "items": ["No selection panel after exiting the settings with bad code in the edit panel."] }
         ],
         main: 'index.js',
     };
@@ -56,7 +56,7 @@ module.exports = (() => {
         const plugin = (Plugin, Library) => {
 
             const
-                { DiscordSelectors, PluginUtilities, DOMTools, Modals, WebpackModules } = Api,
+                { DiscordSelectors, DiscordAPI, PluginUtilities, DOMTools, Modals, WebpackModules } = Api,
                 { Logger, Patcher, Settings, ReactComponents } = Library;
 
             return class Animations extends Plugin {
@@ -256,7 +256,7 @@ module.exports = (() => {
                         }
 
                         for (var i = 1; i < this.settings.messages.limit; i++) {
-                            result += `.scrollerInner-2YIMLh > :nth-last-child(${i})
+                            result += `.messageListItem-1-jvGY:nth-last-child(${i}) > .message-2qnXI6
                             {animation-delay:${((i - 1) * this.settings.messages.delay).toFixed(2)}s}\n`
                         }
 
@@ -275,19 +275,6 @@ module.exports = (() => {
                 /*lists limit*/
                 .side-8zPYf6 > :nth-child(n+${this.settings.lists.limit}),
                 .content-3YMskv > :nth-child(n+${this.settings.lists.limit})
-                {animation: none !important; transform: none !important}
-
-                /* messages */
-                /*nickname, date*/
-                :nth-last-child(n+${this.settings.messages.limit}) .header-23xsNx,
-                /*avatar*/
-                :nth-last-child(n+${this.settings.messages.limit}) .avatar-1BDn8e,
-                /*text*/
-                .scrollerInner-2YIMLh > :nth-last-child(n+${this.settings.messages.limit}),
-                /*embed*/
-                :nth-last-child(n+${this.settings.messages.limit}) .container-1ov-mD,
-                /*blocked*/
-                :nth-last-child(n+${this.settings.messages.limit}) .groupStart-23k01U
                 {animation: none !important; transform: none !important}
 
                 ${!this.settings.lists.enabled ? '' : `
@@ -320,16 +307,7 @@ module.exports = (() => {
 
                 ${!this.settings.messages.enabled ? '' : `
                 /* messages */
-                /*nickname, date*/
-                .header-23xsNx,
-                /*avatar*/
-                .avatar-1BDn8e,
-                /*text*/
-                .scrollerInner-2YIMLh > *,
-                /*embed*/
-                .container-1ov-mD,
-                /*blocked*/
-                .groupStart-23k01U
+                .messageListItem-1-jvGY > .message-2qnXI6
                 {
                     transform: scale(0);
                     animation-fill-mode: forwards;
@@ -1303,10 +1281,29 @@ module.exports = (() => {
                         PluginUtilities.addStyle('Animations-req', this.reqStyles)
                     }, 100);
                     this.changeStyles()
+
+                    this.BadSendingStyles = (e)=>{
+                        if(e.key=="Enter") { // finding parent
+                            var BadSendingTextNode = document.querySelector('.isSending-9nvak6, .isFailed-2MPmD6')
+                            if(!BadSendingTextNode) {
+                                setTimeout(()=>{
+                                    BadSendingTextNode = this.BadSendingStyles(e)
+                                    return sel
+                                },50)// frequency of checks after pressing Enter
+                            } else {
+                            var result = BadSendingTextNode.closest('.message-2qnXI6');// this is where we found it
+                            // there styles for parent
+                            result.style.animation = 'none'
+                            result.style.transform = 'none'
+                            }
+                        }
+                    }
+
+                    document.addEventListener('keyup', this.BadSendingStyles)
                 }
 
                 stop() {
-
+                    document.removeEventListener('keyup', this.BadSendingStyles)
                     PluginUtilities.removeStyle('Animations-main');
                     PluginUtilities.removeStyle('Animations-req');
                     PluginUtilities.removeStyle('Animations-count');
