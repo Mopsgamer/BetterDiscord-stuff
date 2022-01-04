@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.0.11
+ * @version 1.0.12
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -19,15 +19,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.0.11',
+            version: '1.0.12',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
             //{ "title": "New Stuff", "items": ["Animation editing mode."] },
-            { "title": "Improvements", "type": "improved", "items": ["Now there will be no animation for messages that have not been sent. That is, your messages will not be animated twice."] },
-            //{ "title": "Fixes", "type": "fixed", "items": ["No selection panel after exiting the settings with bad code in the edit panel."] }
+            { "title": "Improvements", "type": "improved", "items": ["Horizontal button preview."] },
+            { "title": "Fixes", "type": "fixed", "items": ["\"sel\" is not defined"] }
         ],
         main: 'index.js',
     };
@@ -1015,6 +1015,7 @@ module.exports = (() => {
                                 ], {
                                     type: 'buttons-name',
                                     class: 'buttons',
+                                    horizontal: true,
                                     custom: {
                                         enabled: this.settings.buttons.custom.enabled,
                                         onchange: (e) => {
@@ -1288,7 +1289,7 @@ module.exports = (() => {
                             if(!BadSendingTextNode) {
                                 setTimeout(()=>{
                                     BadSendingTextNode = this.BadSendingStyles(e)
-                                    return sel
+                                    return BadSendingTextNode
                                 },50)// frequency of checks after pressing Enter
                             } else {
                             var result = BadSendingTextNode.closest('.message-2qnXI6');// this is where we found it
