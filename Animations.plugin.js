@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.0.12
+ * @version 1.1.0
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -19,15 +19,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.0.12',
+            version: '1.1.0',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            //{ "title": "New Stuff", "items": ["Animation editing mode."] },
-            { "title": "Improvements", "type": "improved", "items": ["Horizontal button preview."] },
-            { "title": "Fixes", "type": "fixed", "items": ["\"sel\" is not defined"] }
+            { "title": "New Stuff", "items": ["Threads are now animated along with the channels."] },
+            { "title": "Improvements", "type": "improved", "items": ["Selecting/Editing button modified.", "There are 3 more buttons at the beginning to disable animation for certain groups of elements, and the toggles have been removed."] },
+            { "title": "Fixes", "type": "fixed", "items": ["Now the empty textarea will be saved during editing.", "Fixed the presence of the left settings list animation when the list animation setting is off."] }
         ],
         main: 'index.js',
     };
@@ -119,12 +119,7 @@ module.exports = (() => {
                 get countStyles() {
                     let result = '';
 
-                    let notSelector = '.container-3JKcAb > .containerDefault--pIXnN';
-
                     var selectorsLists = [
-                        '.containerDefault-3tr_sE',
-                        '.container-3JKcAb',
-                        '.containerDefault--pIXnN',
                         '.container-3iAQ-0',
 
                         '.container-2Pjhx-',
@@ -145,15 +140,15 @@ module.exports = (() => {
 
                     let min = function (a, b) { return a > b ? a : b }
 
-                    selectorsLists.forEach(selector => {
+                    selectorsLists.forEach(selector => { if(!this.settings.lists.enabled) return;
                         let count = min(document.querySelectorAll(selector).length, this.settings.lists.limit)
 
                         if (this.settings.lists.direction == 'downwards') for (var i = 1; i < count + 1; i++) {
-                            result += `${selector}:nth-child(${i}):not(${notSelector}) `
+                            result += `${selector}:nth-child(${i}) `
                                 + `{animation-delay: ${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                         }
                         if (this.settings.lists.direction == 'upwards') for (var i = 1; i < count + 1; i++) {
-                            result += `${selector}:nth-last-child(${i}):not(${notSelector}) `
+                            result += `${selector}:nth-last-child(${i}) `
                                 + `{animation-delay: ${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                         }
 
@@ -176,6 +171,38 @@ module.exports = (() => {
 
                     return result;
 
+                }
+
+                threadsWithChannels() {
+                    if(!this.settings.lists.enabled) return
+                    var channelsListElements = document.querySelectorAll('#channels .content-3YMskv > [class]');
+                    for (var i = 0, threadsCount = 0; i < channelsListElements.length; i++) {
+                        let children = channelsListElements[i];
+                        
+                        if (children.classList.contains('containerDefault--pIXnN')
+                        || children.classList.contains('containerDefault-3tr_sE')
+                        || children.classList.contains('wrapper-2jXpOf')
+                        ) {
+                            children.style.animationDelay = `${((i+threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                            children.style.animationName = this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name;
+                        }
+
+                        else if (children.classList.contains('container-3JKcAb')) {
+                            var threadsForkElement = children.querySelector('.container-3JKcAb > svg');
+                            var threadsListElements = children.querySelectorAll('.containerDefault--pIXnN');
+
+                            threadsForkElement.style.animationDelay = `${((i+threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                            threadsForkElement.style.animationName = 'slide-right';
+
+                            for (var j = 0; j < threadsListElements.length; j++) {
+                                threadsCount += (j?1:0);
+                                let thread = threadsListElements[j];
+                                thread.style.animationDelay = `${((i+threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                                thread.style.animationName = this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name;
+                            }
+                        }
+                        
+                    }
                 }
 
                 changeStyles() {
@@ -267,10 +294,19 @@ module.exports = (() => {
                 /*ANIMATED DISCORD*/
 
                 /*fix panel*/
-                ${this.settings.panelFix ?
-                            `.root-1gCeng {max-height: 100%}
-                .root-1gCeng .marginBottom20-32qID7 {padding: 0 10px 0 5px}`
-                            : '/*disabled*/'}
+                ${this.settings.panelFix ? `
+                .root-1gCeng {
+                    max-height: 100%;
+                }
+
+                .root-1gCeng .marginBottom20-32qID7 {
+                    padding: 0 10px 0 5px;
+                }
+
+                .plugin-input-group h2 {
+                    margin-bottom: 30px;
+                }
+                ` : '/*disabled*/'}
 
                 /*lists limit*/
                 .side-8zPYf6 > :nth-child(n+${this.settings.lists.limit}),
@@ -281,8 +317,15 @@ module.exports = (() => {
                 /* wawes */
                 /*channels*/
                 .containerDefault-3tr_sE,
-                .container-3JKcAb,
-                .containerDefault--pIXnN,
+                .containerDefault--pIXnN
+                {
+                    transform: scaleX(0);
+                    animation-fill-mode: forwards;
+                    animation-duration: ${this.settings.lists.duration}s;
+                }
+
+                /*active threads button*/
+                .wrapper-2jXpOf,
                 /*search*/
                 .container-3iAQ-0,
                 /*members*/
@@ -326,7 +369,7 @@ module.exports = (() => {
                 .buttonContainer-2jgQ7w button,
                 /*toolbar*/
                 .toolbar-1t6TWx > *,
-                .item-PXvHYJ
+                .topPill-30KHOu > .item-PXvHYJ
                 {
                     transform: scaleX(0);
                     animation-name: ${this.settings.buttons.custom.enabled && this.settings.buttons.custom.frames[this.settings.buttons.custom.page].trim() != '' ? 'custom-buttons' : this.settings.buttons.name};
@@ -335,15 +378,13 @@ module.exports = (() => {
                 }
                 `}
 
-                /**No custom**/
+                /**Non-custom**/
 
+                /*threads fork*/
                 .container-3JKcAb > svg {
                     transform: scale(0);
-                }
-
-                .container-3JKcAb > svg {
+                    transform-oringin: 100% 50%;
                     animation-timing-function: linear;
-                    animation-name: slide-left;
                     animation-duration: ${this.settings.lists.duration}s;
                     animation-fill-mode: forwards;
                 }
@@ -506,6 +547,7 @@ module.exports = (() => {
                     PluginUtilities.removeStyle('Animations-count');
                     PluginUtilities.addStyle('Animations-count', this.countStyles);
 
+                    this.threadsWithChannels()
                 }
 
                 closeSettings() {
@@ -627,7 +669,7 @@ module.exports = (() => {
 
                                         var sections = document.querySelectorAll(`[data-type="${options.type}"] .animPreview`);
                                         for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
-                                        e.target.classList.add('enabled');
+                                        e.currentTarget.classList.add('enabled');
                                     }
                                 },
                                     [...tempBlocks, BdApi.React.createElement('div', {
@@ -645,14 +687,14 @@ module.exports = (() => {
                                         class: `animPageCircleButton ${openedPage == containersCount ? 'enabled' : ''} title-3sZWYQ`,
                                         'data-page': containersCount,
                                         onClick: (e) => {
-                                            for (var containerElem of e.target.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .customTextArea`)) containerElem.classList.remove('show');
-                                            e.target.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer`)[e.target.getAttribute('data-page')].classList.add('show');
+                                            for (var containerElem of e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .customTextArea`)) containerElem.classList.remove('show');
+                                            e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer`)[e.currentTarget.getAttribute('data-page')].classList.add('show');
 
                                             var sections = document.querySelectorAll(`[data-type="${options.type}"] .default .animPageCircleButton`);
                                             for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
-                                            e.target.classList.add('enabled');
+                                            e.currentTarget.classList.add('enabled');
 
-                                            this.settings[options.class].page = e.target.getAttribute('data-page')
+                                            this.settings[options.class].page = e.currentTarget.getAttribute('data-page')
                                         }
                                     },
                                     containersCount+1)
@@ -682,10 +724,11 @@ module.exports = (() => {
                                 BdApi.React.createElement('textarea',
                                     {
                                         type: 'text',
-                                        placeholder: '0% {\n\ttransform: translate(0, 100%)\n}\n\n100% {\n\ttransform: translate(0, 0)\n}',
+                                        placeholder: '/* your keyframe here */\n\n0% {\n\ttransform: translate(0, 100%)\n}\n\n100% {\n\ttransform: translate(0, 0)\n}',
                                         class: `customTextArea inputDefault-_djjkz input-cIJ7To textArea-1Lj-Ns scrollbarDefault-3COgCQ scrollbar-3dvm_9 ${this.settings[options.class].custom.enabled && i == this.settings[options.class].custom.page ?'show':''}`,
                                         onChange: options.custom.onchange
-                                    }
+                                    },
+                                    options.custom.data.frames[i]
                                 )
                             );
 
@@ -695,14 +738,14 @@ module.exports = (() => {
                                         class: `animPageCircleButton ${this.settings[options.class].custom.page == i ? 'enabled' : ''} title-3sZWYQ`,
                                         'data-page': i,
                                         onClick: (e) => {
-                                            for (var containerElem of e.target.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .customTextArea`)) containerElem.classList.remove('show');
-                                            e.target.closest('.animPreviewsPanel').querySelectorAll(`.customTextArea`)[e.target.getAttribute('data-page')].classList.add('show');
+                                            for (var containerElem of e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .customTextArea`)) containerElem.classList.remove('show');
+                                            e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.customTextArea`)[e.currentTarget.getAttribute('data-page')].classList.add('show');
 
                                             var sections = document.querySelectorAll(`[data-type="${options.type}"] .custom .animPageCircleButton`);
                                             for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
-                                            e.target.classList.add('enabled');
+                                            e.currentTarget.classList.add('enabled');
 
-                                            this.settings[options.class].custom.page = e.target.getAttribute('data-page');
+                                            this.settings[options.class].custom.page = e.currentTarget.getAttribute('data-page');
                                         }
                                     },
                                     i+1)
@@ -721,29 +764,34 @@ module.exports = (() => {
                                     },
                                     BdApi.React.createElement('div',
                                         {
-                                            class: `animPreviewActionButton ${openedPage == containersCount ? 'enabled' : ''} title-3sZWYQ`,
+                                            class: `animPreviewActionButton ${this.settings[options.class].custom.enabled ? 'editing' : 'selecting'} title-3sZWYQ`,
                                             onClick: (e) => {
                                                 this.settings[options.class].custom.enabled = !this.settings[options.class].custom.enabled;
                                                 PluginUtilities.saveSettings("Animations", this.settings);
                                                 this.changeStyles();
 
-                                                var panel = e.target.closest('.animPreviewsPanel');
+                                                var panel = e.currentTarget.closest('.animPreviewsPanel');
                                                 var all = panel.querySelectorAll(`.animPreviewsContainer, .customTextArea`)
                                                 all.forEach(elem => elem.classList.remove('show'));
                                                 if (this.settings[options.class].custom.enabled) {
+                                                    e.currentTarget.classList.add('editing')
+                                                    e.currentTarget.classList.remove('selecting')
                                                     panel.getElementsByClassName(`customTextArea`)[this.settings[options.class].custom.page].classList.add('show');
                                                     panel.getElementsByClassName('animPageButtons default')[0].classList.remove('show');
                                                     panel.getElementsByClassName('animPageButtons custom')[0].classList.add('show');
                                                 } else {
+                                                    e.currentTarget.classList.remove('editing')
+                                                    e.currentTarget.classList.add('selecting')
                                                     panel.getElementsByClassName(`animPreviewsContainer`)[this.settings[options.class].page].classList.add('show');
                                                     panel.getElementsByClassName('animPageButtons default')[0].classList.add('show');
                                                     panel.getElementsByClassName('animPageButtons custom')[0].classList.remove('show');
                                                 }
-
-                                                e.target.innerText = this.settings[options.class].custom.enabled ? 'Editing' : 'Selecting'
-
                                             }
-                                        }, this.settings[options.class].custom.enabled ? 'Editing' : 'Selecting')
+                                        },
+
+                                        BdApi.React.createElement('div', {class: 'switchActionButton'}, 'Selecting'),
+                                        BdApi.React.createElement('div', {class: 'switchActionButton'}, 'Editing')
+                                    )
                                 ) : null,
                                 ...containers,
                                 ...textareas,
@@ -775,7 +823,7 @@ module.exports = (() => {
                     return Settings.SettingPanel.build(
                         this.saveSettings.bind(this),
 
-                        new Settings.SettingField(null, null, () => { },
+                        new Settings.SettingField('Settings panel', null, () => { },
                             ButtonsPanel(null, [
                                 {
                                     color: 'blurple', label: 'Reset settings', id: 'reset-animations-settings', onclick: (e) => {
@@ -809,14 +857,63 @@ module.exports = (() => {
                             ])
                         ),
 
-                        new Settings.SettingGroup('Lists').append(
+                        new Settings.SettingField('Switching animations for element groups', null, () => { },
+                            ButtonsPanel(null, [
+                                {
+                                    color: this.settings.lists.enabled ? 'green' : 'red', label: 'Lists', id: 'lists-enable-button', onclick: (e) => {
 
-                            new Settings.Switch('Using', 'Enabling and disabling animations.', this.settings.lists.enabled,
-                                (e) => {
-                                    this.settings.lists.enabled = e;
-                                    this.changeStyles();
+                                        let button = document.getElementById('lists-enable-button')
+
+                                        this.settings.lists.enabled = !this.settings.lists.enabled;
+                                        if (!this.settings.lists.enabled) {
+                                            button.classList.remove('colorGreen-29iAKY')
+                                            button.classList.add('colorRed-1TFJan')
+                                        } else {
+                                            button.classList.remove('colorRed-1TFJan')
+                                            button.classList.add('colorGreen-29iAKY')
+                                        }
+                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        this.changeStyles();
+                                    }
+                                },
+                                {
+                                    color: this.settings.messages.enabled ? 'green' : 'red', label: 'Messages', id: 'messages-enable-button', onclick: (e) => {
+
+                                        let button = document.getElementById('messages-enable-button')
+
+                                        this.settings.messages.enabled = !this.settings.messages.enabled;
+                                        if (!this.settings.messages.enabled) {
+                                            button.classList.remove('colorGreen-29iAKY')
+                                            button.classList.add('colorRed-1TFJan')
+                                        } else {
+                                            button.classList.remove('colorRed-1TFJan')
+                                            button.classList.add('colorGreen-29iAKY')
+                                        }
+                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        this.changeStyles();
+                                    }
+                                },
+                                {
+                                    color: this.settings.buttons.enabled ? 'green' : 'red', label: 'Buttons', id: 'buttons-enable-button', onclick: (e) => {
+
+                                        let button = document.getElementById('buttons-enable-button')
+
+                                        this.settings.buttons.enabled = !this.settings.buttons.enabled;
+                                        if (!this.settings.buttons.enabled) {
+                                            button.classList.remove('colorGreen-29iAKY')
+                                            button.classList.add('colorRed-1TFJan')
+                                        } else {
+                                            button.classList.remove('colorRed-1TFJan')
+                                            button.classList.add('colorGreen-29iAKY')
+                                        }
+                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        this.changeStyles();
+                                    }
                                 }
-                            ),
+                            ])
+                        ),
+
+                        new Settings.SettingGroup('Lists').append(
 
                             new Settings.SettingField('Name', `[default ${this.defaultSettings.lists.name}] The name of the animation of the list items when they appear.`, () => { },
                                 PreviewsPanel([
@@ -836,17 +933,17 @@ module.exports = (() => {
                                     type: 'lists-name',
                                     class: 'lists',
                                     custom: {
-                                        enabled: this.settings.lists.custom.enabled,
+                                        data: this.settings.lists.custom,
                                         onchange: (e) => {
-                                            if(this.isValidCSS(e.target.value)) {
-                                                e.target.classList.add('valid');
-                                                e.target.classList.remove('invalid');
-                                                this.settings.lists.custom.frames[this.settings.lists.custom.page] = e.target.value;
+                                            if(this.isValidCSS(e.currentTarget.value) || e.currentTarget.value=="") {
+                                                e.currentTarget.classList.add('valid');
+                                                e.currentTarget.classList.remove('invalid');
+                                                this.settings.lists.custom.frames[this.settings.lists.custom.page] = e.currentTarget.value;
                                                 PluginUtilities.saveSettings("Animations", this.settings);
                                                 this.changeStyles()
                                             } else {
-                                                e.target.classList.add('invalid');
-                                                e.target.classList.remove('valid')
+                                                e.currentTarget.classList.add('invalid');
+                                                e.currentTarget.classList.remove('valid')
                                             }
                                         }
                                     }
@@ -908,13 +1005,6 @@ module.exports = (() => {
 
                         new Settings.SettingGroup('Messages').append(
 
-                            new Settings.Switch('Using', 'Enabling and disabling animations.', this.settings.messages.enabled,
-                                (e) => {
-                                    this.settings.messages.enabled = e;
-                                    this.changeStyles();
-                                }
-                            ),
-
                             new Settings.SettingField('Name', `[default ${this.defaultSettings.messages.name}] The name of the animation of the messages when they appear.`, () => { },
                                 PreviewsPanel([
                                     { label: 'In', value: 'in' },
@@ -933,17 +1023,17 @@ module.exports = (() => {
                                     type: 'messages-name',
                                     class: 'messages',
                                     custom: {
-                                        enabled: this.settings.messages.custom.enabled,
+                                        data: this.settings.messages.custom,
                                         onchange: (e) => {
-                                            if(this.isValidCSS(e.target.value)) {
-                                                e.target.classList.add('valid');
-                                                e.target.classList.remove('invalid');
-                                                this.settings.messages.custom.frames[this.settings.messages.custom.page] = e.target.value;
+                                            if(this.isValidCSS(e.currentTarget.value) || e.currentTarget.value=="") {
+                                                e.currentTarget.classList.add('valid');
+                                                e.currentTarget.classList.remove('invalid');
+                                                this.settings.messages.custom.frames[this.settings.messages.custom.page] = e.currentTarget.value;
                                                 PluginUtilities.saveSettings("Animations", this.settings);
                                                 this.changeStyles()
                                             } else {
-                                                e.target.classList.add('invalid');
-                                                e.target.classList.remove('valid')
+                                                e.currentTarget.classList.add('invalid');
+                                                e.currentTarget.classList.remove('valid')
                                             }
                                         }
                                     }
@@ -991,13 +1081,6 @@ module.exports = (() => {
 
                         new Settings.SettingGroup('Buttons').append(
 
-                            new Settings.Switch('Using', 'Enabling and disabling animations.', this.settings.buttons.enabled,
-                                (e) => {
-                                    this.settings.buttons.enabled = e;
-                                    this.changeStyles();
-                                }
-                            ),
-
                             new Settings.SettingField('Name', `[default ${this.defaultSettings.buttons.name}] The name of the animation of the buttons when they appear.`, () => { },
                                 PreviewsPanel([
                                     { label: 'In', value: 'in' },
@@ -1017,17 +1100,17 @@ module.exports = (() => {
                                     class: 'buttons',
                                     horizontal: true,
                                     custom: {
-                                        enabled: this.settings.buttons.custom.enabled,
+                                        data: this.settings.buttons.custom,
                                         onchange: (e) => {
-                                            if(this.isValidCSS(e.target.value)) {
-                                                e.target.classList.add('valid');
-                                                e.target.classList.remove('invalid');
-                                                this.settings.buttons.custom.frames[this.settings.buttons.custom.page] = e.target.value;
+                                            if(this.isValidCSS(e.currentTarget.value) || e.currentTarget.value=="") {
+                                                e.currentTarget.classList.add('valid');
+                                                e.currentTarget.classList.remove('invalid');
+                                                this.settings.buttons.custom.frames[this.settings.buttons.custom.page] = e.currentTarget.value;
                                                 PluginUtilities.saveSettings("Animations", this.settings);
                                                 this.changeStyles()
                                             } else {
-                                                e.target.classList.add('invalid');
-                                                e.target.classList.remove('valid')
+                                                e.currentTarget.classList.add('invalid');
+                                                e.currentTarget.classList.remove('valid')
                                             }
                                         }
                                     }
@@ -1145,9 +1228,7 @@ module.exports = (() => {
                         display: inline-block;
                         min-width: 10px;
                         width: fit-content;
-                        height: 0;
                         margin: 5px auto 5px auto;
-                        padding: 5px 10px 25px 10px;
                         color: var(--interactive-normal);
                         text-align: center;
                         text-transform: capitalize;
@@ -1156,10 +1237,44 @@ module.exports = (() => {
                         border: 1px solid var(--background-tertiary);
                         border-radius: 3px;
                         transition: 0.2s;
+                        overflow: hidden;
                     }
 
                     .animPreviewActionButton:hover {
                         border-color: black;
+                    }
+
+                    .switchActionButton {
+                        width: 100px;
+                        display: inline-block;
+                        padding: 5px 10px;
+                    }
+
+                    .switchActionButton {
+                        color: white;
+                        transition: 0.2s background;
+                        background-size: cover;
+                        background: linear-gradient(90deg, transparent 0%, var(--brand-experiment) 0%, var(--brand-experiment) 100%, transparent 100%) no-repeat;
+                    }
+
+                    .selecting .switchActionButton:nth-child(1), .editing .switchActionButton:nth-child(2) {
+                        background-position-x: 0;
+                    }
+
+                    .editing .switchActionButton:nth-child(1) {
+                        background-position-x: 200px;
+                    }
+
+                    .selecting .switchActionButton:nth-child(2) {
+                        background-position-x: -200px;
+                    }
+
+                    .animPreviewActionButton .switchActionButton:nth-child(n+2) {
+                        border-left: 1px solid var(--background-tertiary);
+                    }
+
+                    .animPreviewActionButton:hover .switchActionButton:nth-child(n+2) {
+                        border-left: 1px solid black;
                     }
 
                     .animPageButtons {
@@ -1311,8 +1426,10 @@ module.exports = (() => {
 
                 }
 
+                onSwitch() {
+                    this.threadsWithChannels()
+                }
             }
-
         };
         return plugin(Plugin, Api);
     })(global.ZeresPluginLibrary.buildPlugin(config));
