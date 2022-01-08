@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.1.0
+ * @version 1.1.1
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -19,15 +19,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.1.0',
+            version: '1.1.1',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            { "title": "New Stuff", "items": ["Threads are now animated along with the channels."] },
-            { "title": "Improvements", "type": "improved", "items": ["Selecting/Editing button modified.", "There are 3 more buttons at the beginning to disable animation for certain groups of elements, and the toggles have been removed."] },
-            { "title": "Fixes", "type": "fixed", "items": ["Now the empty textarea will be saved during editing.", "Fixed the presence of the left settings list animation when the list animation setting is off."] }
+            //{ "title": "New Stuff", "items": ["Threads are now animated along with the channels."] },
+            //{ "title": "Improvements", "type": "improved", "items": ["Selecting/Editing button modified.", "There are 3 more buttons at the beginning to disable animation for certain groups of elements, and the toggles have been removed."] },
+            { "title": "Fixes", "type": "fixed", "items": ["Fixed channels underloading."] }
         ],
         main: 'index.js',
     };
@@ -74,7 +74,7 @@ module.exports = (() => {
                             custom: {
                                 enabled: false,
                                 frames: ['', '', '', ''],
-                                page: 0,
+                                page: 0
                             },
                             duration: 0.3,
                             delay: 0.06,
@@ -87,7 +87,7 @@ module.exports = (() => {
                             custom: {
                                 enabled: false,
                                 frames: ['', '', '', ''],
-                                page: 0,
+                                page: 0
                             },
                             duration: 0.4,
                             delay: 0.06,
@@ -101,7 +101,7 @@ module.exports = (() => {
                             custom: {
                                 enabled: false,
                                 frames: ['', '', '', ''],
-                                page: 0,
+                                page: 0
                             },
                             duration: 0.3,
                             delay: 0.1
@@ -173,15 +173,15 @@ module.exports = (() => {
 
                 }
 
-                threadsWithChannels() {
+                threadsWithChannels = ()=>{
                     if(!this.settings.lists.enabled) return
                     var channelsListElements = document.querySelectorAll('#channels .content-3YMskv > [class]');
                     for (var i = 0, threadsCount = 0; i < channelsListElements.length; i++) {
                         let children = channelsListElements[i];
                         
                         if (children.classList.contains('containerDefault--pIXnN')
-                        || children.classList.contains('containerDefault-3tr_sE')
-                        || children.classList.contains('wrapper-2jXpOf')
+                         || children.classList.contains('containerDefault-3tr_sE')
+                         || children.classList.contains('wrapper-2jXpOf')
                         ) {
                             children.style.animationDelay = `${((i+threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
                             children.style.animationName = this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name;
@@ -1416,17 +1416,25 @@ module.exports = (() => {
                     }
 
                     document.addEventListener('keyup', this.BadSendingStyles)
+                    // scrolling channels => update styles
+                    this.channelsScrollTimer = -1;
+                    this.channelsScroll = () => {
+                        if (this.channelsScrollTimer != -1) clearTimeout(this.channelsScrollTimer);
+                        this.channelsScrollTimer = setTimeout(this.threadsWithChannels, 50);// scroll event delay
+                    }
+                    document.getElementById('channels').addEventListener('scroll', this.channelsScroll)
                 }
 
                 stop() {
-                    document.removeEventListener('keyup', this.BadSendingStyles)
+                    document.removeEventListener('keyup', this.BadSendingStyles);
+                    document.getElementById('channels').removeEventListener('scroll', this.channelsScroll);
                     PluginUtilities.removeStyle('Animations-main');
                     PluginUtilities.removeStyle('Animations-req');
                     PluginUtilities.removeStyle('Animations-count');
-
                 }
 
                 onSwitch() {
+                    document.getElementById('channels').addEventListener('scroll', this.channelsScroll)
                     this.threadsWithChannels()
                 }
             }
