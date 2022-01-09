@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.1.1
+ * @version 1.1.2
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -19,7 +19,7 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.1.1',
+            version: '1.1.2',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
@@ -27,7 +27,7 @@ module.exports = (() => {
         changelog: [
             //{ "title": "New Stuff", "items": ["Threads are now animated along with the channels."] },
             //{ "title": "Improvements", "type": "improved", "items": ["Selecting/Editing button modified.", "There are 3 more buttons at the beginning to disable animation for certain groups of elements, and the toggles have been removed."] },
-            { "title": "Fixes", "type": "fixed", "items": ["Fixed channels underloading."] }
+            { "title": "Fixes", "type": "fixed", "items": ["Minimising and maximizing a channel group doesn't load the channels."] }
         ],
         main: 'index.js',
     };
@@ -173,7 +173,7 @@ module.exports = (() => {
 
                 }
 
-                threadsWithChannels = ()=>{
+                threadsWithChannels = (removeAnimations = false)=>{
                     if(!this.settings.lists.enabled) return
                     var channelsListElements = document.querySelectorAll('#channels .content-3YMskv > [class]');
                     for (var i = 0, threadsCount = 0; i < channelsListElements.length; i++) {
@@ -183,8 +183,13 @@ module.exports = (() => {
                          || children.classList.contains('containerDefault-3tr_sE')
                          || children.classList.contains('wrapper-2jXpOf')
                         ) {
-                            children.style.animationDelay = `${((i+threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
-                            children.style.animationName = this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name;
+                            if(removeAnimations) {
+                                children.style.transform = 'none'
+                            }
+                            else {
+                                children.style.animationDelay = `${((i+threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                                children.style.animationName = this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name;
+                            }
                         }
 
                         else if (children.classList.contains('container-3JKcAb')) {
@@ -197,8 +202,13 @@ module.exports = (() => {
                             for (var j = 0; j < threadsListElements.length; j++) {
                                 threadsCount += (j?1:0);
                                 let thread = threadsListElements[j];
-                                thread.style.animationDelay = `${((i+threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
-                                thread.style.animationName = this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name;
+                                if(removeAnimations) {
+                                    thread.style.transform = 'none'
+                                }
+                                else {
+                                    thread.style.animationDelay = `${((i+threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                                    thread.style.animationName = this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name;
+                                }
                             }
                         }
                         
@@ -1420,14 +1430,16 @@ module.exports = (() => {
                     this.channelsScrollTimer = -1;
                     this.channelsScroll = () => {
                         if (this.channelsScrollTimer != -1) clearTimeout(this.channelsScrollTimer);
-                        this.channelsScrollTimer = setTimeout(this.threadsWithChannels, 50);// scroll event delay
+                        this.channelsScrollTimer = setTimeout(()=>this.threadsWithChannels(), 10);// scroll event delay
                     }
                     document.getElementById('channels').addEventListener('scroll', this.channelsScroll)
+                    document.getElementById('channels').addEventListener('mouseup', this.channelsScroll)
                 }
 
                 stop() {
                     document.removeEventListener('keyup', this.BadSendingStyles);
                     document.getElementById('channels').removeEventListener('scroll', this.channelsScroll);
+                    document.getElementById('channels').removeEventListener('mouseup', this.channelsScroll)
                     PluginUtilities.removeStyle('Animations-main');
                     PluginUtilities.removeStyle('Animations-req');
                     PluginUtilities.removeStyle('Animations-count');
@@ -1435,6 +1447,7 @@ module.exports = (() => {
 
                 onSwitch() {
                     document.getElementById('channels').addEventListener('scroll', this.channelsScroll)
+                    document.getElementById('channels').addEventListener('mouseup', this.channelsScroll)
                     this.threadsWithChannels()
                 }
             }
