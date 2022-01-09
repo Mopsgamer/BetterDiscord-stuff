@@ -1,11 +1,13 @@
 /**
  * @name Animations
- * @version 1.1.2
+ * @version 1.1.3
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
+ * @authorId 538010208023347200
  * @website https://github.com/Mopsgamer/BetterDiscord-codes/tree/Animations
  * @source https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/Animations/Animations.plugin.js
+ * @updateUrl https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/Animations/Animations.plugin.js
  */
 
 module.exports = (() => {
@@ -19,15 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.1.2',
+            version: '1.1.3',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            //{ "title": "New Stuff", "items": ["Threads are now animated along with the channels."] },
+            { "title": "New Stuff", "items": ["Button to check the version."] },
             //{ "title": "Improvements", "type": "improved", "items": ["Selecting/Editing button modified.", "There are 3 more buttons at the beginning to disable animation for certain groups of elements, and the toggles have been removed."] },
-            { "title": "Fixes", "type": "fixed", "items": ["Minimising and maximizing a channel group doesn't load the channels."] }
+            //{ "title": "Fixes", "type": "fixed", "items": ["Minimising and maximizing a channel group doesn't load the channels."] }
         ],
         main: 'index.js',
     };
@@ -833,7 +835,7 @@ module.exports = (() => {
                     return Settings.SettingPanel.build(
                         this.saveSettings.bind(this),
 
-                        new Settings.SettingField('Settings panel', null, () => { },
+                        new Settings.SettingField('Мain', null, () => { },
                             ButtonsPanel(null, [
                                 {
                                     color: 'blurple', label: 'Reset settings', id: 'reset-animations-settings', onclick: (e) => {
@@ -846,9 +848,9 @@ module.exports = (() => {
                                     }
                                 },
                                 {
-                                    color: this.settings.panelFix ? 'red' : 'green', label: this.settings.panelFix ? 'Take this window back' : 'Fix this window', id: 'fix-this-window', onclick: (e) => {
+                                    color: this.settings.panelFix ? 'red' : 'green', label: this.settings.panelFix ? 'Take this window back' : 'Fix this window', id: 'animations-fix-this-window', onclick: (e) => {
 
-                                        let button = document.getElementById('fix-this-window')
+                                        let button = document.getElementById('animations-fix-this-window')
 
                                         this.settings.panelFix = !this.settings.panelFix;
                                         if (this.settings.panelFix) {
@@ -862,6 +864,75 @@ module.exports = (() => {
                                         }
                                         PluginUtilities.saveSettings("Animations", this.settings);
                                         this.changeStyles();
+                                    }
+                                },
+                                {
+                                    color: 'gray', label: 'Check the version', id: 'animations-version-check', onclick: (e) => {
+                                        let button = document.getElementById('animations-version-check');
+                                        const Http = new XMLHttpRequest();
+                                        Http.open("GET", 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.plugin.js');
+                                        Http.send();
+
+                                        Http.onreadystatechange = (e) => {
+                                            if(e.currentTarget.readyState != 4) return
+                                            var responseCode = JSON.parse(Http.responseText)
+                                            var response = window.atob(responseCode.content)
+                                            var GitHubVersion = (/(\d+\.)*\d+/).exec((/^.*@version\s+(\d+\.)\d+.*$/m).exec(response))[0]
+
+                                            function newerVersion(v1, v2) {
+                                                var v1Dots = v1.match(/\./g).length
+                                                var v2Dots = v2.match(/\./g).length
+                                                const newParts = v1.split('.')
+                                                const oldParts = v2.split('.')
+
+                                                for (var i = 0; i < (v1Dots > v2Dots ? v1Dots : v2Dots) + 1; i++) {
+                                                    const a = parseInt(newParts[i]) || 0
+                                                    const b = parseInt(oldParts[i]) || 0
+                                                    if (a > b) return v1
+                                                    if (a < b) return v2
+                                                }
+                                                return false
+                                            }
+
+                                            switch (newerVersion(GitHubVersion, config.info.version)) {
+                                                case GitHubVersion:
+                                                    button.innerText = `v${GitHubVersion} - Update`
+                                                    button.classList.remove('colorBrand-3pXr91', 'colorRed-1TFJan', 'colorPrimary-3b3xI6')
+                                                    button.classList.add('colorGreen-29iAKY')
+                                                    button.setAttribute('onclick',`
+                                                    BdApi.showConfirmationModal('Your version is older', ['v${config.info.version} → v${GitHubVersion}','Jump to the download page?'], {
+                                                        confirmText: 'Download',
+                                                        cancelText: 'No',
+                                                        onConfirm() {
+                                                            window.open('https://downgit.evecalm.com/#/home?url=https://github.com/Mopsgamer/BetterDiscord-codes/tree/main/plugins/Animations/Animations.plugin.js')
+                                                        }
+                                                    })`)
+                                                    break;
+                                                case config.info.version:
+                                                    button.innerText = `v${config.info.version} - Your version`
+                                                    button.classList.remove('colorPrimary-3b3xI6', 'colorRed-1TFJan', 'colorGreen-29iAKY')
+                                                    button.classList.add('colorBrand-3pXr91')
+                                                    button.setAttribute('onclick',`
+                                                    BdApi.showConfirmationModal('Your version is newer', ['v${config.info.version} → v${GitHubVersion}','Do you want to install the public version?'], {
+                                                        confirmText: 'Download',
+                                                        cancelText: 'No',
+                                                        onConfirm() {
+                                                            window.open('https://downgit.evecalm.com/#/home?url=https://github.com/Mopsgamer/BetterDiscord-codes/tree/main/plugins/Animations/Animations.plugin.js')
+                                                        }
+                                                    })`)
+                                                    break;
+                                                case false:
+                                                    button.innerText = `v${config.info.version} - Latest version`
+                                                    button.classList.remove('colorBrand-3pXr91', 'colorRed-1TFJan', 'colorGreen-29iAKY')
+                                                    button.classList.add('colorPrimary-3b3xI6')
+                                                    button.setAttribute('onclick',`
+                                                    BdApi.alert('Your version is the newest', ['v${config.info.version} = v${GitHubVersion}','There are no updates.'])`)
+                                                    break;
+                                            
+                                                default:
+                                                    break;
+                                            }
+                                        }
                                     }
                                 }
                             ])
