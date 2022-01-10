@@ -1,7 +1,7 @@
 /**
  * @name Animations
- * @version 1.1.3
- * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.
+ * @version 1.1.4
+ * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
  * @authorId 538010208023347200
@@ -21,15 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.1.3',
-            description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and directions of these animations.',
+            version: '1.1.4',
+            description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            { "title": "New Stuff", "items": ["Button to check the version."] },
-            //{ "title": "Improvements", "type": "improved", "items": ["Selecting/Editing button modified.", "There are 3 more buttons at the beginning to disable animation for certain groups of elements, and the toggles have been removed."] },
-            //{ "title": "Fixes", "type": "fixed", "items": ["Minimising and maximizing a channel group doesn't load the channels."] }
+            { "title": "New Stuff", "items": ["Direction replaced by sequence. (Check your settings, they may have reset.)"] },
+            { "title": "Improvements", "type": "improved", "items": ["Pair of icons."] },
+            { "title": "Fixes", "type": "fixed", "items": ["Fixed animation sequence setting for channel list."] }
         ],
         main: 'index.js',
     };
@@ -72,7 +72,7 @@ module.exports = (() => {
                             enabled: true,
                             name: 'slide-up',
                             page: 0,
-                            direction: 'downwards',
+                            sequence: 'fromFirst',
                             custom: {
                                 enabled: false,
                                 frames: ['', '', '', ''],
@@ -99,7 +99,7 @@ module.exports = (() => {
                             enabled: true,
                             name: 'in',
                             page: 0,
-                            direction: 'right',
+                            sequence: 'fromLast',
                             custom: {
                                 enabled: false,
                                 frames: ['', '', '', ''],
@@ -145,11 +145,11 @@ module.exports = (() => {
                     selectorsLists.forEach(selector => { if(!this.settings.lists.enabled) return;
                         let count = min(document.querySelectorAll(selector).length, this.settings.lists.limit)
 
-                        if (this.settings.lists.direction == 'downwards') for (var i = 1; i < count + 1; i++) {
+                        if (this.settings.lists.sequence == 'fromFirst') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-child(${i}) `
                                 + `{animation-delay: ${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                         }
-                        if (this.settings.lists.direction == 'upwards') for (var i = 1; i < count + 1; i++) {
+                        if (this.settings.lists.sequence == 'fromLast') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-last-child(${i}) `
                                 + `{animation-delay: ${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                         }
@@ -160,11 +160,11 @@ module.exports = (() => {
 
                         let count = document.querySelectorAll(selector).length
 
-                        if (this.settings.buttons.direction == 'right') for (var i = 1; i < count + 1; i++) {
+                        if (this.settings.buttons.sequence == 'fromFirst') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-child(${i}) `
                                 + `{animation-delay: ${((i - 1) * this.settings.buttons.delay).toFixed(2)}s}\n\n`
                         }
-                        if (this.settings.buttons.direction == 'left') for (var i = 1; i < count + 1; i++) {
+                        if (this.settings.buttons.sequence == 'fromLast') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-last-child(${i}) `
                                 + `{animation-delay: ${((i - 1) * this.settings.buttons.delay).toFixed(2)}s}\n\n`
                         }
@@ -178,8 +178,9 @@ module.exports = (() => {
                 threadsWithChannels = (removeAnimations = false)=>{
                     if(!this.settings.lists.enabled) return
                     var channelsListElements = document.querySelectorAll('#channels .content-3YMskv > [class]');
+                    
                     for (var i = 0, threadsCount = 0; i < channelsListElements.length; i++) {
-                        let children = channelsListElements[i];
+                        let children = channelsListElements[(this.settings.lists.sequence=="fromFirst"?i:channelsListElements.length-i-1)];
                         
                         if (children.classList.contains('containerDefault--pIXnN')
                          || children.classList.contains('containerDefault-3tr_sE')
@@ -203,7 +204,7 @@ module.exports = (() => {
 
                             for (var j = 0; j < threadsListElements.length; j++) {
                                 threadsCount += (j?1:0);
-                                let thread = threadsListElements[j];
+                                let thread = threadsListElements[(this.settings.lists.sequence=="fromFirst"?j:threadsListElements.length-j-1)];
                                 if(removeAnimations) {
                                     thread.style.transform = 'none'
                                 }
@@ -233,14 +234,12 @@ module.exports = (() => {
                             'slide-down-right',
                             'slide-down-left',
                             'skew-right',
-                            'skew-left'
+                            'skew-left',
                         ]
 
-                        var directions = [
-                            'downwards',
-                            'upwards',
-                            'right',
-                            'left'
+                        var sequences = [
+                            'fromFirst',
+                            'fromLast',
                         ]
 
                         if (!names.includes(this.settings.lists.name)) {
@@ -248,8 +247,8 @@ module.exports = (() => {
                             PluginUtilities.saveSettings("Animations", this.settings);
                         }
 
-                        if (!directions.includes(this.settings.lists.direction)) {
-                            this.settings.lists.direction = this.defaultSettings.lists.direction;
+                        if (!sequences.includes(this.settings.lists.sequence)) {
+                            this.settings.lists.sequence = this.defaultSettings.lists.sequence;
                             PluginUtilities.saveSettings("Animations", this.settings);
                         }
 
@@ -263,8 +262,8 @@ module.exports = (() => {
                             PluginUtilities.saveSettings("Animations", this.settings);
                         }
 
-                        if (!directions.includes(this.settings.buttons.direction)) {
-                            this.settings.buttons.direction = this.defaultSettings.buttons.direction;
+                        if (!sequences.includes(this.settings.buttons.sequence)) {
+                            this.settings.buttons.sequence = this.defaultSettings.buttons.sequence;
                             PluginUtilities.saveSettings("Animations", this.settings);
                         }
 
@@ -282,16 +281,15 @@ module.exports = (() => {
                         let result = '';
 
                         result +=
-                            `[data-animation="downwards"]:hover .animTempBlock, [data-animation="upwards"]:hover .animTempBlock,`
-                            + `[data-animation="right"]:hover .animTempBlock, [data-animation="left"]:hover .animTempBlock`
+                            `.animPreview:hover .animTempBlock `
                             + `{animation-name: out; animation-duration: 0.3s;}\n\n`;
-                        for (var i = 1; i < 5; i++) {
-                            result += `[data-animation="downwards"] .animTempBlock:nth-child(${i}), [data-animation="right"] .animTempBlock:nth-child(${i})
-                            {animation-delay:${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                        for (var i = 1; i < 4+1+1; i++) {
+                            result += `[data-animation="fromFirst"] .animTempBlock:nth-child(${i})
+                            {animation-delay:${((i - 1) * 0.06).toFixed(2)}s}\n\n`
                         }
-                        for (var i = 1; i < 5; i++) {
-                            result += `[data-animation="upwards"] .animTempBlock:nth-child(${2 * 2 + 1 - i}), [data-animation="left"] .animTempBlock:nth-child(${2 * 2 + 1 - i})
-                            {animation-delay:${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                        for (var i = 1; i < 4+1+1; i++) {
+                            result += `[data-animation="fromLast"] .animTempBlock:nth-last-child(${i})
+                            {animation-delay:${((i - 1) * 0.06).toFixed(2)}s}\n\n`
                         }
 
                         for (var i = 1; i < this.settings.messages.limit; i++) {
@@ -762,7 +760,7 @@ module.exports = (() => {
                                     },
                                     i+1)
                             );
-                        }
+                        };
 
                         var build = BdApi.React.createElement('div',
                             {
@@ -801,8 +799,52 @@ module.exports = (() => {
                                             }
                                         },
 
-                                        BdApi.React.createElement('div', {class: 'switchActionButton'}, 'Selecting'),
-                                        BdApi.React.createElement('div', {class: 'switchActionButton'}, 'Editing')
+                                        BdApi.React.createElement('div',
+                                            {
+                                                class: 'switchActionButton'
+                                            },
+                                            [
+                                                BdApi.React.createElement('div', {
+                                                    class: 'switchActionButtonLabel'
+                                                },
+                                                    'Selecting'
+                                                ),
+                                                BdApi.React.createElement("svg", {
+                                                    width: "18",
+                                                    height: "22",
+                                                    viewBox: "3 2 20 20"
+                                                },
+                                                    BdApi.React.createElement("path", {
+                                                        style: {fill: "none"},
+                                                        d: "M0 0h24v24H0z"
+                                                    }),
+                                                    BdApi.React.createElement("path", {
+                                                        d: "M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"
+                                                    })
+                                                )
+                                            ]
+                                        ),
+                                        BdApi.React.createElement('div',
+                                            {
+                                                class: 'switchActionButton'
+                                            },
+                                            [
+                                                BdApi.React.createElement('div', {
+                                                    class: 'switchActionButtonLabel'
+                                                },
+                                                    'Editing'
+                                                ),
+                                                BdApi.React.createElement("svg", {
+                                                    width: "18",
+                                                    height: "22",
+                                                    viewBox: "0 0 24 24"
+                                                },
+                                                    BdApi.React.createElement("path", {
+                                                        d: "M19.2929 9.8299L19.9409 9.18278C21.353 7.77064 21.353 5.47197 19.9409 4.05892C18.5287 2.64678 16.2292 2.64678 14.817 4.05892L14.1699 4.70694L19.2929 9.8299ZM12.8962 5.97688L5.18469 13.6906L10.3085 18.813L18.0201 11.0992L12.8962 5.97688ZM4.11851 20.9704L8.75906 19.8112L4.18692 15.239L3.02678 19.8796C2.95028 20.1856 3.04028 20.5105 3.26349 20.7337C3.48669 20.9569 3.8116 21.046 4.11851 20.9704Z",
+                                                    })
+                                                )
+                                            ]
+                                        )
                                     )
                                 ) : null,
                                 ...containers,
@@ -1038,14 +1080,14 @@ module.exports = (() => {
                                 { noteOnTop: true }
                             ),
 
-                            new Settings.SettingField('Direction', `[default ${this.defaultSettings.lists.direction}] The direction in which the list items are built.`, () => { },
+                            new Settings.SettingField('Sequence', `[default ${this.defaultSettings.lists.sequence}] The sequence in which the list items are built.`, () => { },
                                 PreviewsPanel([
-                                    { label: 'Downwards', value: 'downwards' },
-                                    { label: 'Upwards', value: 'upwards' }
+                                    { label: '↓', value: 'fromFirst' },
+                                    { label: '↑', value: 'fromLast' },
                                 ], {
-                                    type: 'lists-direction'
-                                }, this.settings.lists.direction, (e) => {
-                                    this.settings.lists.direction = e;
+                                    type: 'lists-sequence'
+                                }, this.settings.lists.sequence, (e) => {
+                                    this.settings.lists.sequence = e.value;
                                     PluginUtilities.saveSettings("Animations", this.settings);
                                     this.changeStyles()
                                 }),
@@ -1205,15 +1247,15 @@ module.exports = (() => {
                                 { noteOnTop: true }
                             ),
 
-                            new Settings.SettingField('Direction', `[default ${this.defaultSettings.buttons.direction}] The direction in which the buttons are built.`, () => { },
+                            new Settings.SettingField('Sequence', `[default ${this.defaultSettings.buttons.sequence}] The sequence in which the buttons are built.`, () => { },
                                 PreviewsPanel([
-                                    { label: 'Right', value: 'right' },
-                                    { label: 'Left', value: 'left' }
+                                    { label: '→', value: 'fromFirst' },
+                                    { label: '←', value: 'fromLast' },
                                 ], {
-                                    type: 'lists-direction',
+                                    type: 'buttons-sequence',
                                     horizontal: true
-                                }, this.settings.buttons.direction, (e) => {
-                                    this.settings.buttons.direction = e;
+                                }, this.settings.buttons.sequence, (e) => {
+                                    this.settings.buttons.sequence = e.value;
                                     PluginUtilities.saveSettings("Animations", this.settings);
                                     this.changeStyles()
                                 }),
@@ -1326,20 +1368,27 @@ module.exports = (() => {
                     }
 
                     .switchActionButton {
-                        width: 100px;
-                        display: inline-block;
+                        display: inline-flex;
+                        justify-content: space-between;
+                        line-height: initial;
+                        width: 120px;
                         padding: 5px 10px;
-                    }
-
-                    .switchActionButton {
-                        color: white;
                         transition: 0.2s background;
                         background-size: cover;
                         background: linear-gradient(90deg, transparent 0%, var(--brand-experiment) 0%, var(--brand-experiment) 100%, transparent 100%) no-repeat;
                     }
 
+                    .switchActionButton > svg {
+                        fill: var(--interactive-normal);
+                    }
+
                     .selecting .switchActionButton:nth-child(1), .editing .switchActionButton:nth-child(2) {
+                        color: white;
                         background-position-x: 0;
+                    }
+
+                    .selecting .switchActionButton:nth-child(1) > svg, .editing .switchActionButton:nth-child(2) > svg {
+                        fill: white;
                     }
 
                     .editing .switchActionButton:nth-child(1) {
@@ -1356,6 +1405,13 @@ module.exports = (() => {
 
                     .animPreviewActionButton:hover .switchActionButton:nth-child(n+2) {
                         border-left: 1px solid black;
+                    }
+
+                    .switchActionButtonLabel {
+                        display: inline-block;
+                        overflow: hidden;
+                        width: 100%;
+                        text-overflow: ellipsis;
                     }
 
                     .animPageButtons {
