@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.1.4
+ * @version 1.1.5
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,15 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.1.4',
+            version: '1.1.5',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            { "title": "New Stuff", "items": ["Direction replaced by sequence. (Check your settings, they may have reset.)"] },
-            { "title": "Improvements", "type": "improved", "items": ["Pair of icons."] },
-            { "title": "Fixes", "type": "fixed", "items": ["Fixed animation sequence setting for channel list."] }
+            //{ "title": "New Stuff", "items": ["Direction replaced by sequence. (Check your settings, they may have reset.)"] },
+            //{ "title": "Improvements", "type": "improved", "items": ["Pair of icons."] },
+            { "title": "Fixes", "type": "fixed", "items": ["A pinch of fixes."] }
         ],
         main: 'index.js',
     };
@@ -122,22 +122,33 @@ module.exports = (() => {
                     let result = '';
 
                     var selectorsLists = [
-                        '.container-3iAQ-0',
-
-                        '.container-2Pjhx-',
-                        '.membersGroup-v9BXpm[data-index]',
-                        '.peopleListItem-2nzedh',
-                        '.header-2RyJ0Y',
-                        '.side-8zPYf6 .item-PXvHYJ',
-                        '.privateChannelsHeaderContainer-3NB1K1',
-                        '.focusLock-Ns3yie .scrollerBase-289Jih:not(.bd-addon-modal-settings) > div'
+                        /*active threads button*/
+                        '.wrapper-NhbLHG',
+                        /*threads button > list*/
+                        '.container-2rzKKA',
+                        /*search*/
+                        '.searchResultGroup-1lU_-i',
+                        /*members*/
+                        '.member-2gU6Ar',
+                        /*member-groups*/
+                        '.membersGroup-2eiWxl',
+                        /*friends*/
+                        '.peopleListItem-u6dGxF',
+                        /*left-lists*/
+                        '.channel-1Shao0, .privateChannelsHeaderContainer-1UWASm',
+                        /*discord settings list*/
+                        '.side-2ur1Qk .item-3XjbnG',
+                        /*alert elements*/
+                        '.focusLock-2tveLW .scrollerBase-_bVAAt:not(.bd-addon-modal-settings) > div'
                     ]
 
                     var selectorsButtons = [
-                        '.actionButtons-14eAc_ button',
-                        '.buttonContainer-2jgQ7w button',
-                        '.toolbar-1t6TWx > *',
-                        '.item-PXvHYJ'
+                        /*chat input buttons*/
+                        '.actionButtons-2vEOUh button',
+                        /*voice opened buttons*/
+                        '.buttonContainer-2lnNiN button',
+                        /*toolbar*/
+                        '.toolbar-3_r2xA > *'
                     ]
 
                     let min = function (a, b) { return a > b ? a : b }
@@ -177,14 +188,14 @@ module.exports = (() => {
 
                 threadsWithChannels = (removeAnimations = false)=>{
                     if(!this.settings.lists.enabled) return
-                    var channelsListElements = document.querySelectorAll('#channels .content-3YMskv > [class]');
+                    var channelsListElements = document.querySelectorAll('#channels .content-2a4AW9 > [class]');
                     
                     for (var i = 0, threadsCount = 0; i < channelsListElements.length; i++) {
                         let children = channelsListElements[(this.settings.lists.sequence=="fromFirst"?i:channelsListElements.length-i-1)];
                         
-                        if (children.classList.contains('containerDefault--pIXnN')
-                         || children.classList.contains('containerDefault-3tr_sE')
-                         || children.classList.contains('wrapper-2jXpOf')
+                        if (children.classList.contains('containerDefault-YUSmu3')
+                         || children.classList.contains('containerDefault-3TQ5YN')
+                         || children.classList.contains('wrapper-NhbLHG')
                         ) {
                             if(removeAnimations) {
                                 children.style.transform = 'none'
@@ -195,9 +206,9 @@ module.exports = (() => {
                             }
                         }
 
-                        else if (children.classList.contains('container-3JKcAb')) {
-                            var threadsForkElement = children.querySelector('.container-3JKcAb > svg');
-                            var threadsListElements = children.querySelectorAll('.containerDefault--pIXnN');
+                        else if (children.classList.contains('container-1Bj0eq')) {
+                            var threadsForkElement = children.querySelector('.container-1Bj0eq > svg');
+                            var threadsListElements = children.querySelectorAll('.containerDefault-YUSmu3');
 
                             threadsForkElement.style.animationDelay = `${((i+threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
                             threadsForkElement.style.animationName = 'slide-right';
@@ -235,37 +246,26 @@ module.exports = (() => {
                             'slide-down-left',
                             'skew-right',
                             'skew-left',
-                        ]
+                        ];
 
                         var sequences = [
                             'fromFirst',
                             'fromLast',
-                        ]
+                        ];
 
-                        if (!names.includes(this.settings.lists.name)) {
-                            this.settings.lists.name = this.defaultSettings.lists.name;
-                            PluginUtilities.saveSettings("Animations", this.settings);
-                        }
+                        (["lists", "messages", "buttons"]).forEach(type=>{
+                            if (!names.includes(this.settings[type].name)) {
+                                this.settings[type].name = this.defaultSettings[type].name;
+                                PluginUtilities.saveSettings("Animations", this.settings);
+                            }
+                        });
 
-                        if (!sequences.includes(this.settings.lists.sequence)) {
-                            this.settings.lists.sequence = this.defaultSettings.lists.sequence;
-                            PluginUtilities.saveSettings("Animations", this.settings);
-                        }
-
-                        if (!names.includes(this.settings.messages.name)) {
-                            this.settings.messages.name = this.defaultSettings.messages.name;
-                            PluginUtilities.saveSettings("Animations", this.settings);
-                        }
-
-                        if (!names.includes(this.settings.buttons.name)) {
-                            this.settings.buttons.name = this.defaultSettings.buttons.name;
-                            PluginUtilities.saveSettings("Animations", this.settings);
-                        }
-
-                        if (!sequences.includes(this.settings.buttons.sequence)) {
-                            this.settings.buttons.sequence = this.defaultSettings.buttons.sequence;
-                            PluginUtilities.saveSettings("Animations", this.settings);
-                        }
+                        (["lists", "buttons"]).forEach(type=>{
+                            if (!sequences.includes(this.settings[type].sequence)) {
+                                this.settings[type].sequence = this.defaultSettings[type].sequence;
+                                PluginUtilities.saveSettings("Animations", this.settings);
+                            }
+                        });
 
                         names.forEach(animName => {
                             for (var i = 1; i < 5; i++) {
@@ -280,9 +280,7 @@ module.exports = (() => {
                     let nthStyles = (() => {
                         let result = '';
 
-                        result +=
-                            `.animPreview:hover .animTempBlock `
-                            + `{animation-name: out; animation-duration: 0.3s;}\n\n`;
+                        result += `.animPreview:hover .animTempBlock {animation-name: out; animation-duration: 0.3s;}\n\n`;
                         for (var i = 1; i < 4+1+1; i++) {
                             result += `[data-animation="fromFirst"] .animTempBlock:nth-child(${i})
                             {animation-delay:${((i - 1) * 0.06).toFixed(2)}s}\n\n`
@@ -293,7 +291,7 @@ module.exports = (() => {
                         }
 
                         for (var i = 1; i < this.settings.messages.limit; i++) {
-                            result += `.messageListItem-1-jvGY:nth-last-child(${i}) > .message-2qnXI6
+                            result += `.messageListItem-ZZ7v6g:nth-last-child(${i}) > .message-2CShn3
                             {animation-delay:${((i - 1) * this.settings.messages.delay).toFixed(2)}s}\n`
                         }
 
@@ -319,15 +317,15 @@ module.exports = (() => {
                 ` : '/*disabled*/'}
 
                 /*lists limit*/
-                .side-8zPYf6 > :nth-child(n+${this.settings.lists.limit}),
-                .content-3YMskv > :nth-child(n+${this.settings.lists.limit})
+                .side-2ur1Qk > :nth-child(n+${this.settings.lists.limit}),
+                .content-2a4AW9 > :nth-child(n+${this.settings.lists.limit})
                 {animation: none !important; transform: none !important}
 
                 ${!this.settings.lists.enabled ? '' : `
                 /* wawes */
                 /*channels*/
-                .containerDefault-3tr_sE,
-                .containerDefault--pIXnN
+                .containerDefault-3TQ5YN,
+                .containerDefault-YUSmu3
                 {
                     transform: scaleX(0);
                     animation-fill-mode: forwards;
@@ -335,21 +333,23 @@ module.exports = (() => {
                 }
 
                 /*active threads button*/
-                .wrapper-2jXpOf,
+                .wrapper-NhbLHG,
+                /*threads button > list*/
+                .container-2rzKKA,
                 /*search*/
-                .container-3iAQ-0,
+                .searchResultGroup-1lU_-i,
                 /*members*/
-                .container-2Pjhx-,
+                .member-2gU6Ar,
                 /*member-groups*/
-                .membersGroup-v9BXpm[data-index],
+                .membersGroup-2eiWxl,
                 /*friends*/
-                .peopleListItem-2nzedh,
+                .peopleListItem-u6dGxF,
                 /*left-lists*/
-                .header-2RyJ0Y, .channel-2QD9_O, .privateChannelsHeaderContainer-3NB1K1,
+                .channel-1Shao0, .privateChannelsHeaderContainer-1UWASm,
                 /*discord settings list*/
-                .side-8zPYf6 .item-PXvHYJ,
+                .side-2ur1Qk .item-3XjbnG,
                 /*alert elements*/
-                .focusLock-Ns3yie .scrollerBase-289Jih:not(.bd-addon-modal-settings) > div
+                .focusLock-2tveLW .scrollerBase-_bVAAt:not(.bd-addon-modal-settings) > div
                 {
                     transform: scaleX(0);
                     animation-name: ${this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name};
@@ -360,7 +360,7 @@ module.exports = (() => {
 
                 ${!this.settings.messages.enabled ? '' : `
                 /* messages */
-                .messageListItem-1-jvGY > .message-2qnXI6
+                .messageListItem-ZZ7v6g > .message-2CShn3
                 {
                     transform: scale(0);
                     animation-fill-mode: forwards;
@@ -369,17 +369,16 @@ module.exports = (() => {
                 }
 
                 /*lines-forward-messages fix*/
-                .divider-JfaTT5 {z-index: 0}
+                .divider-IqmEqJ {z-index: 0}
                 `}
 
                 ${!this.settings.buttons.enabled ? '' : `
-                /*actions buttons*/
-                .actionButtons-14eAc_ button,
+                /*chat input buttons*/
+                .actionButtons-2vEOUh button,
                 /*voice opened buttons*/
-                .buttonContainer-2jgQ7w button,
+                .buttonContainer-2lnNiN button,
                 /*toolbar*/
-                .toolbar-1t6TWx > *,
-                .topPill-30KHOu > .item-PXvHYJ
+                .toolbar-3_r2xA > *
                 {
                     transform: scaleX(0);
                     animation-name: ${this.settings.buttons.custom.enabled && this.settings.buttons.custom.frames[this.settings.buttons.custom.page].trim() != '' ? 'custom-buttons' : this.settings.buttons.name};
@@ -391,7 +390,7 @@ module.exports = (() => {
                 /**Non-custom**/
 
                 /*threads fork*/
-                .container-3JKcAb > svg {
+                .container-1Bj0eq > svg {
                     transform: scale(0);
                     transform-oringin: 100% 50%;
                     animation-timing-function: linear;
@@ -582,16 +581,19 @@ module.exports = (() => {
                             var colorClass;
                             switch (option.color) {
                                 case 'blurple':
-                                    colorClass = 'colorBrand-3pXr91'
+                                    colorClass = 'colorBrand-I6CyqQ'
                                     break;
                                 case 'red':
-                                    colorClass = 'colorRed-1TFJan'
+                                    colorClass = 'colorRed-rQXKgM'
                                     break;
                                 case 'gray': case 'grey':
-                                    colorClass = 'colorPrimary-3b3xI6'
+                                    colorClass = 'colorGrey-2iAG-B'
                                     break;
                                 case 'green':
-                                    colorClass = 'colorGreen-29iAKY'
+                                    colorClass = 'colorGreen-3y-Z79'
+                                    break;
+                                case 'link':
+                                    colorClass = 'lookLink-15mFoz colorPrimary-2AuQVo'
                                     break;
                                 case 'bd':
                                     colorClass = 'bd-button'
@@ -612,7 +614,7 @@ module.exports = (() => {
 
                                     },
                                     id: option.id,
-                                    class: `lookFilled-1Gx00P button-38aScr sizeSmall-2cSMqn ${colorClass}`,
+                                    class: `button-f2h6uQ sizeSmall-wU2dO- ${(option.color!='link'?'lookFilled-yCfaCM':'')} ${colorClass}`,
                                     onClick: option.onclick
                                 },
                                     BdApi.React.createElement('div', {
@@ -673,7 +675,7 @@ module.exports = (() => {
                             previews.push(
                                 BdApi.React.createElement('div', {
                                     'data-animation': template.value,
-                                    class: `animPreview ${value == template.value ? 'enabled' : ''} preview-2nSL_2 group-spacing-16 cardPrimaryOutline-29Ujqw card-3Qj_Yx`,
+                                    class: `animPreview ${value == template.value ? 'enabled' : ''} preview-rua1rr group-spacing-16 cardPrimaryOutline-1ofwVz card-16VQ8C`,
                                     onClick: (e) => {
                                         onclick({value: template.value, page: openedPage});
 
@@ -735,7 +737,7 @@ module.exports = (() => {
                                     {
                                         type: 'text',
                                         placeholder: '/* your keyframe here */\n\n0% {\n\ttransform: translate(0, 100%)\n}\n\n100% {\n\ttransform: translate(0, 0)\n}',
-                                        class: `customTextArea inputDefault-_djjkz input-cIJ7To textArea-1Lj-Ns scrollbarDefault-3COgCQ scrollbar-3dvm_9 ${this.settings[options.class].custom.enabled && i == this.settings[options.class].custom.page ?'show':''}`,
+                                        class: `customTextArea inputDefault-3FGxgL input-2g-os5 textArea-3WXAeD scrollbarDefault-2w-Dyz scrollbar-3vVt8d ${this.settings[options.class].custom.enabled && i == this.settings[options.class].custom.page ?'show':''}`,
                                         onChange: options.custom.onchange
                                     },
                                     options.custom.data.frames[i]
@@ -896,12 +898,12 @@ module.exports = (() => {
 
                                         this.settings.panelFix = !this.settings.panelFix;
                                         if (this.settings.panelFix) {
-                                            button.classList.remove('colorGreen-29iAKY')
-                                            button.classList.add('colorRed-1TFJan')
+                                            button.classList.remove('colorGreen-3y-Z79')
+                                            button.classList.add('colorRed-rQXKgM')
                                             button.innerText = 'Take this window back'
                                         } else {
-                                            button.classList.remove('colorRed-1TFJan')
-                                            button.classList.add('colorGreen-29iAKY')
+                                            button.classList.remove('colorRed-rQXKgM')
+                                            button.classList.add('colorGreen-3y-Z79')
                                             button.innerText = 'Fix this window'
                                         }
                                         PluginUtilities.saveSettings("Animations", this.settings);
@@ -909,7 +911,7 @@ module.exports = (() => {
                                     }
                                 },
                                 {
-                                    color: 'gray', label: 'Check the version', id: 'animations-version-check', onclick: (e) => {
+                                    color: 'gray', label: 'Update', id: 'animations-version-check', onclick: (e) => {
                                         let button = document.getElementById('animations-version-check');
                                         const Http = new XMLHttpRequest();
                                         Http.open("GET", 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.plugin.js');
@@ -939,11 +941,11 @@ module.exports = (() => {
                                             switch (newerVersion(GitHubVersion, config.info.version)) {
                                                 case GitHubVersion:
                                                     button.innerText = `v${GitHubVersion} - Update`
-                                                    button.classList.remove('colorBrand-3pXr91', 'colorRed-1TFJan', 'colorPrimary-3b3xI6')
-                                                    button.classList.add('colorGreen-29iAKY')
+                                                    button.classList.remove('colorBrand-I6CyqQ', 'colorRed-rQXKgM', 'colorGrey-2iAG-B')
+                                                    button.classList.add('colorGreen-3y-Z79')
                                                     button.setAttribute('onclick',`
-                                                    BdApi.showConfirmationModal('Your version is older', ['v${config.info.version} → v${GitHubVersion}','Jump to the download page?'], {
-                                                        confirmText: 'Download',
+                                                    BdApi.showConfirmationModal('Your version is older', ['Your: v${config.info.version} (your)  →  v${GitHubVersion} (github)','Jump to the download page?'], {
+                                                        confirmText: 'Download update',
                                                         cancelText: 'No',
                                                         onConfirm() {
                                                             window.open('https://downgit.evecalm.com/#/home?url=https://github.com/Mopsgamer/BetterDiscord-codes/tree/main/plugins/Animations/Animations.plugin.js')
@@ -951,11 +953,11 @@ module.exports = (() => {
                                                     })`)
                                                     break;
                                                 case config.info.version:
-                                                    button.innerText = `v${config.info.version} - Your version`
-                                                    button.classList.remove('colorPrimary-3b3xI6', 'colorRed-1TFJan', 'colorGreen-29iAKY')
-                                                    button.classList.add('colorBrand-3pXr91')
+                                                    button.innerText = `v${config.info.version} - Your own version`
+                                                    button.classList.remove('colorGrey-2iAG-B', 'colorRed-rQXKgM', 'colorGreen-3y-Z79')
+                                                    button.classList.add('colorBrand-I6CyqQ')
                                                     button.setAttribute('onclick',`
-                                                    BdApi.showConfirmationModal('Your version is newer', ['v${config.info.version} → v${GitHubVersion}','Do you want to install the public version?'], {
+                                                    BdApi.showConfirmationModal('Your version is newer', ['v${config.info.version} (your)  →  v${GitHubVersion} (github)','Jump to the download page?'], {
                                                         confirmText: 'Download',
                                                         cancelText: 'No',
                                                         onConfirm() {
@@ -965,10 +967,16 @@ module.exports = (() => {
                                                     break;
                                                 case false:
                                                     button.innerText = `v${config.info.version} - Latest version`
-                                                    button.classList.remove('colorBrand-3pXr91', 'colorRed-1TFJan', 'colorGreen-29iAKY')
-                                                    button.classList.add('colorPrimary-3b3xI6')
+                                                    button.classList.remove('colorBrand-I6CyqQ', 'colorRed-rQXKgM', 'colorGreen-3y-Z79')
+                                                    button.classList.add('colorGrey-2iAG-B')
                                                     button.setAttribute('onclick',`
-                                                    BdApi.alert('Your version is the newest', ['v${config.info.version} = v${GitHubVersion}','There are no updates.'])`)
+                                                    BdApi.showConfirmationModal('Your version is latest', ['v${config.info.version} (your)  ↔  v${GitHubVersion} (github)','Jump to the download page?'], {
+                                                        confirmText: 'Download again',
+                                                        cancelText: 'No',
+                                                        onConfirm() {
+                                                            window.open('https://downgit.evecalm.com/#/home?url=https://github.com/Mopsgamer/BetterDiscord-codes/tree/main/plugins/Animations/Animations.plugin.js')
+                                                        }
+                                                    })`)
                                                     break;
                                             
                                                 default:
@@ -989,11 +997,11 @@ module.exports = (() => {
 
                                         this.settings.lists.enabled = !this.settings.lists.enabled;
                                         if (!this.settings.lists.enabled) {
-                                            button.classList.remove('colorGreen-29iAKY')
-                                            button.classList.add('colorRed-1TFJan')
+                                            button.classList.remove('colorGreen-3y-Z79')
+                                            button.classList.add('colorRed-rQXKgM')
                                         } else {
-                                            button.classList.remove('colorRed-1TFJan')
-                                            button.classList.add('colorGreen-29iAKY')
+                                            button.classList.remove('colorRed-rQXKgM')
+                                            button.classList.add('colorGreen-3y-Z79')
                                         }
                                         PluginUtilities.saveSettings("Animations", this.settings);
                                         this.changeStyles();
@@ -1006,11 +1014,11 @@ module.exports = (() => {
 
                                         this.settings.messages.enabled = !this.settings.messages.enabled;
                                         if (!this.settings.messages.enabled) {
-                                            button.classList.remove('colorGreen-29iAKY')
-                                            button.classList.add('colorRed-1TFJan')
+                                            button.classList.remove('colorGreen-3y-Z79')
+                                            button.classList.add('colorRed-rQXKgM')
                                         } else {
-                                            button.classList.remove('colorRed-1TFJan')
-                                            button.classList.add('colorGreen-29iAKY')
+                                            button.classList.remove('colorRed-rQXKgM')
+                                            button.classList.add('colorGreen-3y-Z79')
                                         }
                                         PluginUtilities.saveSettings("Animations", this.settings);
                                         this.changeStyles();
@@ -1023,11 +1031,11 @@ module.exports = (() => {
 
                                         this.settings.buttons.enabled = !this.settings.buttons.enabled;
                                         if (!this.settings.buttons.enabled) {
-                                            button.classList.remove('colorGreen-29iAKY')
-                                            button.classList.add('colorRed-1TFJan')
+                                            button.classList.remove('colorGreen-3y-Z79')
+                                            button.classList.add('colorRed-rQXKgM')
                                         } else {
-                                            button.classList.remove('colorRed-1TFJan')
-                                            button.classList.add('colorGreen-29iAKY')
+                                            button.classList.remove('colorRed-rQXKgM')
+                                            button.classList.add('colorGreen-3y-Z79')
                                         }
                                         PluginUtilities.saveSettings("Animations", this.settings);
                                         this.changeStyles();
@@ -1544,7 +1552,7 @@ module.exports = (() => {
                                     return BadSendingTextNode
                                 },50)// frequency of checks after pressing Enter
                             } else {
-                            var result = BadSendingTextNode.closest('.message-2qnXI6');// this is where we found it
+                            var result = BadSendingTextNode.closest('.message-2CShn3');// this is where we found it
                             // there styles for parent
                             result.style.animation = 'none'
                             result.style.transform = 'none'
@@ -1559,14 +1567,24 @@ module.exports = (() => {
                         if (this.channelsScrollTimer != -1) clearTimeout(this.channelsScrollTimer);
                         this.channelsScrollTimer = setTimeout(()=>this.threadsWithChannels(), 10);// scroll event delay
                     }
-                    document.getElementById('channels').addEventListener('scroll', this.channelsScroll)
-                    document.getElementById('channels').addEventListener('mouseup', this.channelsScroll)
+                    setInterval(function checkChannelsIsNullAdd(){
+                        if(document.getElementById('channels') == null) return
+                        document.getElementById('channels').addEventListener('scroll', this.channelsScroll)
+                        document.getElementById('channels').addEventListener('mouseup', this.channelsScroll)
+                        clearInterval(checkChannelsIsNullAdd)
+                    })
+                    
                 }
 
                 stop() {
                     document.removeEventListener('keyup', this.BadSendingStyles);
-                    document.getElementById('channels').removeEventListener('scroll', this.channelsScroll);
-                    document.getElementById('channels').removeEventListener('mouseup', this.channelsScroll)
+                    setInterval(function checkChannelsIsNullRemove(){
+                        if(document.getElementById('channels') == null) return
+                        document.getElementById('channels').removeEventListener('scroll', this.channelsScroll)
+                        document.getElementById('channels').removeEventListener('mouseup', this.channelsScroll)
+                        clearInterval(checkChannelsIsNullRemove)
+                    })
+                    
                     PluginUtilities.removeStyle('Animations-main');
                     PluginUtilities.removeStyle('Animations-req');
                     PluginUtilities.removeStyle('Animations-count');
