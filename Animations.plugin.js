@@ -1572,7 +1572,7 @@ module.exports = (() => {
                         document.getElementById('channels').addEventListener('scroll', this.channelsScroll)
                         document.getElementById('channels').addEventListener('mouseup', this.channelsScroll)
                         clearInterval(checkChannelsIsNullAdd)
-                    })
+                    },500)
                     
                 }
 
@@ -1583,7 +1583,7 @@ module.exports = (() => {
                         document.getElementById('channels').removeEventListener('scroll', this.channelsScroll)
                         document.getElementById('channels').removeEventListener('mouseup', this.channelsScroll)
                         clearInterval(checkChannelsIsNullRemove)
-                    })
+                    },500)
                     
                     PluginUtilities.removeStyle('Animations-main');
                     PluginUtilities.removeStyle('Animations-req');
