@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.1.6
+ * @version 1.1.7
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,7 +21,7 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.1.6',
+            version: '1.1.7',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
@@ -1564,7 +1564,7 @@ module.exports = (() => {
 
                     this.BadSendingStyles = (e)=>{
                         if(e.key=="Enter") { // finding parent
-                            var BadSendingTextNode = document.querySelector('.isSending-9nvak6, .isFailed-2MPmD6')
+                            var BadSendingTextNode = document.querySelector('.isSending-3SiDwE, .isFailed-2b8sCy')
                             if(!BadSendingTextNode) {
                                 setTimeout(()=>{
                                     BadSendingTextNode = this.BadSendingStyles(e)
