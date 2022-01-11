@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.1.5
+ * @version 1.1.6
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,7 +21,7 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.1.5',
+            version: '1.1.6',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
@@ -29,7 +29,7 @@ module.exports = (() => {
         changelog: [
             //{ "title": "New Stuff", "items": ["Direction replaced by sequence. (Check your settings, they may have reset.)"] },
             //{ "title": "Improvements", "type": "improved", "items": ["Pair of icons."] },
-            { "title": "Fixes", "type": "fixed", "items": ["A pinch of fixes."] }
+            { "title": "Fixes", "type": "fixed", "items": ["Fixes and improvements."] }
         ],
         main: 'index.js',
     };
@@ -135,7 +135,8 @@ module.exports = (() => {
                         /*friends*/
                         '.peopleListItem-u6dGxF',
                         /*left-lists*/
-                        '.channel-1Shao0, .privateChannelsHeaderContainer-1UWASm',
+                        '.channel-1Shao0',
+                        '.privateChannelsHeaderContainer-1UWASm',
                         /*discord settings list*/
                         '.side-2ur1Qk .item-3XjbnG',
                         /*alert elements*/
@@ -303,11 +304,11 @@ module.exports = (() => {
 
                 /*fix panel*/
                 ${this.settings.panelFix ? `
-                .root-1gCeng {
+                .root-g14mjS {
                     max-height: 100%;
                 }
 
-                .root-1gCeng .marginBottom20-32qID7 {
+                .root-g14mjS .marginBottom20-315RVT {
                     padding: 0 10px 0 5px;
                 }
 
@@ -812,9 +813,9 @@ module.exports = (() => {
                                                     'Selecting'
                                                 ),
                                                 BdApi.React.createElement("svg", {
-                                                    width: "18",
-                                                    height: "22",
-                                                    viewBox: "3 2 20 20"
+                                                    width: "24",
+                                                    height: "24",
+                                                    viewBox: "3 2 19 19"
                                                 },
                                                     BdApi.React.createElement("path", {
                                                         style: {fill: "none"},
@@ -837,9 +838,9 @@ module.exports = (() => {
                                                     'Editing'
                                                 ),
                                                 BdApi.React.createElement("svg", {
-                                                    width: "18",
-                                                    height: "22",
-                                                    viewBox: "0 0 24 24"
+                                                    width: "24",
+                                                    height: "24",
+                                                    viewBox: "0 1 22 22"
                                                 },
                                                     BdApi.React.createElement("path", {
                                                         d: "M19.2929 9.8299L19.9409 9.18278C21.353 7.77064 21.353 5.47197 19.9409 4.05892C18.5287 2.64678 16.2292 2.64678 14.817 4.05892L14.1699 4.70694L19.2929 9.8299ZM12.8962 5.97688L5.18469 13.6906L10.3085 18.813L18.0201 11.0992L12.8962 5.97688ZM4.11851 20.9704L8.75906 19.8112L4.18692 15.239L3.02678 19.8796C2.95028 20.1856 3.04028 20.5105 3.26349 20.7337C3.48669 20.9569 3.8116 21.046 4.11851 20.9704Z",
@@ -882,7 +883,10 @@ module.exports = (() => {
                         new Settings.SettingField('Мain', null, () => { },
                             ButtonsPanel(null, [
                                 {
-                                    color: 'blurple', label: 'Reset settings', id: 'reset-animations-settings', onclick: (e) => {
+                                    color: 'blurple',
+                                    label: 'Reset settings',
+                                    id: 'reset-animations-settings',
+                                    onclick: (e) => {
                                         let button = document.getElementById('reset-animations-settings');
                                         PluginUtilities.saveSettings("Animations", this.defaultSettings);
                                         this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
@@ -892,7 +896,10 @@ module.exports = (() => {
                                     }
                                 },
                                 {
-                                    color: this.settings.panelFix ? 'red' : 'green', label: this.settings.panelFix ? 'Take this window back' : 'Fix this window', id: 'animations-fix-this-window', onclick: (e) => {
+                                    color: this.settings.panelFix ? 'red' : 'green',
+                                    label: this.settings.panelFix ? 'Take this window back' : 'Fix this window',
+                                    id: 'animations-fix-this-window',
+                                    onclick: (e) => {
 
                                         let button = document.getElementById('animations-fix-this-window')
 
@@ -911,7 +918,10 @@ module.exports = (() => {
                                     }
                                 },
                                 {
-                                    color: 'gray', label: 'Update', id: 'animations-version-check', onclick: (e) => {
+                                    color: 'gray',
+                                    label: 'Update',
+                                    id: 'animations-version-check',
+                                    onclick: (e) => {
                                         let button = document.getElementById('animations-version-check');
                                         const Http = new XMLHttpRequest();
                                         Http.open("GET", 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.plugin.js');
@@ -944,7 +954,7 @@ module.exports = (() => {
                                                     button.classList.remove('colorBrand-I6CyqQ', 'colorRed-rQXKgM', 'colorGrey-2iAG-B')
                                                     button.classList.add('colorGreen-3y-Z79')
                                                     button.setAttribute('onclick',`
-                                                    BdApi.showConfirmationModal('Your version is older', ['Your: v${config.info.version} (your)  →  v${GitHubVersion} (github)','Jump to the download page?'], {
+                                                    BdApi.showConfirmationModal('Your version is older', ['v${config.info.version} (your)  →  v${GitHubVersion} (github)','Jump to the download page?'], {
                                                         confirmText: 'Download update',
                                                         cancelText: 'No',
                                                         onConfirm() {
@@ -991,7 +1001,10 @@ module.exports = (() => {
                         new Settings.SettingField('Switching animations for element groups', null, () => { },
                             ButtonsPanel(null, [
                                 {
-                                    color: this.settings.lists.enabled ? 'green' : 'red', label: 'Lists', id: 'lists-enable-button', onclick: (e) => {
+                                    color: this.settings.lists.enabled ? 'green' : 'red',
+                                    label: 'Lists',
+                                    id: 'lists-enable-button',
+                                    onclick: (e) => {
 
                                         let button = document.getElementById('lists-enable-button')
 
@@ -1008,7 +1021,10 @@ module.exports = (() => {
                                     }
                                 },
                                 {
-                                    color: this.settings.messages.enabled ? 'green' : 'red', label: 'Messages', id: 'messages-enable-button', onclick: (e) => {
+                                    color: this.settings.messages.enabled ? 'green' : 'red',
+                                    label: 'Messages',
+                                    id: 'messages-enable-button',
+                                    onclick: (e) => {
 
                                         let button = document.getElementById('messages-enable-button')
 
@@ -1025,7 +1041,10 @@ module.exports = (() => {
                                     }
                                 },
                                 {
-                                    color: this.settings.buttons.enabled ? 'green' : 'red', label: 'Buttons', id: 'buttons-enable-button', onclick: (e) => {
+                                    color: this.settings.buttons.enabled ? 'green' : 'red',
+                                    label: 'Buttons',
+                                    id: 'buttons-enable-button',
+                                    onclick: (e) => {
 
                                         let button = document.getElementById('buttons-enable-button')
 
@@ -1572,7 +1591,7 @@ module.exports = (() => {
                         document.getElementById('channels').addEventListener('scroll', this.channelsScroll)
                         document.getElementById('channels').addEventListener('mouseup', this.channelsScroll)
                         clearInterval(checkChannelsIsNullAdd)
-                    },500)
+                    }, 500)
                     
                 }
 
@@ -1583,7 +1602,7 @@ module.exports = (() => {
                         document.getElementById('channels').removeEventListener('scroll', this.channelsScroll)
                         document.getElementById('channels').removeEventListener('mouseup', this.channelsScroll)
                         clearInterval(checkChannelsIsNullRemove)
-                    },500)
+                    }, 500)
                     
                     PluginUtilities.removeStyle('Animations-main');
                     PluginUtilities.removeStyle('Animations-req');
