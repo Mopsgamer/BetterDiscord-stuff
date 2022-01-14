@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.1.8.1
+ * @version 1.1.8.2
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,7 +21,7 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.1.8.1',
+            version: '1.1.8.2',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
@@ -1602,18 +1602,22 @@ module.exports = (() => {
                         if (this.channelsScrollTimer != -1) clearTimeout(this.channelsScrollTimer);
                         this.channelsScrollTimer = setTimeout(()=>this.threadsWithChannels(), 10);// scroll event delay
                     }
-                    var channels = document.getElementById('channels')
-
-                    channels.addEventListener('scroll', this.channelsScroll)
-                    channels.addEventListener('mouseup', this.channelsScroll)
-                    
+                    setInterval(function chn(){
+                        var channels = document.getElementById('channels')
+                        channels.addEventListener('scroll', this.channelsScroll)
+                        channels.addEventListener('mouseup', this.channelsScroll)
+                        clearInterval(chn)
+                    }, 100)
                 }
 
                 stop() {
                     document.removeEventListener('keyup', this.BadSendingStyles);
-                    var channels = document.getElementById('channels')
-                    channels.removeEventListener('scroll', this.channelsScroll)
-                    channels.removeEventListener('mouseup', this.channelsScroll)
+                    setInterval(function chn(){
+                        var channels = document.getElementById('channels')
+                        channels.removeEventListener('scroll', this.channelsScroll)
+                        channels.removeEventListener('mouseup', this.channelsScroll)
+                        clearInterval(chn)
+                    }, 100)
                     
                     PluginUtilities.removeStyle('Animations-main');
                     PluginUtilities.removeStyle('Animations-req');
@@ -1621,10 +1625,12 @@ module.exports = (() => {
                 }
 
                 onSwitch() {
-                    var channels = document.getElementById('channels')
-                    channels.addEventListener('scroll', this.channelsScroll)
-                    channels.addEventListener('mouseup', this.channelsScroll)
-                    this.threadsWithChannels()
+                    setInterval(function chn(){
+                        var channels = document.getElementById('channels')
+                        channels.addEventListener('scroll', this.channelsScroll)
+                        channels.addEventListener('mouseup', this.channelsScroll)
+                        clearInterval(chn)
+                    }, 100)
                 }
             }
         };
