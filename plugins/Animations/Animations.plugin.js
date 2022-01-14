@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.1.8.2
+ * @version 1.1.8.3
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,7 +21,7 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.1.8.2',
+            version: '1.1.8.3',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
@@ -1631,6 +1631,7 @@ module.exports = (() => {
                         channels.addEventListener('mouseup', this.channelsScroll)
                         clearInterval(chn)
                     }, 100)
+                    this.threadsWithChannels()
                 }
             }
         };
