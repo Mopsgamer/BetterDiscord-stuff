@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.1.7
+ * @version 1.1.8
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,15 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.1.7',
+            version: '1.1.8',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            //{ "title": "New Stuff", "items": ["Direction replaced by sequence. (Check your settings, they may have reset.)"] },
+            { "title": "New Stuff", "items": ["Discord settings animations."] },
             //{ "title": "Improvements", "type": "improved", "items": ["Pair of icons."] },
-            { "title": "Fixes", "type": "fixed", "items": ["Fixes and improvements."] }
+            //{ "title": "Fixes", "type": "fixed", "items": ["Fixes and improvements."] }
         ],
         main: 'index.js',
     };
@@ -138,7 +138,13 @@ module.exports = (() => {
                         '.channel-1Shao0',
                         '.privateChannelsHeaderContainer-1UWASm',
                         /*discord settings list*/
-                        '.side-2ur1Qk .item-3XjbnG',
+                        '.side-2ur1Qk *',
+                        /*discord settings*/
+                        'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:first-child > *',
+                        'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:not(.bd-settings-group):not(:first-child)',
+                        'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > h2',
+                        '.bd-addon-card',
+                        '.bd-addon-card > div',
                         /*alert elements*/
                         '.focusLock-2tveLW .scrollerBase-_bVAAt:not(.bd-addon-modal-settings) > div'
                     ]
@@ -149,10 +155,11 @@ module.exports = (() => {
                         /*voice opened buttons*/
                         '.buttonContainer-2lnNiN button',
                         /*toolbar*/
-                        '.toolbar-3_r2xA > *'
+                        '.toolbar-3_r2xA > *',
+                        '.children-3xh0VB > *'
                     ]
 
-                    let min = function (a, b) { return a > b ? a : b }
+                    let min = (a, b) => (a > b ? a : b)
 
                     selectorsLists.forEach(selector => { if(!this.settings.lists.enabled) return;
                         let count = min(document.querySelectorAll(selector).length, this.settings.lists.limit)
@@ -348,7 +355,13 @@ module.exports = (() => {
                 /*left-lists*/
                 .channel-1Shao0, .privateChannelsHeaderContainer-1UWASm,
                 /*discord settings list*/
-                .side-2ur1Qk .item-3XjbnG,
+                .side-2ur1Qk *,
+                /*discord settings*/
+                main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:first-child > *,
+                main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:not(.bd-settings-group):not(:first-child),
+                main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > h2,
+                .bd-addon-card,
+                .bd-addon-card > div,
                 /*alert elements*/
                 .focusLock-2tveLW .scrollerBase-_bVAAt:not(.bd-addon-modal-settings) > div
                 {
@@ -379,7 +392,8 @@ module.exports = (() => {
                 /*voice opened buttons*/
                 .buttonContainer-2lnNiN button,
                 /*toolbar*/
-                .toolbar-3_r2xA > *
+                .toolbar-3_r2xA > *,
+                .children-3xh0VB > *
                 {
                     transform: scaleX(0);
                     animation-name: ${this.settings.buttons.custom.enabled && this.settings.buttons.custom.frames[this.settings.buttons.custom.page].trim() != '' ? 'custom-buttons' : this.settings.buttons.name};
@@ -399,7 +413,7 @@ module.exports = (() => {
                     animation-fill-mode: forwards;
                 }
 
-                .video-1ptUNw {
+                .video-8B-TdZ {
                     animation-name: out !important;
                 }
 
@@ -614,6 +628,7 @@ module.exports = (() => {
                                         margin: '4px 8px'
 
                                     },
+                                    hint: option.hint,
                                     id: option.id,
                                     class: `button-f2h6uQ sizeSmall-wU2dO- ${(option.color!='link'?'lookFilled-yCfaCM':'')} ${colorClass}`,
                                     onClick: option.onclick
@@ -707,7 +722,7 @@ module.exports = (() => {
                                             for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
                                             e.currentTarget.classList.add('enabled');
 
-                                            this.settings[options.class].page = e.currentTarget.getAttribute('data-page')
+                                            this.settings[options.class].page = Number(e.currentTarget.getAttribute('data-page'));
                                         }
                                     },
                                     containersCount+1)
@@ -758,7 +773,7 @@ module.exports = (() => {
                                             for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
                                             e.currentTarget.classList.add('enabled');
 
-                                            this.settings[options.class].custom.page = e.currentTarget.getAttribute('data-page');
+                                            this.settings[options.class].custom.page = Number(e.currentTarget.getAttribute('data-page'));
                                         }
                                     },
                                     i+1)
@@ -883,6 +898,7 @@ module.exports = (() => {
                         new Settings.SettingField('Мain', null, () => { },
                             ButtonsPanel(null, [
                                 {
+                                    hint: 'turtle',
                                     color: 'blurple',
                                     label: 'Reset settings',
                                     id: 'reset-animations-settings',
@@ -1591,7 +1607,7 @@ module.exports = (() => {
                         document.getElementById('channels').addEventListener('scroll', this.channelsScroll)
                         document.getElementById('channels').addEventListener('mouseup', this.channelsScroll)
                         clearInterval(checkChannelsIsNullAdd)
-                    }, 500)
+                    }, 50)
                     
                 }
 
@@ -1602,7 +1618,7 @@ module.exports = (() => {
                         document.getElementById('channels').removeEventListener('scroll', this.channelsScroll)
                         document.getElementById('channels').removeEventListener('mouseup', this.channelsScroll)
                         clearInterval(checkChannelsIsNullRemove)
-                    }, 500)
+                    }, 50)
                     
                     PluginUtilities.removeStyle('Animations-main');
                     PluginUtilities.removeStyle('Animations-req');
@@ -1610,8 +1626,12 @@ module.exports = (() => {
                 }
 
                 onSwitch() {
-                    document.getElementById('channels').addEventListener('scroll', this.channelsScroll)
-                    document.getElementById('channels').addEventListener('mouseup', this.channelsScroll)
+                    setInterval(function checkChannelsIsNullRemove(){
+                        if(document.getElementById('channels') == null) return
+                        document.getElementById('channels').removeEventListener('scroll', this.channelsScroll)
+                        document.getElementById('channels').removeEventListener('mouseup', this.channelsScroll)
+                        clearInterval(checkChannelsIsNullRemove)
+                    }, 50)
                     this.threadsWithChannels()
                 }
             }
