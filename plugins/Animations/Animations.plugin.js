@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.1.8.4
+ * @version 1.1.8.5
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,7 +21,7 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.1.8.4',
+            version: '1.1.8.5',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
@@ -140,7 +140,7 @@ module.exports = (() => {
                         /*discord settings list*/
                         '.side-2ur1Qk *',
                         /*discord settings*/
-                        'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:first-child > *',
+                        'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:first-child > *:not(.image-141SOA)',
                         'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:not(.bd-settings-group):not(:first-child)',
                         'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > h2',
                         '.bd-addon-card',
@@ -357,7 +357,7 @@ module.exports = (() => {
                 /*discord settings list*/
                 .side-2ur1Qk *,
                 /*discord settings*/
-                main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:first-child > *,
+                main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:first-child > *:not(.image-141SOA),
                 main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:not(.bd-settings-group):not(:first-child),
                 main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > h2,
                 .bd-addon-card,
