@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.1.8.5
+ * @version 1.2.0
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,13 +21,13 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.1.8.5',
+            version: '1.2.0',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            { "title": "New Stuff", "items": ["Discord settings animations."] },
+            { "title": "New Stuff", "items": ["More animated elements."] },
             //{ "title": "Improvements", "type": "improved", "items": ["Pair of icons."] },
             //{ "title": "Fixes", "type": "fixed", "items": ["Fixes and improvements."] }
         ],
@@ -132,9 +132,11 @@ module.exports = (() => {
                         '.member-2gU6Ar',
                         /*member-groups*/
                         '.membersGroup-2eiWxl',
+                        /*servers*/
+                        '.listItem-3SmSlK',
                         /*friends*/
                         '.peopleListItem-u6dGxF',
-                        /*left-lists*/
+                        /*channels*/
                         '.channel-1Shao0',
                         '.privateChannelsHeaderContainer-1UWASm',
                         /*discord settings list*/
@@ -156,7 +158,8 @@ module.exports = (() => {
                         '.buttonContainer-2lnNiN button',
                         /*toolbar*/
                         '.toolbar-3_r2xA > *',
-                        '.children-3xh0VB > *'
+                        '.children-3xh0VB > *',
+                        '.tabBar-ra-EuL > .item-3mHhwr'
                     ]
 
                     let min = (a, b) => (a > b ? a : b)
@@ -177,7 +180,7 @@ module.exports = (() => {
 
                     selectorsButtons.forEach(selector => {
 
-                        let count = document.querySelectorAll(selector).length
+                        let count = 20
 
                         if (this.settings.buttons.sequence == 'fromFirst') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-child(${i}) `
@@ -311,10 +314,6 @@ module.exports = (() => {
 
                 /*fix panel*/
                 ${this.settings.panelFix ? `
-                .root-g14mjS {
-                    max-height: 100%;
-                }
-
                 .root-g14mjS .marginBottom20-315RVT {
                     padding: 0 10px 0 5px;
                 }
@@ -350,9 +349,11 @@ module.exports = (() => {
                 .member-2gU6Ar,
                 /*member-groups*/
                 .membersGroup-2eiWxl,
+                /*servers*/
+                .listItem-3SmSlK,
                 /*friends*/
                 .peopleListItem-u6dGxF,
-                /*left-lists*/
+                /*channels*/
                 .channel-1Shao0, .privateChannelsHeaderContainer-1UWASm,
                 /*discord settings list*/
                 .side-2ur1Qk *,
@@ -393,7 +394,8 @@ module.exports = (() => {
                 .buttonContainer-2lnNiN button,
                 /*toolbar*/
                 .toolbar-3_r2xA > *,
-                .children-3xh0VB > *
+                .children-3xh0VB > *,
+                .tabBar-ra-EuL > .item-3mHhwr
                 {
                     transform: scaleX(0);
                     animation-name: ${this.settings.buttons.custom.enabled && this.settings.buttons.custom.frames[this.settings.buttons.custom.page].trim() != '' ? 'custom-buttons' : this.settings.buttons.name};
@@ -413,6 +415,7 @@ module.exports = (() => {
                     animation-fill-mode: forwards;
                 }
 
+                /*discord changelog video*/
                 .video-8B-TdZ {
                     animation-name: out !important;
                 }
@@ -912,8 +915,8 @@ module.exports = (() => {
                                     }
                                 },
                                 {
-                                    color: this.settings.panelFix ? 'red' : 'green',
-                                    label: this.settings.panelFix ? 'Take this window back' : 'Fix this window',
+                                    color: this.settings.panelFix ? 'green' : 'red',
+                                    label: 'Spaces',
                                     id: 'animations-fix-this-window',
                                     onclick: (e) => {
 
@@ -921,13 +924,11 @@ module.exports = (() => {
 
                                         this.settings.panelFix = !this.settings.panelFix;
                                         if (this.settings.panelFix) {
-                                            button.classList.remove('colorGreen-3y-Z79')
-                                            button.classList.add('colorRed-rQXKgM')
-                                            button.innerText = 'Take this window back'
-                                        } else {
                                             button.classList.remove('colorRed-rQXKgM')
                                             button.classList.add('colorGreen-3y-Z79')
-                                            button.innerText = 'Fix this window'
+                                        } else {
+                                            button.classList.remove('colorGreen-3y-Z79')
+                                            button.classList.add('colorRed-rQXKgM')
                                         }
                                         PluginUtilities.saveSettings("Animations", this.settings);
                                         this.changeStyles();
@@ -1361,12 +1362,12 @@ module.exports = (() => {
                     .customTextArea.show {
                         opacity: 1;
                         padding: 10px;
-                        height: 335px;
+                        height: 374px;
                         border: 1px solid var(--background-tertiary);
                     }
 
                     .customTextArea.show:hover {
-                        border-color: black;
+                        border-color: var(--deprecated-text-input-border-hover);
                         transition: 0.2s border;
                     }
 
@@ -1377,7 +1378,7 @@ module.exports = (() => {
                     .animPreviewsContainer.show {
                         opacity: 1;
                         border: 1px solid var(--background-tertiary);
-                        height: 335px;
+                        height: 374px;
                     }
 
                     .animPreviewsContainer.compact {
@@ -1407,7 +1408,7 @@ module.exports = (() => {
                     }
 
                     .animPreviewActionButton:hover {
-                        border-color: black;
+                        border-color: var(--deprecated-text-input-border-hover);
                     }
 
                     .switchActionButton {
@@ -1447,7 +1448,7 @@ module.exports = (() => {
                     }
 
                     .animPreviewActionButton:hover .switchActionButton:nth-child(n+2) {
-                        border-left: 1px solid black;
+                        border-left: 1px solid var(--deprecated-text-input-border-hover);
                     }
 
                     .switchActionButtonLabel {
@@ -1492,7 +1493,7 @@ module.exports = (() => {
                     }
 
                     .animPageCircleButton:hover {
-                        border-color: black;
+                        border-color: var(--deprecated-text-input-border-hover);
                     }
 
                     .animPageCircleButton.enabled {
@@ -1501,21 +1502,26 @@ module.exports = (() => {
                     }
 
                     .vertical .animPreview {
+                        display: inline-flex;
                         box-sizing: border-box;
                         width: 120px;
-                        height: 145px;
+                        height: 165px;
                         padding: 5px;
-                        display: inline-block;
                         transition: 0.2s;
+                        flex-direction: column;
+                        justify-content: space-evenly;
                     }
 
                     .horizontal .animPreview {
+                        display: inline-flex;
                         box-sizing: border-box;
-                        width: calc(100% - 16px);
+                        width: calc(100% - 26px);
                         height: 45px;
                         padding: 5px;
-                        display: inline-block;
                         transition: 0.2s;
+                        flex-direction: row;
+                        justify-content: space-evenly;
+                        align-items: center;
                     }
 
                     .horizontal .compact .animPreview {
@@ -1523,7 +1529,7 @@ module.exports = (() => {
                     }
 
                     .animPreview:hover {
-                        border-color: black;
+                        border-color: var(--deprecated-text-input-border-hover);
                     }
 
                     .animPreview.enabled {
@@ -1550,26 +1556,38 @@ module.exports = (() => {
                     .animPreview.enabled .animTempBlock {
                         background-color: #fff;
                     }
-                    
-                    .vertical .animPreview .animPreviewLabel {
-                        position: absolute;
-                        padding-left: 4px;
-                        bottom: 6pt;
+
+                    .animPreview .animPreviewLabel {
+                        box-sizing: border-box;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
                         color: var(--interactive-normal);
                         font-size: 10pt;
+                        margin: 4px;
+                        padding: 0 4px;
+                    }
+                    
+                    .vertical .animPreview .animPreviewLabel {
+                        height: 25px;
+                        width: auto;
+                        bottom: 6pt;
+                        line-height: 150%;
+                        text-align: center;
                     }
 
                     .horizontal .animPreview .animPreviewLabel {
-                        position: absolute;
-                        padding-left: 4px;
-                        bottom: 11pt;
-                        right: 11pt;
-                        color: var(--interactive-normal);
-                        font-size: 10pt;
+                        height: 26px;
+                        width: 30%;
+                        display: inline-block;
+                        float: right;
+                        line-height: 200%;
+                        text-align: right;
                     }
 
                     .animPreview.enabled .animPreviewLabel {
                         color: #fff;
+                        border-color: #fff;
                     }`
 
                     PluginUtilities.removeStyle('Animations-req');
@@ -1585,7 +1603,7 @@ module.exports = (() => {
                                 setTimeout(()=>{
                                     BadSendingTextNode = this.BadSendingStyles(e)
                                     return BadSendingTextNode
-                                },50)// frequency of checks after pressing Enter
+                                }, 50)// frequency of checks after pressing Enter
                             } else {
                             var result = BadSendingTextNode.closest('.message-2CShn3');// this is where we found it
                             // there styles for parent
@@ -1600,7 +1618,7 @@ module.exports = (() => {
                     this.channelsScrollTimer = -1;
                     this.channelsScroll = () => {
                         if (this.channelsScrollTimer != -1) clearTimeout(this.channelsScrollTimer);
-                        this.channelsScrollTimer = setTimeout(()=>this.threadsWithChannels(), 10);// scroll event delay
+                        this.channelsScrollTimer = setTimeout(()=>this.threadsWithChannels(), 40);// scroll event delay
                     }
 
                     var chn = ()=>{
