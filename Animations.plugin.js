@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.1
+ * @version 1.2.2
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,15 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.1',
+            version: '1.2.2',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            //{ "title": "New Stuff", "items": ["More animated elements."] },
-            { "title": "Improvements", "type": "improved", "items": ["A simpler plugin update."] },
-            //{ "title": "Fixes", "type": "fixed", "items": ["Fixes and improvements."] }
+            { "title": "New Stuff", "items": ["More animated elements."] },
+            { "title": "Improvements", "type": "improved", "items": ["Changed default delay settings.", "Increased the maximum delay for buttons.", "Removed animation for the list of members, which is filled with placeholders."] },
+            { "title": "Fixes", "type": "fixed", "items": ["Buttons delay setting."] }
         ],
         main: 'index.js',
     };
@@ -79,7 +79,7 @@ module.exports = (() => {
                                 page: 0
                             },
                             duration: 0.3,
-                            delay: 0.06,
+                            delay: 0.04,
                             limit: 60
                         },
                         messages: {
@@ -92,7 +92,7 @@ module.exports = (() => {
                                 page: 0
                             },
                             duration: 0.4,
-                            delay: 0.06,
+                            delay: 0.04,
                             limit: 30
                         },
                         buttons: {
@@ -106,7 +106,7 @@ module.exports = (() => {
                                 page: 0
                             },
                             duration: 0.3,
-                            delay: 0.1
+                            delay: 0.2
                         }
                     }
 
@@ -129,9 +129,9 @@ module.exports = (() => {
                         /*search*/
                         '.searchResultGroup-1lU_-i',
                         /*members*/
-                        '.member-2gU6Ar',
+                        '.member-2gU6Ar:not(.placeholder-1WgmVn)',
                         /*member-groups*/
-                        '.membersGroup-2eiWxl',
+                        'h2.membersGroup-2eiWxl',
                         /*servers*/
                         '.listItem-3SmSlK',
                         /*friends*/
@@ -139,6 +139,8 @@ module.exports = (() => {
                         /*channels*/
                         '.channel-1Shao0',
                         '.privateChannelsHeaderContainer-1UWASm',
+                        /*discovery categories*/
+                        '.categoryItem-Kc_HK_',
                         /*discord settings list*/
                         '.side-2ur1Qk *',
                         /*discord settings*/
@@ -148,14 +150,17 @@ module.exports = (() => {
                         '.bd-addon-card',
                         '.bd-addon-card > div',
                         /*alert elements*/
-                        '.focusLock-2tveLW .scrollerBase-_bVAAt:not(.bd-addon-modal-settings) > div'
+                        '.focusLock-2tveLW .scrollerBase-_bVAAt:not(.bd-addon-modal-settings) > div',
+                        '.templatesList-uohY49 > *',
+                        /*public servers*/
+                        '.guildList-3GXKvP > .loaded-igpmmx'
                     ]
 
                     var selectorsButtons = [
                         /*chat input buttons*/
                         '.actionButtons-2vEOUh button',
                         /*voice opened buttons*/
-                        '.buttonContainer-2lnNiN button',
+                        '.buttons-uaqb-5 > *',
                         /*toolbar*/
                         '.toolbar-3_r2xA > *',
                         '.children-3xh0VB > *',
@@ -346,15 +351,18 @@ module.exports = (() => {
                 /*search*/
                 .searchResultGroup-1lU_-i,
                 /*members*/
-                .member-2gU6Ar,
+                .member-2gU6Ar:not(.placeholder-1WgmVn),
                 /*member-groups*/
-                .membersGroup-2eiWxl,
+                h2.membersGroup-2eiWxl,
                 /*servers*/
                 .listItem-3SmSlK,
                 /*friends*/
                 .peopleListItem-u6dGxF,
                 /*channels*/
-                .channel-1Shao0, .privateChannelsHeaderContainer-1UWASm,
+                .channel-1Shao0,
+                .privateChannelsHeaderContainer-1UWASm,
+                /*discovery categories*/
+                .categoryItem-Kc_HK_,
                 /*discord settings list*/
                 .side-2ur1Qk *,
                 /*discord settings*/
@@ -364,7 +372,10 @@ module.exports = (() => {
                 .bd-addon-card,
                 .bd-addon-card > div,
                 /*alert elements*/
-                .focusLock-2tveLW .scrollerBase-_bVAAt:not(.bd-addon-modal-settings) > div
+                .focusLock-2tveLW .scrollerBase-_bVAAt:not(.bd-addon-modal-settings) > div,
+                .templatesList-uohY49 > *,
+                /*public servers*/
+                .guildList-3GXKvP > .loaded-igpmmx
                 {
                     transform: scaleX(0);
                     animation-name: ${this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name};
@@ -391,7 +402,7 @@ module.exports = (() => {
                 /*chat input buttons*/
                 .actionButtons-2vEOUh button,
                 /*voice opened buttons*/
-                .buttonContainer-2lnNiN button,
+                .buttons-uaqb-5 > *,
                 /*toolbar*/
                 .toolbar-3_r2xA > *,
                 .children-3xh0VB > *,
@@ -1329,10 +1340,10 @@ module.exports = (() => {
 
                             new Settings.Slider('Delay', `[default ${this.defaultSettings.buttons.delay}] Delay before appearing for each button in seconds.`, 1, 10, this.settings.buttons.delay,
                                 (e) => {
-                                    this.settings.messages.delay = e;
+                                    this.settings.buttons.delay = e;
                                     this.changeStyles()
                                 }, {
-                                markers: [0, 0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.15, 0.2],
+                                markers: [0, 0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.15, 0.2, 0.25, 0.3],
                                 stickToMarkers: true
                             }
                             ),
