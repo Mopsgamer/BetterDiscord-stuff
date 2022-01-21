@@ -979,7 +979,7 @@ module.exports = (() => {
                                                             ],
                                                             {
                                                                 onConfirm() {
-                                                                    PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/Animations/Animations.plugin.js')
+                                                                    PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js')
                                                                 }
                                                             })
                                                         },
@@ -999,7 +999,7 @@ module.exports = (() => {
                                                             ],
                                                             {
                                                                 onConfirm() {
-                                                                    PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/Animations/Animations.plugin.js')
+                                                                    PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js')
                                                                 }
                                                             })
                                                         },
@@ -1019,7 +1019,7 @@ module.exports = (() => {
                                                             ],
                                                             {
                                                                 onConfirm() {
-                                                                    PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/Animations/Animations.plugin.js')
+                                                                    PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js')
                                                                 }
                                                             })
                                                         },
