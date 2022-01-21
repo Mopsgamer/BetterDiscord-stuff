@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.0
+ * @version 1.2.1
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,14 +21,14 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.0',
+            version: '1.2.1',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            { "title": "New Stuff", "items": ["More animated elements."] },
-            //{ "title": "Improvements", "type": "improved", "items": ["Pair of icons."] },
+            //{ "title": "New Stuff", "items": ["More animated elements."] },
+            { "title": "Improvements", "type": "improved", "items": ["A simpler plugin update."] },
             //{ "title": "Fixes", "type": "fixed", "items": ["Fixes and improvements."] }
         ],
         main: 'index.js',
@@ -58,7 +58,7 @@ module.exports = (() => {
         const plugin = (Plugin, Library) => {
 
             const
-                { DiscordSelectors, DiscordAPI, PluginUtilities, DOMTools, Modals, WebpackModules } = Api,
+                { DiscordSelectors, DiscordAPI, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules } = Api,
                 { Logger, Patcher, Settings, ReactComponents } = Library;
 
             return class Animations extends Plugin {
@@ -970,40 +970,61 @@ module.exports = (() => {
                                                     button.innerText = `v${GitHubVersion} - Update`
                                                     button.classList.remove('colorBrand-I6CyqQ', 'colorRed-rQXKgM', 'colorGrey-2iAG-B')
                                                     button.classList.add('colorGreen-3y-Z79')
-                                                    button.setAttribute('onclick',`
-                                                    BdApi.showConfirmationModal('Your version is older', ['v${config.info.version} (your)  →  v${GitHubVersion} (github)','Jump to the download page?'], {
-                                                        confirmText: 'Download update',
-                                                        cancelText: 'No',
-                                                        onConfirm() {
-                                                            window.open('https://downgit.evecalm.com/#/home?url=https://github.com/Mopsgamer/BetterDiscord-codes/tree/main/plugins/Animations/Animations.plugin.js')
-                                                        }
-                                                    })`)
+                                                    button.addEventListener('click',
+                                                        ()=>{
+                                                            BdApi.showConfirmationModal('Your version is older',
+                                                            [
+                                                                `v${config.info.version} (your)  →  v${GitHubVersion} (github)`,
+                                                                BdApi.React.createElement('span', {style: {color: '#3ba55d', 'text-transform': 'uppercase'}}, 'The plugin will be updated.')
+                                                            ],
+                                                            {
+                                                                onConfirm() {
+                                                                    PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/Animations/Animations.plugin.js')
+                                                                }
+                                                            })
+                                                        },
+                                                        { once: true }
+                                                    )
                                                     break;
                                                 case config.info.version:
                                                     button.innerText = `v${config.info.version} - Your own version`
                                                     button.classList.remove('colorGrey-2iAG-B', 'colorRed-rQXKgM', 'colorGreen-3y-Z79')
                                                     button.classList.add('colorBrand-I6CyqQ')
-                                                    button.setAttribute('onclick',`
-                                                    BdApi.showConfirmationModal('Your version is newer', ['v${config.info.version} (your)  →  v${GitHubVersion} (github)','Jump to the download page?'], {
-                                                        confirmText: 'Download',
-                                                        cancelText: 'No',
-                                                        onConfirm() {
-                                                            window.open('https://downgit.evecalm.com/#/home?url=https://github.com/Mopsgamer/BetterDiscord-codes/tree/main/plugins/Animations/Animations.plugin.js')
-                                                        }
-                                                    })`)
+                                                    button.addEventListener('click',
+                                                        ()=>{
+                                                            BdApi.showConfirmationModal('Your version is newer',
+                                                            [
+                                                                `v${config.info.version} (your)  →  v${GitHubVersion} (github)`,
+                                                                BdApi.React.createElement('span', {style: {color: '#ed4245', 'text-transform': 'uppercase'}}, 'The plugin will be downdated.')
+                                                            ],
+                                                            {
+                                                                onConfirm() {
+                                                                    PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/Animations/Animations.plugin.js')
+                                                                }
+                                                            })
+                                                        },
+                                                        { once: true }
+                                                    )
                                                     break;
                                                 case false:
                                                     button.innerText = `v${config.info.version} - Latest version`
                                                     button.classList.remove('colorBrand-I6CyqQ', 'colorRed-rQXKgM', 'colorGreen-3y-Z79')
                                                     button.classList.add('colorGrey-2iAG-B')
-                                                    button.setAttribute('onclick',`
-                                                    BdApi.showConfirmationModal('Your version is latest', ['v${config.info.version} (your)  ↔  v${GitHubVersion} (github)','Jump to the download page?'], {
-                                                        confirmText: 'Download again',
-                                                        cancelText: 'No',
-                                                        onConfirm() {
-                                                            window.open('https://downgit.evecalm.com/#/home?url=https://github.com/Mopsgamer/BetterDiscord-codes/tree/main/plugins/Animations/Animations.plugin.js')
-                                                        }
-                                                    })`)
+                                                    button.addEventListener('click',
+                                                        ()=>{
+                                                            BdApi.showConfirmationModal('Your version is latest',
+                                                            [
+                                                                `v${config.info.version} (your)  ↔  v${GitHubVersion} (github)`,
+                                                                BdApi.React.createElement('span', {style: {color: '#faa81a', 'text-transform': 'uppercase'}}, 'The plugin will be restored.')
+                                                            ],
+                                                            {
+                                                                onConfirm() {
+                                                                    PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/Animations/Animations.plugin.js')
+                                                                }
+                                                            })
+                                                        },
+                                                        { once: true }
+                                                    )
                                                     break;
                                             
                                                 default:
