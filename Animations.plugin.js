@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.2
+ * @version 1.2.3
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,15 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.2',
+            version: '1.2.3',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            { "title": "New Stuff", "items": ["More animated elements."] },
-            { "title": "Improvements", "type": "improved", "items": ["Changed default delay settings.", "Increased the maximum delay for buttons.", "Removed animation for the list of members, which is filled with placeholders."] },
-            { "title": "Fixes", "type": "fixed", "items": ["Buttons delay setting."] }
+            { "title": "New Stuff", "items": ["Template button for the editor."] },
+            { "title": "Improvements", "type": "improved", "items": ["Changed the editor's font."] },
+            //{ "title": "Fixes", "type": "fixed", "items": ["Buttons delay setting."] }
         ],
         main: 'index.js',
     };
@@ -686,10 +686,11 @@ module.exports = (() => {
                         var containersCount = 0;
                         var previewsCountOnPage = (options.horizontal ? 6 : 8);
 
-                        if(options.custom) if(this.settings[options.class].custom.enabled &&
-                            !this.isValidCSS(this.settings[options.class].custom.frames[this.settings[options.class].custom.page])
-                        ) {
-                            this.settings.lists.custom.enabled = false;
+                        if(options.custom)
+                        if(this.settings[options.class].custom.enabled)
+                        if(!this.isValidCSS(this.settings[options.class].custom.frames[this.settings[options.class].custom.page]))
+                        {
+                            this.settings[options.class].custom.enabled = false;
                             PluginUtilities.saveSettings("Animations", this.settings);
                         }
 
@@ -726,20 +727,23 @@ module.exports = (() => {
                             swipeButtonsDefault.push(
                                 BdApi.React.createElement('div',
                                     {
-                                        class: `animPageCircleButton ${openedPage == containersCount ? 'enabled' : ''} title-3sZWYQ`,
+                                        class: `animPageCircleButton ${openedPage == containersCount ? 'enabled' : ''}`,
                                         'data-page': containersCount,
                                         onClick: (e) => {
-                                            for (var containerElem of e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .customTextArea`)) containerElem.classList.remove('show');
+                                            for (var containerElem of e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .customKeyframeTextArea`)) containerElem.classList.remove('show');
+
                                             e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer`)[e.currentTarget.getAttribute('data-page')].classList.add('show');
 
                                             var sections = document.querySelectorAll(`[data-type="${options.type}"] .default .animPageCircleButton`);
                                             for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
+
                                             e.currentTarget.classList.add('enabled');
 
                                             this.settings[options.class].page = Number(e.currentTarget.getAttribute('data-page'));
                                         }
                                     },
-                                    containersCount+1)
+                                    containersCount+1
+                                )
                             );
 
                             var pages = [];
@@ -761,38 +765,78 @@ module.exports = (() => {
 
                         }
 
-                        if (options.custom) for (var i = 0; i < 4; i++) {
-                            textareas.push(
-                                BdApi.React.createElement('textarea',
-                                    {
-                                        type: 'text',
-                                        placeholder: '/* your keyframe here */\n\n0% {\n\ttransform: translate(0, 100%)\n}\n\n100% {\n\ttransform: translate(0, 0)\n}',
-                                        class: `customTextArea inputDefault-3FGxgL input-2g-os5 textArea-3WXAeD scrollbarDefault-2w-Dyz scrollbar-3vVt8d ${this.settings[options.class].custom.enabled && i == this.settings[options.class].custom.page ?'show':''}`,
-                                        onChange: options.custom.onchange
-                                    },
-                                    options.custom.data.frames[i]
-                                )
-                            );
+                        if (options.custom) {
+
+                            for (var i = 0; i < 4; i++) {
+                                textareas.push(
+                                    BdApi.React.createElement('textarea',
+                                        {
+                                            type: 'text',
+                                            placeholder: '/*\nAnimated elements have scale(0) in the transformation,\nso your animation must contain scale(1) on the final frame(100%).\n*/\n\n0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}',
+                                            class: `customKeyframeTextArea inputDefault-3FGxgL input-2g-os5 textArea-3WXAeD scrollbarDefault-2w-Dyz scrollbar-3vVt8d ${this.settings[options.class].custom.enabled && i == this.settings[options.class].custom.page ?'show':''}`,
+                                            onChange: (e)=>{
+                                                var textarea = e.currentTarget;
+                                                var value = e.currentTarget.value;
+                                                if(this.isValidCSS(value) || value == "") {
+                                                    textarea.classList.add('valid');
+                                                    textarea.classList.remove('invalid');
+                                                    this.settings[options.class].custom.frames[this.settings[options.class].custom.page] = value;
+                                                    PluginUtilities.saveSettings("Animations", this.settings);
+                                                    this.changeStyles()
+                                                } else {
+                                                    textarea.classList.add('invalid');
+                                                    textarea.classList.remove('valid');
+                                                }
+
+                                                options.custom.onchange(e)
+                                            }
+                                        },
+                                        options.custom.data.frames[i]
+                                    )
+                                );
+
+                                swipeButtonsCustom.push(
+                                    BdApi.React.createElement('div',
+                                        {
+                                            class: `animPageCircleButton ${this.settings[options.class].custom.page == i ? 'enabled' : ''}`,
+                                            'data-page': i,
+                                            onClick: (e) => {
+                                                for (var containerElem of e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .customKeyframeTextArea`)) containerElem.classList.remove('show');
+
+                                                e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.customKeyframeTextArea`)[e.currentTarget.getAttribute('data-page')].classList.add('show');
+
+                                                var sections = document.querySelectorAll(`[data-type="${options.type}"] .custom .animPageCircleButton`);
+                                                for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
+
+                                                e.currentTarget.classList.add('enabled');
+
+                                                this.settings[options.class].custom.page = Number(e.currentTarget.getAttribute('data-page'));
+                                            }
+                                        },
+                                        i+1
+                                    )
+                                );
+                            };
 
                             swipeButtonsCustom.push(
                                 BdApi.React.createElement('div',
                                     {
-                                        class: `animPageCircleButton ${this.settings[options.class].custom.page == i ? 'enabled' : ''} title-3sZWYQ`,
-                                        'data-page': i,
+                                        class: `animPageCircleButton`,
                                         onClick: (e) => {
-                                            for (var containerElem of e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .customTextArea`)) containerElem.classList.remove('show');
-                                            e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.customTextArea`)[e.currentTarget.getAttribute('data-page')].classList.add('show');
+                                            e.currentTarget.closest('.animPreviewsPanel').querySelector(`.customKeyframeTextArea.show`).value
+                                            = `0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}`;
+    
+                                            this.settings[options.class].custom.frames[this.settings[options.class].custom.page]
+                                            = `0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}`;
 
-                                            var sections = document.querySelectorAll(`[data-type="${options.type}"] .custom .animPageCircleButton`);
-                                            for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
-                                            e.currentTarget.classList.add('enabled');
-
-                                            this.settings[options.class].custom.page = Number(e.currentTarget.getAttribute('data-page'));
+                                            PluginUtilities.saveSettings("Animations", this.settings);
+                                            this.changeStyles()
                                         }
                                     },
-                                    i+1)
+                                    'template'
+                                )
                             );
-                        };
+                        }
 
                         var build = BdApi.React.createElement('div',
                             {
@@ -813,12 +857,12 @@ module.exports = (() => {
                                                 this.changeStyles();
 
                                                 var panel = e.currentTarget.closest('.animPreviewsPanel');
-                                                var all = panel.querySelectorAll(`.animPreviewsContainer, .customTextArea`)
+                                                var all = panel.querySelectorAll(`.animPreviewsContainer, .customKeyframeTextArea`)
                                                 all.forEach(elem => elem.classList.remove('show'));
                                                 if (this.settings[options.class].custom.enabled) {
                                                     e.currentTarget.classList.add('editing')
                                                     e.currentTarget.classList.remove('selecting')
-                                                    panel.getElementsByClassName(`customTextArea`)[this.settings[options.class].custom.page].classList.add('show');
+                                                    panel.getElementsByClassName(`customKeyframeTextArea`)[this.settings[options.class].custom.page].classList.add('show');
                                                     panel.getElementsByClassName('animPageButtons default')[0].classList.remove('show');
                                                     panel.getElementsByClassName('animPageButtons custom')[0].classList.add('show');
                                                 } else {
@@ -851,7 +895,7 @@ module.exports = (() => {
                                                         d: "M0 0h24v24H0z"
                                                     }),
                                                     BdApi.React.createElement("path", {
-                                                        d: "M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"
+                                                        d: options.horizontal?"M 4 18 h 17 v -3 H 4 v 3 z M 4 10 v 3 h 17 v -3 h -17 M 4 5 v 3 h 17 V 5 H 4 z":"M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"
                                                     })
                                                 )
                                             ]
@@ -1133,18 +1177,7 @@ module.exports = (() => {
                                     class: 'lists',
                                     custom: {
                                         data: this.settings.lists.custom,
-                                        onchange: (e) => {
-                                            if(this.isValidCSS(e.currentTarget.value) || e.currentTarget.value=="") {
-                                                e.currentTarget.classList.add('valid');
-                                                e.currentTarget.classList.remove('invalid');
-                                                this.settings.lists.custom.frames[this.settings.lists.custom.page] = e.currentTarget.value;
-                                                PluginUtilities.saveSettings("Animations", this.settings);
-                                                this.changeStyles()
-                                            } else {
-                                                e.currentTarget.classList.add('invalid');
-                                                e.currentTarget.classList.remove('valid')
-                                            }
-                                        }
+                                        onchange: (e) => { }
                                     }
                                 },
                                 this.settings.lists.name, (e) => {
@@ -1223,18 +1256,7 @@ module.exports = (() => {
                                     class: 'messages',
                                     custom: {
                                         data: this.settings.messages.custom,
-                                        onchange: (e) => {
-                                            if(this.isValidCSS(e.currentTarget.value) || e.currentTarget.value=="") {
-                                                e.currentTarget.classList.add('valid');
-                                                e.currentTarget.classList.remove('invalid');
-                                                this.settings.messages.custom.frames[this.settings.messages.custom.page] = e.currentTarget.value;
-                                                PluginUtilities.saveSettings("Animations", this.settings);
-                                                this.changeStyles()
-                                            } else {
-                                                e.currentTarget.classList.add('invalid');
-                                                e.currentTarget.classList.remove('valid')
-                                            }
-                                        }
+                                        onchange: (e) => { }
                                     }
                                 },
                                 this.settings.messages.name, (e) => {
@@ -1300,18 +1322,7 @@ module.exports = (() => {
                                     horizontal: true,
                                     custom: {
                                         data: this.settings.buttons.custom,
-                                        onchange: (e) => {
-                                            if(this.isValidCSS(e.currentTarget.value) || e.currentTarget.value=="") {
-                                                e.currentTarget.classList.add('valid');
-                                                e.currentTarget.classList.remove('invalid');
-                                                this.settings.buttons.custom.frames[this.settings.buttons.custom.page] = e.currentTarget.value;
-                                                PluginUtilities.saveSettings("Animations", this.settings);
-                                                this.changeStyles()
-                                            } else {
-                                                e.currentTarget.classList.add('invalid');
-                                                e.currentTarget.classList.remove('valid')
-                                            }
-                                        }
+                                        onchange: (e) => { }
                                     }
                                 },
                                 this.settings.buttons.name, (e) => {
@@ -1365,9 +1376,9 @@ module.exports = (() => {
                     this.reqStyles =
                     `/*components*/
 
-                    /*.animPreviewsPanel {
-
-                    }*/
+                    .animPreviewsPanel {
+                        oveflow: hidden;
+                    }
 
                     .animPreviewsContainer {
                         display: flex;
@@ -1382,29 +1393,34 @@ module.exports = (() => {
                         transition: 0.5s opacity;
                     }
 
-                    .customTextArea {
+                    .customKeyframeTextArea {
                         opacity: 0;
                         display: block;
                         padding: 0;
                         height: 0;
                         border: none;
                         transition: 0.2s opacity;
+                        font-size: 0.875rem;
+                        line-height: 1.125rem;
+                        text-indent: 0;
+                        white-space: pre-wrap;
+                        font-family: Consolas, monospace;
                     }
 
-                    .customTextArea.show {
+                    .customKeyframeTextArea::placeholder {
+                        font-family: Consolas, monopoly;
+                    }
+
+                    .customKeyframeTextArea.show {
                         opacity: 1;
                         padding: 10px;
                         height: 374px;
                         border: 1px solid var(--background-tertiary);
                     }
 
-                    .customTextArea.show:hover {
+                    .customKeyframeTextArea.show:hover {
                         border-color: var(--deprecated-text-input-border-hover);
                         transition: 0.2s border;
-                    }
-
-                    .customTextArea.invalid {
-                        color: #ed4245;
                     }
 
                     .animPreviewsContainer.show {
@@ -1506,10 +1522,11 @@ module.exports = (() => {
                         width: fit-content;
                         height: 0;
                         margin: 5px 5px;
-                        padding: 5px 10px 25px 10px;
+                        padding: 5px 9px 25px 11px;
                         color: var(--interactive-normal);
                         text-align: center;
                         font-size: 18px;
+                        font-family: Consolas, monospace;
                         background-color: var(--background-secondary);
                         border: 1px solid var(--background-tertiary);
                         border-radius: 100px;
