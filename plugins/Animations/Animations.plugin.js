@@ -29,7 +29,7 @@ module.exports = (() => {
         changelog: [
             { "title": "New Stuff", "items": ["Reworked animations."] },
             //{ "title": "Improvements", "type": "improved", "items": ["Changed the editor's font."] },
-            { "title": "Fixes", "type": "fixed", "items": ["Added compatibility with Horizontal Server Lists."] }
+            { "title": "Fixes", "type": "fixed", "items": ["Added compatibility with Horizontal Server List."] }
         ],
         main: 'index.js',
     };
