@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.3
+ * @version 1.2.4
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,15 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.3',
+            version: '1.2.4',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            { "title": "New Stuff", "items": ["Template button for the editor."] },
-            { "title": "Improvements", "type": "improved", "items": ["Changed the editor's font."] },
-            //{ "title": "Fixes", "type": "fixed", "items": ["Buttons delay setting."] }
+            { "title": "New Stuff", "items": ["Reworked animations."] },
+            //{ "title": "Improvements", "type": "improved", "items": ["Changed the editor's font."] },
+            { "title": "Fixes", "type": "fixed", "items": ["Added compatibility with Horizontal Server Lists."] }
         ],
         main: 'index.js',
     };
@@ -118,58 +118,63 @@ module.exports = (() => {
                 getDescription() { return config.info.description }
                 getVersion() { return config.info.version }
 
+                static colors = {
+                    red: '#ed4245',
+                    green: '#3ba55d',
+                    yellow: '#faa81a'
+                }
+
+                static selectorsLists = [
+                    /*active threads button*/
+                    '.wrapper-NhbLHG',
+                    /*threads button > list*/
+                    '.container-2rzKKA',
+                    /*search*/
+                    '.searchResultGroup-1lU_-i',
+                    /*members*/
+                    '.member-2gU6Ar:not(.placeholder-1WgmVn)',
+                    /*member-groups*/
+                    'h2.membersGroup-2eiWxl',
+                    /*servers*/
+                    '#app-mount .guilds-2JjMmN [class*=listItem]:not([class*=listItemWrapper])',
+                    /*friends*/
+                    '.peopleListItem-u6dGxF',
+                    /*channels*/
+                    '.channel-1Shao0',
+                    '.privateChannelsHeaderContainer-1UWASm',
+                    /*discovery categories*/
+                    '.categoryItem-Kc_HK_',
+                    /*discord settings list*/
+                    '.side-2ur1Qk *',
+                    /*discord settings*/
+                    'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:first-child > *:not(.image-141SOA)',
+                    'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:not(.bd-settings-group):not(:first-child)',
+                    'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > h2',
+                    '.bd-addon-card',
+                    /*alert elements*/
+                    '.focusLock-2tveLW .scrollerBase-_bVAAt:not(.bd-addon-modal-settings) > div',
+                    '.templatesList-uohY49 > *',
+                    /*public servers*/
+                    '.guildList-3GXKvP > .loaded-igpmmx'
+                ]
+
+                static selectorsButtons = [
+                    /*chat input buttons*/
+                    '.actionButtons-2vEOUh button',
+                    /*voice opened buttons*/
+                    '.buttons-uaqb-5 > *',
+                    /*toolbar*/
+                    '.toolbar-3_r2xA > *',
+                    '.children-3xh0VB > *',
+                    '.tabBar-ra-EuL > .item-3mHhwr'
+                ]
+
                 get countStyles() {
                     let result = '';
 
-                    var selectorsLists = [
-                        /*active threads button*/
-                        '.wrapper-NhbLHG',
-                        /*threads button > list*/
-                        '.container-2rzKKA',
-                        /*search*/
-                        '.searchResultGroup-1lU_-i',
-                        /*members*/
-                        '.member-2gU6Ar:not(.placeholder-1WgmVn)',
-                        /*member-groups*/
-                        'h2.membersGroup-2eiWxl',
-                        /*servers*/
-                        '.listItem-3SmSlK',
-                        /*friends*/
-                        '.peopleListItem-u6dGxF',
-                        /*channels*/
-                        '.channel-1Shao0',
-                        '.privateChannelsHeaderContainer-1UWASm',
-                        /*discovery categories*/
-                        '.categoryItem-Kc_HK_',
-                        /*discord settings list*/
-                        '.side-2ur1Qk *',
-                        /*discord settings*/
-                        'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:first-child > *:not(.image-141SOA)',
-                        'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:not(.bd-settings-group):not(:first-child)',
-                        'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > h2',
-                        '.bd-addon-card',
-                        '.bd-addon-card > div',
-                        /*alert elements*/
-                        '.focusLock-2tveLW .scrollerBase-_bVAAt:not(.bd-addon-modal-settings) > div',
-                        '.templatesList-uohY49 > *',
-                        /*public servers*/
-                        '.guildList-3GXKvP > .loaded-igpmmx'
-                    ]
-
-                    var selectorsButtons = [
-                        /*chat input buttons*/
-                        '.actionButtons-2vEOUh button',
-                        /*voice opened buttons*/
-                        '.buttons-uaqb-5 > *',
-                        /*toolbar*/
-                        '.toolbar-3_r2xA > *',
-                        '.children-3xh0VB > *',
-                        '.tabBar-ra-EuL > .item-3mHhwr'
-                    ]
-
                     let min = (a, b) => (a > b ? a : b)
 
-                    selectorsLists.forEach(selector => { if(!this.settings.lists.enabled) return;
+                    Animations.selectorsLists.forEach(selector => { if(!this.settings.lists.enabled) return;
                         let count = min(document.querySelectorAll(selector).length, this.settings.lists.limit)
 
                         if (this.settings.lists.sequence == 'fromFirst') for (var i = 1; i < count + 1; i++) {
@@ -183,7 +188,7 @@ module.exports = (() => {
 
                     })
 
-                    selectorsButtons.forEach(selector => {
+                    Animations.selectorsButtons.forEach(selector => {
 
                         let count = 20
 
@@ -246,6 +251,146 @@ module.exports = (() => {
                 }
 
                 changeStyles() {
+
+                    var keyframes = function(name, rotate=0) {
+
+                        return {
+                            "out":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50%;
+                                    transform: scale(0.7) rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) rotate(${rotate}deg);
+                                }
+                            }`,
+                            "in":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50%;
+                                    transform: scale(1.3) rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) rotate(${rotate}deg);
+                                }
+                            }`,
+                            "slide-right":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 0% 50%;
+                                    transform: scaleX(0) rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform-origin: ${rotate!=90?'0% 50%':'50%'};
+                                    transform: scale(1) translate(0) rotate(${rotate}deg);
+                                }
+                            }`,
+                            "slide-left":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 100% 50%;
+                                    transform: scaleX(0) rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform-origin: ${rotate!=90?'100% 50%':'50%'};
+                                    transform: scale(1) translate(0) rotate(${rotate}deg);
+                                }
+                            }`,
+                            "slide-up":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50% 100%;
+                                    transform: scaleY(0) rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform-origin: ${rotate!=90?'50% 100%':'50%'};
+                                    transform: scale(1) translate(0) rotate(${rotate}deg);
+                                }
+                            }`,
+                            "slide-down":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50% 0%;
+                                    transform: scaleY(0) rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform-origin: ${rotate!=90?'50% 0%':'50%'};
+                                    transform: scale(1) translate(0) rotate(${rotate}deg);
+                                }
+                            }`,
+                            "slide-up-right":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 0% 100%;
+                                    transform: scale(0) rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform-origin: ${rotate!=90?'0% 100%':'50%'};
+                                    transform: scale(1) rotate(${rotate}deg) translate(0);
+                                }
+                            }`,
+                            "slide-up-left":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 100%;
+                                    transform: scale(0) rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform-origin: ${rotate!=90?'100%':'50%'};
+                                    transform: scale(1) rotate(${rotate}deg) translate(0);
+                                }
+                            }`,
+                            "slide-down-right":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 0%;
+                                    transform: scale(0) rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform-origin: ${rotate!=90?'0%':'50%'};
+                                    transform: scale(1) rotate(${rotate}deg) translate(0);
+                                }
+                            }`,
+                            "slide-down-left":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 100% 0%;
+                                    transform: scale(0) rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform-origin: ${rotate!=90?'100% 0%':'50%'};
+                                    transform: scale(1) rotate(${rotate}deg) translate(0);
+                                }
+                            }`,
+                            "skew-right":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50%;
+                                    transform: skewX(-30deg) scale(0.8) rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform-origin: 50%;
+                                    transform: skewX(0) scale(1) rotate(${rotate}deg);
+                                }
+                            }`,
+                            "skew-left":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50%;
+                                    transform: skewX(30deg) scale(0.8) rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform-origin: 50%;
+                                    transform: skewX(0) scale(1) rotate(${rotate}deg);
+                                }
+                            }`
+                        }
+                        
+                    }
+
                     let animPrevStyles = (() => {
                         let result = '';
 
@@ -344,44 +489,20 @@ module.exports = (() => {
                     animation-duration: ${this.settings.lists.duration}s;
                 }
 
-                /*active threads button*/
-                .wrapper-NhbLHG,
-                /*threads button > list*/
-                .container-2rzKKA,
-                /*search*/
-                .searchResultGroup-1lU_-i,
-                /*members*/
-                .member-2gU6Ar:not(.placeholder-1WgmVn),
-                /*member-groups*/
-                h2.membersGroup-2eiWxl,
-                /*servers*/
-                .listItem-3SmSlK,
-                /*friends*/
-                .peopleListItem-u6dGxF,
-                /*channels*/
-                .channel-1Shao0,
-                .privateChannelsHeaderContainer-1UWASm,
-                /*discovery categories*/
-                .categoryItem-Kc_HK_,
-                /*discord settings list*/
-                .side-2ur1Qk *,
-                /*discord settings*/
-                main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:first-child > *:not(.image-141SOA),
-                main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:not(.bd-settings-group):not(:first-child),
-                main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > h2,
-                .bd-addon-card,
-                .bd-addon-card > div,
-                /*alert elements*/
-                .focusLock-2tveLW .scrollerBase-_bVAAt:not(.bd-addon-modal-settings) > div,
-                .templatesList-uohY49 > *,
-                /*public servers*/
-                .guildList-3GXKvP > .loaded-igpmmx
+                ${Animations.selectorsLists.join(', ')}
                 {
                     transform: scaleX(0);
                     animation-name: ${this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name};
                     animation-fill-mode: forwards;
                     animation-duration: ${this.settings.lists.duration}s;
                 }
+
+                ${!BdApi.Themes.isEnabled('Horizontal Server List')? '' : `
+                #app-mount .guilds-2JjMmN [class*=listItem]:not([class*=listItemWrapper]) {
+                    transform: scaleX(0) rotate(90deg);
+                    animation-name: ${this.settings.lists.name}_90;
+                }
+                `}
                 `}
 
                 ${!this.settings.messages.enabled ? '' : `
@@ -399,14 +520,7 @@ module.exports = (() => {
                 `}
 
                 ${!this.settings.buttons.enabled ? '' : `
-                /*chat input buttons*/
-                .actionButtons-2vEOUh button,
-                /*voice opened buttons*/
-                .buttons-uaqb-5 > *,
-                /*toolbar*/
-                .toolbar-3_r2xA > *,
-                .children-3xh0VB > *,
-                .tabBar-ra-EuL > .item-3mHhwr
+                ${Animations.selectorsButtons.join(', ')}
                 {
                     transform: scaleX(0);
                     animation-name: ${this.settings.buttons.custom.enabled && this.settings.buttons.custom.frames[this.settings.buttons.custom.page].trim() != '' ? 'custom-buttons' : this.settings.buttons.name};
@@ -433,133 +547,41 @@ module.exports = (() => {
 
                 /**Keyframes**/
 
-                @keyframes out {
-                    0% {
-                        transform-origin: 50% 50%;
-                        transform: scale(0.7);
-                    }
-                    100% {
-                        transform-origin: 50% 50%;
-                        transform: scale(1);
-                    }
-                }
+                ${keyframes("out")["out"]}
+                ${keyframes("out_90", 90)["out"]}
         
-                @keyframes in {
-                    0% {
-                        transform-origin: 50% 50%;
-                        transform: scale(1.3);
-                    }
-                    100% {
-                        transform-origin: 50% 50%;
-                        transform: scale(1);
-                    }
-                }
+                ${keyframes("in")["in"]}
+                ${keyframes("in_90", 90)["in"]}
 
-                @keyframes slide-up {
-                    0% {
-                        transform: scaleY(0) translateY(200%);
-                    }
-                    100% {
-                        transform: scale(1) translateY(0);
-                    }
-                }
+                ${keyframes("slide-up")["slide-up"]}
+                ${keyframes("slide-up_90", 90)["slide-up"]}
 
-                @keyframes slide-down {
-                    0% {
-                        transform: scaleY(0) translateY(-200%);
-                    }
-                    100% {
-                        transform: scale(1) translateY(0);
-                    }
-                }
+                ${keyframes("slide-down")["slide-down"]}
+                ${keyframes("slide-down_90", 90)["slide-down"]}
                 
-                @keyframes slide-up-right {
-                    0% {
-                        transform-origin: 0 50%;
-                        transform: scaleX(0) rotate(10deg) translateY(200%);
-                    }
-                    100% {
-                        transform-origin: 0 50%;
-                        transform: scale(1) rotate(0deg) translateY(0);
-                    }
-                }
-        
-                @keyframes slide-up-left {
-                    0% {
-                        transform-origin: 100% 50%;
-                        transform: scaleX(0) rotate(-10deg) translateY(200%);
-                    }
-                    100% {
-                        transform-origin: 100% 50%;
-                        transform: scale(1) rotate(0deg) translateY(0);
-                    }
-                }
+                ${keyframes("slide-up-right")["slide-up-right"]}
+                ${keyframes("slide-up-right_90", 90)["slide-up-right"]}
 
-                @keyframes slide-down-right {
-                    0% {
-                        transform-origin: 0 50%;
-                        transform: scaleX(0) rotate(10deg) translateY(-200%);
-                    }
-                    100% {
-                        transform-origin: 0 50%;
-                        transform: scale(1) rotate(0deg) translateY(0);
-                    }
-                }
-        
-                @keyframes slide-down-left {
-                    0% {
-                        transform-origin: 100% 50%;
-                        transform: scaleX(0) rotate(-10deg) translateY(-200%);
-                    }
-                    100% {
-                        transform-origin: 100% 50%;
-                        transform: scale(1) rotate(0deg) translateY(0);
-                    }
-                }
-        
-                @keyframes slide-right {
-                    0% {
-                        transform-origin: 0 50%;
-                        transform: scaleX(0) translateX(-100%);
-                    }
-                    100% {
-                        transform-origin: 0 50%;
-                        transform: scale(1) translateX(0);
-                    }
-                }
+                ${keyframes("slide-up-left")["slide-up-left"]}
+                ${keyframes("slide-up-left_90", 90)["slide-up-left"]}
 
-                @keyframes slide-left {
-                    0% {
-                        transform-origin: 100% 50%;
-                        transform: scaleX(0) translateX(100%);
-                    }
-                    100% {
-                        transform-origin: 100% 50%;
-                        transform: scale(1) translateX(0);
-                    }
-                }
+                ${keyframes("slide-down-right")["slide-down-right"]}
+                ${keyframes("slide-down-right_90", 90)["slide-down-right"]}
+
+                ${keyframes("slide-down-left")["slide-down-left"]}
+                ${keyframes("slide-down-left_90", 90)["slide-down-left"]}
         
-                @keyframes skew-right {
-                    0% {
-                        transform-origin: 50% 50%;
-                        transform: skewX(-30deg) scale(0.8);
-                    }
-                    100% {
-                        transform-origin: 50% 50%;
-                        transform: skewX(0) scale(1);
-                    }
-                }
-                
-                @keyframes skew-left {
-                    0% {
-                        transform-origin: 50% 50%;
-                        transform: skewX(30deg) scale(0.8);
-                    }
-                    100% {
-                        transform-origin: 50% 50%;
-                        transform: skewX(0) scale(1);
-                    }
-                }
+                ${keyframes("slide-right")["slide-right"]}
+                ${keyframes("slide-right_90", 90)["slide-right"]}
+
+                ${keyframes("slide-left")["slide-left"]}
+                ${keyframes("slide-left_90", 90)["slide-left"]}
+        
+                ${keyframes("skew-right")["skew-right"]}
+                ${keyframes("skew-right_90", 90)["skew-right"]}
+
+                ${keyframes("skew-left")["skew-left"]}
+                ${keyframes("skew-left_90", 90)["skew-left"]}
 
                 \n${animPrevStyles}
                 \n${nthStyles}
@@ -604,11 +626,11 @@ module.exports = (() => {
 
                 getSettingsPanel() {
 
-                    var ButtonsPanel = (label, options = []) => {
-                        var buttons = [];
-                        options.forEach(option => {
+                    var ButtonsPanel = (label, buttonsTemp = []) => {
+                        var nodes = [];
+                        buttonsTemp.forEach(button => {
                             var colorClass;
-                            switch (option.color) {
+                            switch (button.color) {
                                 case 'blurple':
                                     colorClass = 'colorBrand-I6CyqQ'
                                     break;
@@ -633,25 +655,25 @@ module.exports = (() => {
                                     break;
                             }
 
-                            buttons.push([
+                            nodes.push([
                                 BdApi.React.createElement('button', {
                                     style: {
                                         display: 'inline-block',
-                                        width: option.width ?? 'fit-content',
-                                        padding: option.padding ?? '4px 8px',
+                                        width: button.width ?? 'fit-content',
+                                        padding: button.padding ?? '4px 8px',
                                         margin: '4px 8px'
 
                                     },
-                                    hint: option.hint,
-                                    id: option.id,
-                                    class: `button-f2h6uQ sizeSmall-wU2dO- ${(option.color!='link'?'lookFilled-yCfaCM':'')} ${colorClass}`,
-                                    onClick: option.onclick
+                                    hint: button.hint,
+                                    id: button.id,
+                                    class: `button-f2h6uQ sizeSmall-wU2dO- ${(button.color!='link'?'lookFilled-yCfaCM':'')} ${colorClass}`,
+                                    onClick: button.onclick
                                 },
                                     BdApi.React.createElement('div', {
                                         class: 'contents-18-Yxp',
                                         style: { 'pointer-events': 'none' }
                                     },
-                                        option.label
+                                    button.label
                                     )
                                 )
                             ])
@@ -666,7 +688,7 @@ module.exports = (() => {
                                         label ? BdApi.React.createElement('label', {
                                             class: 'title-31JmR4'
                                         }, label) : null,
-                                        ...buttons
+                                        ...nodes
                                     ]
                                 )
                             }
@@ -1030,7 +1052,7 @@ module.exports = (() => {
                                                             BdApi.showConfirmationModal('Your version is older',
                                                             [
                                                                 `v${config.info.version} (your)  →  v${GitHubVersion} (github)`,
-                                                                BdApi.React.createElement('span', {style: {color: '#3ba55d', 'text-transform': 'uppercase'}}, 'The plugin will be updated.')
+                                                                BdApi.React.createElement('span', {style: {color: Animations.colors.green, 'text-transform': 'uppercase'}}, 'The plugin will be updated.')
                                                             ],
                                                             {
                                                                 onConfirm() {
@@ -1050,7 +1072,7 @@ module.exports = (() => {
                                                             BdApi.showConfirmationModal('Your version is newer',
                                                             [
                                                                 `v${config.info.version} (your)  →  v${GitHubVersion} (github)`,
-                                                                BdApi.React.createElement('span', {style: {color: '#ed4245', 'text-transform': 'uppercase'}}, 'The plugin will be downdated.')
+                                                                BdApi.React.createElement('span', {style: {color: Animations.colors.red, 'text-transform': 'uppercase'}}, 'The plugin will be downdated.')
                                                             ],
                                                             {
                                                                 onConfirm() {
@@ -1070,7 +1092,7 @@ module.exports = (() => {
                                                             BdApi.showConfirmationModal('Your version is latest',
                                                             [
                                                                 `v${config.info.version} (your)  ↔  v${GitHubVersion} (github)`,
-                                                                BdApi.React.createElement('span', {style: {color: '#faa81a', 'text-transform': 'uppercase'}}, 'The plugin will be restored.')
+                                                                BdApi.React.createElement('span', {style: {color: Animations.colors.yellow, 'text-transform': 'uppercase'}}, 'The plugin will be restored.')
                                                             ],
                                                             {
                                                                 onConfirm() {
@@ -1642,8 +1664,8 @@ module.exports = (() => {
                     PluginUtilities.removeStyle('Animations-req');
                     setTimeout(() => {
                         PluginUtilities.addStyle('Animations-req', this.reqStyles)
+                        this.changeStyles()
                     }, 100);
-                    this.changeStyles()
 
                     this.BadSendingStyles = (e)=>{
                         if(e.key=="Enter") { // finding parent
