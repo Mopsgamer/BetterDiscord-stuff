@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.4
+ * @version 1.2.5
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,15 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.4',
+            version: '1.2.5',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            { "title": "New Stuff", "items": ["Reworked animations."] },
-            //{ "title": "Improvements", "type": "improved", "items": ["Changed the editor's font."] },
-            { "title": "Fixes", "type": "fixed", "items": ["Added compatibility with Horizontal Server List."] }
+            { "title": "New Stuff", "items": ["New animations animations."] },
+            { "title": "Improvements", "type": "improved", "items": ["Some animations now have transparency at the beginning."] },
+            //{ "title": "Fixes", "type": "fixed", "items": ["Added compatibility with Horizontal Server List."] }
         ],
         main: 'index.js',
     };
@@ -169,6 +169,34 @@ module.exports = (() => {
                     '.tabBar-ra-EuL > .item-3mHhwr'
                 ]
 
+                static names = [
+                    'opacity',
+                    'slime',
+                    'brick-right',
+                    'brick-left',
+                    'brick-up',
+                    'brick-down',
+                    'in',
+                    'out',
+                    'slide-right',
+                    'slide-left',
+                    'slide-up',
+                    'slide-up-right',
+                    'slide-up-left',
+                    'slide-down',
+                    'slide-down-right',
+                    'slide-down-left',
+                    'skew-right',
+                    'skew-left',
+                    'wide-skew-right',
+                    'wide-skew-left',
+                ]
+
+                static sequences = [
+                    'fromFirst',
+                    'fromLast',
+                ]
+
                 get countStyles() {
                     let result = '';
 
@@ -252,29 +280,125 @@ module.exports = (() => {
 
                 changeStyles() {
 
-                    var keyframes = function(name, rotate=0) {
-
-                        return {
-                            "out":
-                            `@keyframes ${name} {
-                                0% {
-                                    transform-origin: 50%;
-                                    transform: scale(0.7) rotate(${rotate}deg);
-                                }
-                                100% {
-                                    transform-origin: 50%;
-                                    transform: scale(1) rotate(${rotate}deg);
-                                }
-                            }`,
+                    var createKeyFrame = function(name, originalName, rotate=0) {
+                        var keyframes = {
                             "in":
                             `@keyframes ${name} {
                                 0% {
                                     transform-origin: 50%;
                                     transform: scale(1.3) rotate(${rotate}deg);
+                                    opacity: 0;
                                 }
                                 100% {
                                     transform-origin: 50%;
                                     transform: scale(1) rotate(${rotate}deg);
+                                    opacity: 1;
+                                }
+                            }`,
+                            "out":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50%;
+                                    transform: scale(0.7) rotate(${rotate}deg);
+                                    opacity: 0;
+                                }
+                                100% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) rotate(${rotate}deg);
+                                    opacity: 1;
+                                }
+                            }`,
+                            "opacity":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) rotate(${rotate}deg);
+                                    opacity: 0;
+                                }
+                                100% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) rotate(${rotate}deg);
+                                    opacity: 1;
+                                }
+                            }`,
+                            "slime":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) rotate(${rotate}deg);
+                                    opacity: 0;
+                                }
+                                25% {
+                                    transform-origin: 50%;
+                                    transform: scale(1.3, 0.7) rotate(${rotate}deg);
+                                    opacity: 1;
+                                }
+                                50% {
+                                    transform-origin: 50%;
+                                    transform: scale(0.8, 1.2) rotate(${rotate}deg);
+                                    opacity: 1;
+                                }
+                                75% {
+                                    transform-origin: 50%;
+                                    transform: scale(1.1, 0.9) rotate(${rotate}deg);
+                                    opacity: 1;
+                                }
+                                100% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) rotate(${rotate}deg);
+                                    opacity: 1;
+                                }
+                            }`,
+                            "brick-up":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(0, 500%) rotate(${rotate}deg);
+                                    opacity: 0;
+                                }
+                                100% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                                    opacity: 1;
+                                }
+                            }`,
+                            "brick-right":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(-500%, 0) rotate(${rotate}deg);
+                                    opacity: 0;
+                                }
+                                100% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                                    opacity: 1;
+                                }
+                            }`,
+                            "brick-left":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(500%, 0) rotate(${rotate}deg);
+                                    opacity: 0;
+                                }
+                                100% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                                    opacity: 1;
+                                }
+                            }`,
+                            "brick-down":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(0, -500%) rotate(${rotate}deg);
+                                    opacity: 0;
+                                }
+                                100% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                                    opacity: 1;
                                 }
                             }`,
                             "slide-right":
@@ -369,66 +493,90 @@ module.exports = (() => {
                             `@keyframes ${name} {
                                 0% {
                                     transform-origin: 50%;
-                                    transform: skewX(-30deg) scale(0.8) rotate(${rotate}deg);
+                                    transform: skewX(-30deg) scale(1) rotate(${rotate}deg);
+                                    opacity: 0;
                                 }
                                 100% {
                                     transform-origin: 50%;
                                     transform: skewX(0) scale(1) rotate(${rotate}deg);
+                                    opacity: 1;
                                 }
                             }`,
                             "skew-left":
                             `@keyframes ${name} {
                                 0% {
                                     transform-origin: 50%;
-                                    transform: skewX(30deg) scale(0.8) rotate(${rotate}deg);
+                                    transform: skewX(30deg) scale(1) rotate(${rotate}deg);
+                                    opacity: 0;
                                 }
                                 100% {
                                     transform-origin: 50%;
                                     transform: skewX(0) scale(1) rotate(${rotate}deg);
+                                    opacity: 1;
+                                }
+                            }`,
+                            "wide-skew-right":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50%;
+                                    transform: skewY(15deg) scale(1) rotate(${rotate}deg);
+                                    opacity: 0;
+                                }
+                                100% {
+                                    transform-origin: 50%;
+                                    transform: skew(0) scale(1) rotate(${rotate}deg);
+                                    opacity: 1;
+                                }
+                            }`,
+                            "wide-skew-left":
+                            `@keyframes ${name} {
+                                0% {
+                                    transform-origin: 50%;
+                                    transform: skewY(-15deg) scale(1) rotate(${rotate}deg);
+                                    opacity: 0;
+                                }
+                                100% {
+                                    transform-origin: 50%;
+                                    transform: skew(0) scale(1) rotate(${rotate}deg);
+                                    opacity: 1;
                                 }
                             }`
                         }
+
+                        return keyframes[originalName]
                         
                     }
+
+                    var keyframes = (()=>{
+                        var result = '';
+
+                        Animations.names.forEach(
+                            animName=>{
+                                result+=`${createKeyFrame(animName, animName, 0)}\n\n${createKeyFrame(`${animName}_90`, animName, 90)}`
+                            }
+                        )
+
+                        return result
+                    })()
 
                     let animPrevStyles = (() => {
                         let result = '';
 
-                        var names = [
-                            'in',
-                            'out',
-                            'slide-right',
-                            'slide-left',
-                            'slide-up',
-                            'slide-up-right',
-                            'slide-up-left',
-                            'slide-down',
-                            'slide-down-right',
-                            'slide-down-left',
-                            'skew-right',
-                            'skew-left',
-                        ];
-
-                        var sequences = [
-                            'fromFirst',
-                            'fromLast',
-                        ];
-
-                        (["lists", "messages", "buttons"]).forEach(type=>{
-                            if (!names.includes(this.settings[type].name)) {
+                        ;(["lists", "messages", "buttons"]).forEach(type=>{
+                            if (!Animations.names.includes(this.settings[type].name)) {
                                 this.settings[type].name = this.defaultSettings[type].name;
                                 PluginUtilities.saveSettings("Animations", this.settings);
                             }
                         });
 
-                        (["lists", "buttons"]).forEach(type=>{
-                            if (!sequences.includes(this.settings[type].sequence)) {
+                        ;(["lists", "buttons"]).forEach(type=>{
+                            if (!Animations.sequences.includes(this.settings[type].sequence)) {
                                 this.settings[type].sequence = this.defaultSettings[type].sequence;
                                 PluginUtilities.saveSettings("Animations", this.settings);
                             }
                         });
 
-                        names.forEach(animName => {
+                        Animations.names.forEach(animName => {
                             for (var i = 1; i < 5; i++) {
                                 result += `.animPreview[data-animation="${animName}"]:hover > .animTempBlock:nth-child(${i})`
                                     + ` {transform: scale(0); animation-name: ${animName}; animation-fill-mode: forwards; animation-duration: 0.3s; animation-delay: ${(i - 1) * 0.06}s;}\n`
@@ -547,41 +695,7 @@ module.exports = (() => {
 
                 /**Keyframes**/
 
-                ${keyframes("out")["out"]}
-                ${keyframes("out_90", 90)["out"]}
-        
-                ${keyframes("in")["in"]}
-                ${keyframes("in_90", 90)["in"]}
-
-                ${keyframes("slide-up")["slide-up"]}
-                ${keyframes("slide-up_90", 90)["slide-up"]}
-
-                ${keyframes("slide-down")["slide-down"]}
-                ${keyframes("slide-down_90", 90)["slide-down"]}
-                
-                ${keyframes("slide-up-right")["slide-up-right"]}
-                ${keyframes("slide-up-right_90", 90)["slide-up-right"]}
-
-                ${keyframes("slide-up-left")["slide-up-left"]}
-                ${keyframes("slide-up-left_90", 90)["slide-up-left"]}
-
-                ${keyframes("slide-down-right")["slide-down-right"]}
-                ${keyframes("slide-down-right_90", 90)["slide-down-right"]}
-
-                ${keyframes("slide-down-left")["slide-down-left"]}
-                ${keyframes("slide-down-left_90", 90)["slide-down-left"]}
-        
-                ${keyframes("slide-right")["slide-right"]}
-                ${keyframes("slide-right_90", 90)["slide-right"]}
-
-                ${keyframes("slide-left")["slide-left"]}
-                ${keyframes("slide-left_90", 90)["slide-left"]}
-        
-                ${keyframes("skew-right")["skew-right"]}
-                ${keyframes("skew-right_90", 90)["skew-right"]}
-
-                ${keyframes("skew-left")["skew-left"]}
-                ${keyframes("skew-left_90", 90)["skew-left"]}
+                ${keyframes}
 
                 \n${animPrevStyles}
                 \n${nthStyles}
@@ -1184,6 +1298,12 @@ module.exports = (() => {
                                 PreviewsPanel([
                                     { label: 'In', value: 'in' },
                                     { label: 'Out', value: 'out' },
+                                    { label: 'Opacity', value: 'opacity' },
+                                    { label: 'Slime', value: 'slime' },
+                                    { label: 'Brick right', value: 'brick-right' },
+                                    { label: 'Brick left', value: 'brick-left' },
+                                    { label: 'Brick up', value: 'brick-up' },
+                                    { label: 'Brick down', value: 'brick-down' },
                                     { label: 'Slide right', value: 'slide-right' },
                                     { label: 'Slide left', value: 'slide-left' },
                                     { label: 'Slide up', value: 'slide-up' },
@@ -1194,6 +1314,8 @@ module.exports = (() => {
                                     { label: 'Slide down (left)', value: 'slide-down-left' },
                                     { label: 'Skew right', value: 'skew-right' },
                                     { label: 'Skew left', value: 'skew-left' },
+                                    { label: 'Wide skew right', value: 'wide-skew-right' },
+                                    { label: 'Wide skew left', value: 'wide-skew-left' },
                                 ], {
                                     type: 'lists-name',
                                     class: 'lists',
@@ -1263,6 +1385,12 @@ module.exports = (() => {
                                 PreviewsPanel([
                                     { label: 'In', value: 'in' },
                                     { label: 'Out', value: 'out' },
+                                    { label: 'Opacity', value: 'opacity' },
+                                    { label: 'Slime', value: 'slime' },
+                                    { label: 'Brick right', value: 'brick-right' },
+                                    { label: 'Brick left', value: 'brick-left' },
+                                    { label: 'Brick up', value: 'brick-up' },
+                                    { label: 'Brick down', value: 'brick-down' },
                                     { label: 'Slide right', value: 'slide-right' },
                                     { label: 'Slide left', value: 'slide-left' },
                                     { label: 'Slide up', value: 'slide-up' },
@@ -1273,6 +1401,8 @@ module.exports = (() => {
                                     { label: 'Slide down (left)', value: 'slide-down-left' },
                                     { label: 'Skew right', value: 'skew-right' },
                                     { label: 'Skew left', value: 'skew-left' },
+                                    { label: 'Wide skew right', value: 'wide-skew-right' },
+                                    { label: 'Wide skew left', value: 'wide-skew-left' },
                                 ], {
                                     type: 'messages-name',
                                     class: 'messages',
@@ -1328,6 +1458,12 @@ module.exports = (() => {
                                 PreviewsPanel([
                                     { label: 'In', value: 'in' },
                                     { label: 'Out', value: 'out' },
+                                    { label: 'Opacity', value: 'opacity' },
+                                    { label: 'Slime', value: 'slime' },
+                                    { label: 'Brick right', value: 'brick-right' },
+                                    { label: 'Brick left', value: 'brick-left' },
+                                    { label: 'Brick up', value: 'brick-up' },
+                                    { label: 'Brick down', value: 'brick-down' },
                                     { label: 'Slide right', value: 'slide-right' },
                                     { label: 'Slide left', value: 'slide-left' },
                                     { label: 'Slide up', value: 'slide-up' },
@@ -1338,6 +1474,8 @@ module.exports = (() => {
                                     { label: 'Slide down (left)', value: 'slide-down-left' },
                                     { label: 'Skew right', value: 'skew-right' },
                                     { label: 'Skew left', value: 'skew-left' },
+                                    { label: 'Wide skew right', value: 'wide-skew-right' },
+                                    { label: 'Wide skew left', value: 'wide-skew-left' },
                                 ], {
                                     type: 'buttons-name',
                                     class: 'buttons',
@@ -1612,7 +1750,7 @@ module.exports = (() => {
                         height: 18%;
                         margin: 4px;
                         border-radius: 3pt;
-                        background-color: var(--interactive-normal);
+                        background-color: var(--interactive-normal)
                     }
 
                     .horizontal .animPreview .animTempBlock {
@@ -1622,6 +1760,10 @@ module.exports = (() => {
                         border-radius: 3pt;
                         background-color: var(--interactive-normal);
                         display: inline-block;
+                    }
+
+                    .vertical .animPreview.enabled .animTempBlock {
+                        background-color: #fff;
                     }
 
                     .animPreview.enabled .animTempBlock {
@@ -1701,6 +1843,23 @@ module.exports = (() => {
                         clearInterval(chni)
                     }
                     var chni = setInterval(chn, 100)
+
+                    this.observer = new MutationObserver(
+                        (event)=>{
+                            const {removedNodes, addedNodes} = event[0];
+                            const compabilityThemes = ['Horizontal-Server-List'];
+
+                            ;([removedNodes, addedNodes]).forEach(
+                                (changes, typeIndex)=>changes.forEach(
+                                    (node) => {
+                                        if(compabilityThemes.includes(node.id)) this.changeStyles();
+                                    }
+                                )
+                            )
+                        }
+                    )
+                    this.observer.observe(document.getElementsByTagName("bd-themes")[0], {"childList": true})
+
                 }
 
                 stop() {
@@ -1718,6 +1877,9 @@ module.exports = (() => {
                     PluginUtilities.removeStyle('Animations-main');
                     PluginUtilities.removeStyle('Animations-req');
                     PluginUtilities.removeStyle('Animations-count');
+
+                    this.observer.disconnect()
+
                 }
 
                 onSwitch() {
