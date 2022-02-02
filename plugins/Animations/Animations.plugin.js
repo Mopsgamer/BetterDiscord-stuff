@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.5
+ * @version 1.2.6
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,15 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.5',
+            version: '1.2.6',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            { "title": "New Stuff", "items": ["New animations animations."] },
-            { "title": "Improvements", "type": "improved", "items": ["Some animations now have transparency at the beginning."] },
-            //{ "title": "Fixes", "type": "fixed", "items": ["Added compatibility with Horizontal Server List."] }
+            //{ "title": "New Stuff", "items": ["New animations animations."] },
+            { "title": "Improvements", "type": "improved", "items": ["Improvement of the buttons in the settings."] },
+            { "title": "Fixes", "type": "fixed", "items": ["The list of inactive members is now darker.", "Removed button to increase the indentation."] }
         ],
         main: 'index.js',
     };
@@ -59,7 +59,7 @@ module.exports = (() => {
 
             const
                 { DiscordSelectors, DiscordAPI, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules } = Api,
-                { Logger, Patcher, Settings, ReactComponents } = Library;
+                { Logger, Patcher, Settings, Tooltip, ReactComponents } = Library;
 
             return class Animations extends Plugin {
 
@@ -67,7 +67,6 @@ module.exports = (() => {
                     super();
 
                     this.defaultSettings = {
-                        panelFix: true,
                         lists: {
                             enabled: true,
                             name: 'slide-up',
@@ -118,7 +117,7 @@ module.exports = (() => {
                 getDescription() { return config.info.description }
                 getVersion() { return config.info.version }
 
-                static colors = {
+                colors = {
                     red: '#ed4245',
                     green: '#3ba55d',
                     yellow: '#faa81a'
@@ -200,10 +199,8 @@ module.exports = (() => {
                 get countStyles() {
                     let result = '';
 
-                    let min = (a, b) => (a > b ? a : b)
-
-                    Animations.selectorsLists.forEach(selector => { if(!this.settings.lists.enabled) return;
-                        let count = min(document.querySelectorAll(selector).length, this.settings.lists.limit)
+                    Animations.selectorsLists.forEach((selector, i) => { if(!this.settings.lists.enabled) return;
+                        let count = Math.min(document.querySelectorAll(selector).length, this.settings.lists.limit)
 
                         if (this.settings.lists.sequence == 'fromFirst') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-child(${i}) `
@@ -280,7 +277,7 @@ module.exports = (() => {
 
                 changeStyles() {
 
-                    var createKeyFrame = function(name, originalName, rotate=0) {
+                    var createKeyFrame = function(name, originalName, rotate=0, opacity=1) {
                         var keyframes = {
                             "in":
                             `@keyframes ${name} {
@@ -292,7 +289,7 @@ module.exports = (() => {
                                 100% {
                                     transform-origin: 50%;
                                     transform: scale(1) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                             }`,
                             "out":
@@ -305,7 +302,7 @@ module.exports = (() => {
                                 100% {
                                     transform-origin: 50%;
                                     transform: scale(1) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                             }`,
                             "opacity":
@@ -318,7 +315,7 @@ module.exports = (() => {
                                 100% {
                                     transform-origin: 50%;
                                     transform: scale(1) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                             }`,
                             "slime":
@@ -331,22 +328,22 @@ module.exports = (() => {
                                 25% {
                                     transform-origin: 50%;
                                     transform: scale(1.3, 0.7) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                                 50% {
                                     transform-origin: 50%;
                                     transform: scale(0.8, 1.2) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                                 75% {
                                     transform-origin: 50%;
                                     transform: scale(1.1, 0.9) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                                 100% {
                                     transform-origin: 50%;
                                     transform: scale(1) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                             }`,
                             "brick-up":
@@ -359,7 +356,7 @@ module.exports = (() => {
                                 100% {
                                     transform-origin: 50%;
                                     transform: scale(1) translate(0, 0) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                             }`,
                             "brick-right":
@@ -372,7 +369,7 @@ module.exports = (() => {
                                 100% {
                                     transform-origin: 50%;
                                     transform: scale(1) translate(0, 0) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                             }`,
                             "brick-left":
@@ -385,7 +382,7 @@ module.exports = (() => {
                                 100% {
                                     transform-origin: 50%;
                                     transform: scale(1) translate(0, 0) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                             }`,
                             "brick-down":
@@ -398,7 +395,7 @@ module.exports = (() => {
                                 100% {
                                     transform-origin: 50%;
                                     transform: scale(1) translate(0, 0) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                             }`,
                             "slide-right":
@@ -499,7 +496,7 @@ module.exports = (() => {
                                 100% {
                                     transform-origin: 50%;
                                     transform: skewX(0) scale(1) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                             }`,
                             "skew-left":
@@ -512,7 +509,7 @@ module.exports = (() => {
                                 100% {
                                     transform-origin: 50%;
                                     transform: skewX(0) scale(1) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                             }`,
                             "wide-skew-right":
@@ -525,7 +522,7 @@ module.exports = (() => {
                                 100% {
                                     transform-origin: 50%;
                                     transform: skew(0) scale(1) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                             }`,
                             "wide-skew-left":
@@ -538,7 +535,7 @@ module.exports = (() => {
                                 100% {
                                     transform-origin: 50%;
                                     transform: skew(0) scale(1) rotate(${rotate}deg);
-                                    opacity: 1;
+                                    opacity: ${opacity};
                                 }
                             }`
                         }
@@ -552,7 +549,11 @@ module.exports = (() => {
 
                         Animations.names.forEach(
                             animName=>{
-                                result+=`${createKeyFrame(animName, animName, 0)}\n\n${createKeyFrame(`${animName}_90`, animName, 90)}`
+                                result+=`
+                                ${createKeyFrame(animName, animName, 0)}\n
+                                ${createKeyFrame(`${animName}_offline`, animName, 0, 0.3)}\n
+                                ${createKeyFrame(`${animName}_90`, animName, 90)}\n
+                                `
                             }
                         )
 
@@ -610,17 +611,6 @@ module.exports = (() => {
                     this.styles = `
                 /*ANIMATED DISCORD*/
 
-                /*fix panel*/
-                ${this.settings.panelFix ? `
-                .root-g14mjS .marginBottom20-315RVT {
-                    padding: 0 10px 0 5px;
-                }
-
-                .plugin-input-group h2 {
-                    margin-bottom: 30px;
-                }
-                ` : '/*disabled*/'}
-
                 /*lists limit*/
                 .side-2ur1Qk > :nth-child(n+${this.settings.lists.limit}),
                 .content-2a4AW9 > :nth-child(n+${this.settings.lists.limit})
@@ -635,6 +625,12 @@ module.exports = (() => {
                     transform: scaleX(0);
                     animation-fill-mode: forwards;
                     animation-duration: ${this.settings.lists.duration}s;
+                }
+
+                /* members offline */
+                .offline-22aM7E
+                {
+                    animation-name: ${this.settings.lists.name}_offline !important;
                 }
 
                 ${Animations.selectorsLists.join(', ')}
@@ -740,69 +736,106 @@ module.exports = (() => {
 
                 getSettingsPanel() {
 
-                    var ButtonsPanel = (label, buttonsTemp = []) => {
-                        var nodes = [];
-                        buttonsTemp.forEach(button => {
-                            var colorClass;
-                            switch (button.color) {
-                                case 'blurple':
-                                    colorClass = 'colorBrand-I6CyqQ'
-                                    break;
-                                case 'red':
-                                    colorClass = 'colorRed-rQXKgM'
-                                    break;
-                                case 'gray': case 'grey':
-                                    colorClass = 'colorGrey-2iAG-B'
-                                    break;
-                                case 'green':
-                                    colorClass = 'colorGreen-3y-Z79'
-                                    break;
-                                case 'link':
-                                    colorClass = 'lookLink-15mFoz colorPrimary-2AuQVo'
-                                    break;
-                                case 'bd':
-                                    colorClass = 'bd-button'
-                                    break;
+                    var ElementButton = (button) => {
 
-                                default:
-                                    colorClass = 'bd-button'
-                                    break;
-                            }
-
-                            nodes.push([
-                                BdApi.React.createElement('button', {
-                                    style: {
-                                        display: 'inline-block',
-                                        width: button.width ?? 'fit-content',
-                                        padding: button.padding ?? '4px 8px',
-                                        margin: '4px 8px'
-
+                        return BdApi.React.createElement('button', {
+                            style: {
+                                display: 'inline-block',
+                                width: button.width ?? 'fit-content',
+                                height: button.height ?? 'fit-content',
+                                padding: button.padding ?? '8px',
+                                margin: button.margin ?? '8px',
+                                'transition': 'background-color .17s ease, color .17s ease, opacity 250ms ease',
+                            },
+                            id: button.id,
+                            class: `button-f2h6uQ sizeSmall-wU2dO- ${button.inverted ? 'inverted' : 'filled'} ${button.color ?? 'blurple'} ${button.class ?? ''}`,
+                            onClick: button.onclick, onLoad(e){console.log('LOADED')}
+                        },
+                            BdApi.React.createElement('div', {
+                                style: {
+                                    'pointer-events': 'none',
+                                    'display': 'flex',
+                                    'align-items': 'center',
+                                    'justify-content': 'center'
+                                }
+                            },
+                                [
+                                    button.svgPath ? BdApi.React.createElement('svg',
+                                        {
+                                            viewBox: button.svgView ?? '0 0 24 24',
+                                            fill: '#fff',
+                                            style: {
+                                                width: '18px',
+                                                height: '18px',
+                                                'margin-right': '4px'
+                                            }
+                                        },
+                                        BdApi.React.createElement('path', { d: button.svgPath })
+                                    ) : null,
+                                    BdApi.React.createElement('span', {
+                                        class: 'buttonText-1c-l_x',
                                     },
-                                    hint: button.hint,
-                                    id: button.id,
-                                    class: `button-f2h6uQ sizeSmall-wU2dO- ${(button.color!='link'?'lookFilled-yCfaCM':'')} ${colorClass}`,
-                                    onClick: button.onclick
-                                },
-                                    BdApi.React.createElement('div', {
-                                        class: 'contents-18-Yxp',
-                                        style: { 'pointer-events': 'none' }
-                                    },
-                                    button.label
+                                        button.label
                                     )
+                                ]
+                            )
+                        )
+                    }
+
+                    /**
+                     * Returns `class Panel extends BdApi.React.Component`.
+                     * @param {string} label White title.
+                     * @param {Array<object>} containersTemp Array with button container templates.
+                     * @param {object} options Panel optinons.
+                     * @param {string} [options.widthAll] The width of each button, if the template does not specify a different width.
+                     * @param {string} [options.heightAll] The height of each button, if the template does not specify a different height.
+                     * @param {string} [options.align="flex-start"] `justify-content` css value for each button container.
+                     */
+
+                    var ButtonsPanel = (label, containersTemp = [], options = {}) => {
+                        var containerNodes = [];
+                        containersTemp.forEach(containerTemp=>{
+                            var buttonNodes = [];
+                            containerTemp.buttons.forEach(buttonTemp=>{
+                                buttonNodes.push(
+                                    ElementButton({
+                                        width: options.widthAll ?? containerTemp.options?.widthAll,
+                                        height: options.heightAll ?? containerTemp.options?.heightAll,
+                                        ...buttonTemp
+                                    })
                                 )
-                            ])
+                            })
+                            containerNodes.push(
+                                BdApi.React.createElement('div',
+                                    {
+                                        style: {
+                                            display: 'inline-flex',
+                                            width: '100%',
+                                            'justify-content': options.align ?? containerTemp.options?.align ?? 'flex-start'
+                                        },
+                                        class: `buttonsContainer`
+                                    },
+                                    ...buttonNodes
+                                )
+                            )
                         })
 
                         class Panel extends BdApi.React.Component {
                             render() {
                                 return BdApi.React.createElement('div', {
-                                    class: 'buttonsPanel'
+                                    style: {
+                                        display: 'flex',
+                                        width: '100%',
+                                        'flex-direction': 'column',
+                                        'justify-content': options.align ?? 'flex-start'
+                                    },
+                                    class: `buttonsPanel`
                                 },
                                     [
                                         label ? BdApi.React.createElement('label', {
                                             class: 'title-31JmR4'
                                         }, label) : null,
-                                        ...nodes
+                                        ...containerNodes
                                     ]
                                 )
                             }
@@ -859,7 +892,7 @@ module.exports = (() => {
                             )
                         })
 
-                        for (containersCount = 0; containersCount+1 <= Math.ceil(previewsTemp.length / previewsCountOnPage); containersCount++) {
+                        for (containersCount = 0; containersCount + 1 <= Math.ceil(previewsTemp.length / previewsCountOnPage); containersCount++) {
                             swipeButtonsDefault.push(
                                 BdApi.React.createElement('div',
                                     {
@@ -878,7 +911,7 @@ module.exports = (() => {
                                             this.settings[options.class].page = Number(e.currentTarget.getAttribute('data-page'));
                                         }
                                     },
-                                    containersCount+1
+                                    containersCount + 1
                                 )
                             );
 
@@ -893,7 +926,7 @@ module.exports = (() => {
                             containers.push(
                                 BdApi.React.createElement('div',
                                     {
-                                        class: `animPreviewsContainer ${(options.custom)?(!this.settings[options.class].custom.enabled && openedPage == containersCount ?'show':''):(openedPage == containersCount?'show':'')} ${previewsTemp.length < previewsCountOnPage + 1 ? 'compact' : ''}`,
+                                        class: `animPreviewsContainer ${(options.custom) ? (!this.settings[options.class].custom.enabled && openedPage == containersCount ? 'show' : '') : (openedPage == containersCount ? 'show' : '')} ${previewsTemp.length < previewsCountOnPage + 1 ? 'compact' : ''}`,
                                     },
                                     pages
                                 )
@@ -909,11 +942,11 @@ module.exports = (() => {
                                         {
                                             type: 'text',
                                             placeholder: '/*\nAnimated elements have scale(0) in the transformation,\nso your animation must contain scale(1) on the final frame(100%).\n*/\n\n0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}',
-                                            class: `customKeyframeTextArea inputDefault-3FGxgL input-2g-os5 textArea-3WXAeD scrollbarDefault-2w-Dyz scrollbar-3vVt8d ${this.settings[options.class].custom.enabled && i == this.settings[options.class].custom.page ?'show':''}`,
-                                            onChange: (e)=>{
+                                            class: `customKeyframeTextArea inputDefault-3FGxgL input-2g-os5 textArea-3WXAeD scrollbarDefault-2w-Dyz scrollbar-3vVt8d ${this.settings[options.class].custom.enabled && i == this.settings[options.class].custom.page ? 'show' : ''}`,
+                                            onChange: (e) => {
                                                 var textarea = e.currentTarget;
                                                 var value = e.currentTarget.value;
-                                                if(this.isValidCSS(value) || value == "") {
+                                                if (this.isValidCSS(value) || value == "") {
                                                     textarea.classList.add('valid');
                                                     textarea.classList.remove('invalid');
                                                     this.settings[options.class].custom.frames[this.settings[options.class].custom.page] = value;
@@ -949,7 +982,7 @@ module.exports = (() => {
                                                 this.settings[options.class].custom.page = Number(e.currentTarget.getAttribute('data-page'));
                                             }
                                         },
-                                        i+1
+                                        i + 1
                                     )
                                 );
                             };
@@ -960,10 +993,10 @@ module.exports = (() => {
                                         class: `animPageCircleButton`,
                                         onClick: (e) => {
                                             e.currentTarget.closest('.animPreviewsPanel').querySelector(`.customKeyframeTextArea.show`).value
-                                            = `0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}`;
-    
+                                                = `0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}`;
+
                                             this.settings[options.class].custom.frames[this.settings[options.class].custom.page]
-                                            = `0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}`;
+                                                = `0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}`;
 
                                             PluginUtilities.saveSettings("Animations", this.settings);
                                             this.changeStyles()
@@ -1027,11 +1060,11 @@ module.exports = (() => {
                                                     viewBox: "3 2 19 19"
                                                 },
                                                     BdApi.React.createElement("path", {
-                                                        style: {fill: "none"},
+                                                        style: { fill: "none" },
                                                         d: "M0 0h24v24H0z"
                                                     }),
                                                     BdApi.React.createElement("path", {
-                                                        d: options.horizontal?"M 4 18 h 17 v -3 H 4 v 3 z M 4 10 v 3 h 17 v -3 h -17 M 4 5 v 3 h 17 V 5 H 4 z":"M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"
+                                                        d: options.horizontal ? "M 4 18 h 17 v -3 H 4 v 3 z M 4 10 v 3 h 17 v -3 h -17 M 4 5 v 3 h 17 V 5 H 4 z" : "M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"
                                                     })
                                                 )
                                             ]
@@ -1064,16 +1097,16 @@ module.exports = (() => {
                                 containers.length > 1 ?
                                     BdApi.React.createElement('div',
                                         {
-                                            class: `animPageButtons default ${options.custom?(!this.settings[options.class].custom.enabled?'show':''):'show'}`,
+                                            class: `animPageButtons default ${options.custom ? (!this.settings[options.class].custom.enabled ? 'show' : '') : 'show'}`,
                                         },
                                         swipeButtonsDefault
                                     ) : null,
-                                    BdApi.React.createElement('div',
-                                        {
-                                            class: `animPageButtons custom ${options.custom?(this.settings[options.class].custom.enabled?'show':''):'show'}`,
-                                        },
-                                        swipeButtonsCustom
-                                    ),
+                                BdApi.React.createElement('div',
+                                    {
+                                        class: `animPageButtons custom ${options.custom ? (this.settings[options.class].custom.enabled ? 'show' : '') : 'show'}`,
+                                    },
+                                    swipeButtonsCustom
+                                ),
                             ])
 
 
@@ -1089,207 +1122,236 @@ module.exports = (() => {
                     return Settings.SettingPanel.build(
                         this.saveSettings.bind(this),
 
-                        new Settings.SettingField('Мain', null, () => { },
+                        new Settings.SettingField(null, null, () => { },
                             ButtonsPanel(null, [
                                 {
-                                    hint: 'turtle',
-                                    color: 'blurple',
-                                    label: 'Reset settings',
-                                    id: 'reset-animations-settings',
-                                    onclick: (e) => {
-                                        let button = document.getElementById('reset-animations-settings');
-                                        PluginUtilities.saveSettings("Animations", this.defaultSettings);
-                                        this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
-                                        this.changeStyles();
-                                        button.innerText = 'Reseting...';
-                                        this.closeSettings();
-                                    }
-                                },
-                                {
-                                    color: this.settings.panelFix ? 'green' : 'red',
-                                    label: 'Spaces',
-                                    id: 'animations-fix-this-window',
-                                    onclick: (e) => {
+                                    buttons: [
+                                        {
+                                            color: 'blurple',
+                                            label: 'Reset',
+                                            svgView: '0 0 20 20',
+                                            svgPath: 'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
+                                            onclick: (e) => {
 
-                                        let button = document.getElementById('animations-fix-this-window')
+                                                let button = e.currentTarget;
 
-                                        this.settings.panelFix = !this.settings.panelFix;
-                                        if (this.settings.panelFix) {
-                                            button.classList.remove('colorRed-rQXKgM')
-                                            button.classList.add('colorGreen-3y-Z79')
-                                        } else {
-                                            button.classList.remove('colorGreen-3y-Z79')
-                                            button.classList.add('colorRed-rQXKgM')
-                                        }
-                                        PluginUtilities.saveSettings("Animations", this.settings);
-                                        this.changeStyles();
-                                    }
-                                },
-                                {
-                                    color: 'gray',
-                                    label: 'Update',
-                                    id: 'animations-version-check',
-                                    onclick: (e) => {
-                                        let button = document.getElementById('animations-version-check');
-                                        const Http = new XMLHttpRequest();
-                                        Http.open("GET", 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.plugin.js');
-                                        Http.send();
+                                                PluginUtilities.saveSettings("Animations", this.defaultSettings);
+                                                this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
+                                                this.changeStyles();
+                                                button.innerText = 'Reseting...';
+                                                this.closeSettings();
+                                            }
+                                        },
+                                        {
+                                            color: 'blurple',
+                                            label: 'Update',
+                                            id: 'animations-version-check',
+                                            inverted: false,
+                                            onclick: (e) => {
 
-                                        Http.onreadystatechange = (e) => {
-                                            if(e.currentTarget.readyState != 4) return
-                                            var responseCode = JSON.parse(Http.responseText)
-                                            var response = window.atob(responseCode.content)
-                                            var GitHubVersion = (/(\d+\.)*\d+/).exec((/^.*@version\s+(\d+\.)\d+.*$/m).exec(response))[0]
+                                                let button = e.currentTarget;
 
-                                            function newerVersion(v1, v2) {
-                                                var v1Dots = v1.match(/\./g).length
-                                                var v2Dots = v2.match(/\./g).length
-                                                const newParts = v1.split('.')
-                                                const oldParts = v2.split('.')
+                                                button.innerText = 'Searching for updates...';
 
-                                                for (var i = 0; i < (v1Dots > v2Dots ? v1Dots : v2Dots) + 1; i++) {
-                                                    const a = parseInt(newParts[i]) || 0
-                                                    const b = parseInt(oldParts[i]) || 0
-                                                    if (a > b) return v1
-                                                    if (a < b) return v2
+                                                const Http = new XMLHttpRequest();
+                                                Http.open("GET", 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.plugin.js');
+                                                Http.send();
+
+                                                Http.timeout = 5000;
+                                                Http.ontimeout = function (e) {
+                                                    button.innerText = 'Timeout exceeded';
+                                                    button.classList.remove('blurple')
+                                                    button.classList.add('red')
+                                                };
+
+                                                Http.onreadystatechange = (e) => {
+                                                    if (e.currentTarget.readyState != 4) return
+
+                                                    if (!Http.responseText) {
+                                                        button.innerText = 'An error occurred';
+                                                        button.classList.remove('blurple')
+                                                        button.classList.add('red')
+                                                        return
+                                                    }
+
+                                                    var responseCode = JSON.parse(Http.responseText)
+                                                    var response = window.atob(responseCode.content)
+                                                    var GitHubVersion = (/(\d+\.)*\d+/).exec((/^.*@version\s+(\d+\.)\d+.*$/m).exec(response))[0]
+
+                                                    function newerVersion(v1, v2) {
+                                                        var v1Dots = v1.match(/\./g).length
+                                                        var v2Dots = v2.match(/\./g).length
+                                                        const newParts = v1.split('.')
+                                                        const oldParts = v2.split('.')
+
+                                                        for (var i = 0; i < (v1Dots > v2Dots ? v1Dots : v2Dots) + 1; i++) {
+                                                            const a = parseInt(newParts[i]) || 0
+                                                            const b = parseInt(oldParts[i]) || 0
+                                                            if (a > b) return v1
+                                                            if (a < b) return v2
+                                                        }
+                                                        return false
+                                                    }
+
+                                                    switch (newerVersion(GitHubVersion, config.info.version)) {
+                                                        case GitHubVersion:
+                                                            button.innerText = `v${GitHubVersion} - Update`
+                                                            button.classList.remove('blurple')
+                                                            button.classList.add('green')
+                                                            button.addEventListener('click',
+                                                                () => {
+                                                                    BdApi.showConfirmationModal('Your version is older',
+                                                                        [
+                                                                            `v${config.info.version} (your)  →  v${GitHubVersion} (github)`,
+                                                                            BdApi.React.createElement('span', { style: { color: this.colors.green, 'text-transform': 'uppercase' } }, 'The plugin will be updated.')
+                                                                        ],
+                                                                        {
+                                                                            onConfirm() {
+                                                                                PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js')
+                                                                            }
+                                                                        })
+                                                                },
+                                                                { once: true }
+                                                            )
+                                                            break;
+                                                        case config.info.version:
+                                                            button.innerText = `v${config.info.version} - Your own version`
+                                                            button.classList.remove('blurple')
+                                                            button.classList.add('grey')
+                                                            button.addEventListener('click',
+                                                                () => {
+                                                                    BdApi.showConfirmationModal('Your version is newer',
+                                                                        [
+                                                                            `v${config.info.version} (your)  →  v${GitHubVersion} (github)`,
+                                                                            BdApi.React.createElement('span', { style: { color: this.colors.red, 'text-transform': 'uppercase' } }, 'The plugin will be downdated.')
+                                                                        ],
+                                                                        {
+                                                                            onConfirm() {
+                                                                                PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js')
+                                                                            }
+                                                                        })
+                                                                },
+                                                                { once: true }
+                                                            )
+                                                            break;
+                                                        case false:
+                                                            button.innerText = `v${config.info.version} - Latest version`
+                                                            button.classList.remove('blurple')
+                                                            button.classList.add('grey')
+                                                            button.addEventListener('click',
+                                                                () => {
+                                                                    BdApi.showConfirmationModal('Your version is latest',
+                                                                        [
+                                                                            `v${config.info.version} (your)  ↔  v${GitHubVersion} (github)`,
+                                                                            BdApi.React.createElement('span', { style: { color: this.colors.yellow, 'text-transform': 'uppercase' } }, 'The plugin will be restored.')
+                                                                        ],
+                                                                        {
+                                                                            onConfirm() {
+                                                                                PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js')
+                                                                            }
+                                                                        })
+                                                                },
+                                                                { once: true }
+                                                            )
+                                                            break;
+
+                                                        default:
+                                                            break;
+                                                    }
                                                 }
-                                                return false
-                                            }
-
-                                            switch (newerVersion(GitHubVersion, config.info.version)) {
-                                                case GitHubVersion:
-                                                    button.innerText = `v${GitHubVersion} - Update`
-                                                    button.classList.remove('colorBrand-I6CyqQ', 'colorRed-rQXKgM', 'colorGrey-2iAG-B')
-                                                    button.classList.add('colorGreen-3y-Z79')
-                                                    button.addEventListener('click',
-                                                        ()=>{
-                                                            BdApi.showConfirmationModal('Your version is older',
-                                                            [
-                                                                `v${config.info.version} (your)  →  v${GitHubVersion} (github)`,
-                                                                BdApi.React.createElement('span', {style: {color: Animations.colors.green, 'text-transform': 'uppercase'}}, 'The plugin will be updated.')
-                                                            ],
-                                                            {
-                                                                onConfirm() {
-                                                                    PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js')
-                                                                }
-                                                            })
-                                                        },
-                                                        { once: true }
-                                                    )
-                                                    break;
-                                                case config.info.version:
-                                                    button.innerText = `v${config.info.version} - Your own version`
-                                                    button.classList.remove('colorGrey-2iAG-B', 'colorRed-rQXKgM', 'colorGreen-3y-Z79')
-                                                    button.classList.add('colorBrand-I6CyqQ')
-                                                    button.addEventListener('click',
-                                                        ()=>{
-                                                            BdApi.showConfirmationModal('Your version is newer',
-                                                            [
-                                                                `v${config.info.version} (your)  →  v${GitHubVersion} (github)`,
-                                                                BdApi.React.createElement('span', {style: {color: Animations.colors.red, 'text-transform': 'uppercase'}}, 'The plugin will be downdated.')
-                                                            ],
-                                                            {
-                                                                onConfirm() {
-                                                                    PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js')
-                                                                }
-                                                            })
-                                                        },
-                                                        { once: true }
-                                                    )
-                                                    break;
-                                                case false:
-                                                    button.innerText = `v${config.info.version} - Latest version`
-                                                    button.classList.remove('colorBrand-I6CyqQ', 'colorRed-rQXKgM', 'colorGreen-3y-Z79')
-                                                    button.classList.add('colorGrey-2iAG-B')
-                                                    button.addEventListener('click',
-                                                        ()=>{
-                                                            BdApi.showConfirmationModal('Your version is latest',
-                                                            [
-                                                                `v${config.info.version} (your)  ↔  v${GitHubVersion} (github)`,
-                                                                BdApi.React.createElement('span', {style: {color: Animations.colors.yellow, 'text-transform': 'uppercase'}}, 'The plugin will be restored.')
-                                                            ],
-                                                            {
-                                                                onConfirm() {
-                                                                    PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js')
-                                                                }
-                                                            })
-                                                        },
-                                                        { once: true }
-                                                    )
-                                                    break;
-                                            
-                                                default:
-                                                    break;
                                             }
                                         }
-                                    }
-                                }
-                            ])
-                        ),
-
-                        new Settings.SettingField('Switching animations for element groups', null, () => { },
-                            ButtonsPanel(null, [
-                                {
-                                    color: this.settings.lists.enabled ? 'green' : 'red',
-                                    label: 'Lists',
-                                    id: 'lists-enable-button',
-                                    onclick: (e) => {
-
-                                        let button = document.getElementById('lists-enable-button')
-
-                                        this.settings.lists.enabled = !this.settings.lists.enabled;
-                                        if (!this.settings.lists.enabled) {
-                                            button.classList.remove('colorGreen-3y-Z79')
-                                            button.classList.add('colorRed-rQXKgM')
-                                        } else {
-                                            button.classList.remove('colorRed-rQXKgM')
-                                            button.classList.add('colorGreen-3y-Z79')
-                                        }
-                                        PluginUtilities.saveSettings("Animations", this.settings);
-                                        this.changeStyles();
-                                    }
+                                    ],
                                 },
                                 {
-                                    color: this.settings.messages.enabled ? 'green' : 'red',
-                                    label: 'Messages',
-                                    id: 'messages-enable-button',
-                                    onclick: (e) => {
-
-                                        let button = document.getElementById('messages-enable-button')
-
-                                        this.settings.messages.enabled = !this.settings.messages.enabled;
-                                        if (!this.settings.messages.enabled) {
-                                            button.classList.remove('colorGreen-3y-Z79')
-                                            button.classList.add('colorRed-rQXKgM')
-                                        } else {
-                                            button.classList.remove('colorRed-rQXKgM')
-                                            button.classList.add('colorGreen-3y-Z79')
+                                    buttons: [
+                                        {
+                                            label: 'Issues',
+                                            color: 'grey',
+                                            svgPath: 'm12 .5c-6.63 0-12 5.28-12 11.792 0 5.211 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.361-1.335-1.725-1.335-1.725-1.087-.731.084-.716.084-.716 1.205.082 1.838 1.215 1.838 1.215 1.07 1.803 2.809 1.282 3.495.981.108-.763.417-1.282.76-1.577-2.665-.295-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.235-3.164-.135-.298-.54-1.497.105-3.121 0 0 1.005-.316 3.3 1.209.96-.262 1.98-.392 3-.398 1.02.006 2.04.136 3 .398 2.28-1.525 3.285-1.209 3.285-1.209.645 1.624.24 2.823.12 3.121.765.825 1.23 1.877 1.23 3.164 0 4.53-2.805 5.527-5.475 5.817.42.354.81 1.077.81 2.182 0 1.578-.015 2.846-.015 3.229 0 .309.21.678.825.56 4.801-1.548 8.236-5.97 8.236-11.173 0-6.512-5.373-11.792-12-11.792z',
+                                            onclick: (e) => {
+                                                window.open('https://github.com/Mopsgamer/BetterDiscord-codes/issues')
+                                            }
+                                        },
+                                        {
+                                            label: 'Discussions',
+                                            color: 'grey',
+                                            svgPath: 'm12 .5c-6.63 0-12 5.28-12 11.792 0 5.211 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.361-1.335-1.725-1.335-1.725-1.087-.731.084-.716.084-.716 1.205.082 1.838 1.215 1.838 1.215 1.07 1.803 2.809 1.282 3.495.981.108-.763.417-1.282.76-1.577-2.665-.295-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.235-3.164-.135-.298-.54-1.497.105-3.121 0 0 1.005-.316 3.3 1.209.96-.262 1.98-.392 3-.398 1.02.006 2.04.136 3 .398 2.28-1.525 3.285-1.209 3.285-1.209.645 1.624.24 2.823.12 3.121.765.825 1.23 1.877 1.23 3.164 0 4.53-2.805 5.527-5.475 5.817.42.354.81 1.077.81 2.182 0 1.578-.015 2.846-.015 3.229 0 .309.21.678.825.56 4.801-1.548 8.236-5.97 8.236-11.173 0-6.512-5.373-11.792-12-11.792z',
+                                            onclick: (e) => {
+                                                window.open('https://github.com/Mopsgamer/BetterDiscord-codes/discussions')
+                                            }
                                         }
-                                        PluginUtilities.saveSettings("Animations", this.settings);
-                                        this.changeStyles();
-                                    }
+                                    ],
                                 },
                                 {
-                                    color: this.settings.buttons.enabled ? 'green' : 'red',
-                                    label: 'Buttons',
-                                    id: 'buttons-enable-button',
-                                    onclick: (e) => {
+                                    buttons: [
+                                        {
+                                            color: this.settings.lists.enabled ? 'green' : 'red',
+                                            label: 'Lists',
+                                            id: 'lists-enable-button',
+                                            onclick: (e) => {
 
-                                        let button = document.getElementById('buttons-enable-button')
+                                                let button = e.currentTarget
 
-                                        this.settings.buttons.enabled = !this.settings.buttons.enabled;
-                                        if (!this.settings.buttons.enabled) {
-                                            button.classList.remove('colorGreen-3y-Z79')
-                                            button.classList.add('colorRed-rQXKgM')
-                                        } else {
-                                            button.classList.remove('colorRed-rQXKgM')
-                                            button.classList.add('colorGreen-3y-Z79')
+                                                this.settings.lists.enabled = !this.settings.lists.enabled;
+                                                if (!this.settings.lists.enabled) {
+                                                    button.classList.remove('green')
+                                                    button.classList.add('red')
+                                                } else {
+                                                    button.classList.remove('red')
+                                                    button.classList.add('green')
+                                                }
+                                                PluginUtilities.saveSettings("Animations", this.settings);
+                                                this.changeStyles();
+                                            }
+                                        },
+                                        {
+                                            color: this.settings.messages.enabled ? 'green' : 'red',
+                                            label: 'Messages',
+                                            id: 'messages-enable-button',
+                                            onclick: (e) => {
+
+                                                let button = e.currentTarget
+
+                                                this.settings.messages.enabled = !this.settings.messages.enabled;
+                                                if (!this.settings.messages.enabled) {
+                                                    button.classList.remove('green')
+                                                    button.classList.add('red')
+                                                } else {
+                                                    button.classList.remove('red')
+                                                    button.classList.add('green')
+                                                }
+                                                PluginUtilities.saveSettings("Animations", this.settings);
+                                                this.changeStyles();
+                                            }
+                                        },
+                                        {
+                                            color: this.settings.buttons.enabled ? 'green' : 'red',
+                                            label: 'Buttons',
+                                            id: 'buttons-enable-button',
+                                            onclick: (e) => {
+
+                                                let button = e.currentTarget
+
+                                                this.settings.buttons.enabled = !this.settings.buttons.enabled;
+                                                if (!this.settings.buttons.enabled) {
+                                                    button.classList.remove('green')
+                                                    button.classList.add('red')
+                                                } else {
+                                                    button.classList.remove('red')
+                                                    button.classList.add('green')
+                                                }
+                                                PluginUtilities.saveSettings("Animations", this.settings);
+                                                this.changeStyles();
+                                            }
                                         }
-                                        PluginUtilities.saveSettings("Animations", this.settings);
-                                        this.changeStyles();
-                                    }
+                                    ]
                                 }
-                            ])
+                            ],
+                                {
+                                    widthAll: '100%',
+                                    align: 'space-between'
+                                })
                         ),
 
                         new Settings.SettingGroup('Lists').append(
@@ -1324,12 +1386,12 @@ module.exports = (() => {
                                         onchange: (e) => { }
                                     }
                                 },
-                                this.settings.lists.name, (e) => {
-                                    this.settings.lists.name = e.value;
-                                    this.settings.lists.page = e.page;
-                                    PluginUtilities.saveSettings("Animations", this.settings);
-                                    this.changeStyles()
-                                }),
+                                    this.settings.lists.name, (e) => {
+                                        this.settings.lists.name = e.value;
+                                        this.settings.lists.page = e.page;
+                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        this.changeStyles()
+                                    }),
                                 { noteOnTop: true }
                             ),
 
@@ -1411,12 +1473,12 @@ module.exports = (() => {
                                         onchange: (e) => { }
                                     }
                                 },
-                                this.settings.messages.name, (e) => {
-                                    this.settings.messages.name = e.value;
-                                    this.settings.messages.page = e.page;
-                                    PluginUtilities.saveSettings("Animations", this.settings);
-                                    this.changeStyles()
-                                }),
+                                    this.settings.messages.name, (e) => {
+                                        this.settings.messages.name = e.value;
+                                        this.settings.messages.page = e.page;
+                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        this.changeStyles()
+                                    }),
                                 { noteOnTop: true }
                             ),
 
@@ -1485,12 +1547,12 @@ module.exports = (() => {
                                         onchange: (e) => { }
                                     }
                                 },
-                                this.settings.buttons.name, (e) => {
-                                    this.settings.buttons.name = e.value;
-                                    this.settings.buttons.page = e.page;
-                                    PluginUtilities.saveSettings("Animations", this.settings);
-                                    this.changeStyles()
-                                }),
+                                    this.settings.buttons.name, (e) => {
+                                        this.settings.buttons.name = e.value;
+                                        this.settings.buttons.page = e.page;
+                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        this.changeStyles()
+                                    }),
                                 { noteOnTop: true }
                             ),
 
@@ -1533,7 +1595,7 @@ module.exports = (() => {
                 }
 
                 start() {
-                    this.reqStyles =
+                    this.CompStyles =
                     `/*components*/
 
                     .animPreviewsPanel {
@@ -1801,11 +1863,109 @@ module.exports = (() => {
                     .animPreview.enabled .animPreviewLabel {
                         color: #fff;
                         border-color: #fff;
-                    }`
+                    }
+
+                    
+                    button.blurple.filled {
+                        color: white;
+                        background-color: var(--brand-experiment);
+                    }
+                    button.blurple.filled:hover {
+                        background-color: var(--brand-experiment-560);
+                    }
+                    button.blurple.inverted {
+                        color: var(--brand-experiment);
+                        border: 1px solid var(--brand-experiment);
+                    }
+                    button.blurple.inverted:hover {
+                        color: var(--brand-experiment-560);
+                        border: 1px solid var(--brand-experiment-560);
+                    }
+                    
+                    button.white.filled {
+                        color: var(--brand-experiment);
+                        background-color: #fff;
+                    }
+                    button.white.filled:hover {
+                        background-color: var(--brand-experiment-100);
+                    }
+                    button.white.inverted {
+                        color: #fff;
+                        border: 1px solid #fff;
+                    }
+                    button.white.inverted:hover {
+                        color: var(--brand-experiment-100);
+                        border: 1px solid var(--brand-experiment-100);
+                    }
+
+                    button.grey.filled {
+                        color: white;
+                        background-color: #4f545c;
+                    }
+                    button.grey.filled:hover {
+                        background-color: #5d6269;
+                    }
+                    button.grey.inverted {
+                        color: #4f545c;
+                        border: 1px solid #4f545c;
+                    }
+                    button.grey.inverted:hover {
+                        color: #5d6269;
+                        border: 1px solid #5d6269;
+                    }
+
+                    button.red.filled {
+                        color: white;
+                        background-color: hsl(359,calc(var(--saturation-factor, 1)*82.6%),59.4%);
+                    }
+                    button.red.filled:hover {
+                        background-color: hsl(359,calc(var(--saturation-factor, 1)*56.7%),48%);
+                    }
+                    button.red.inverted {
+                        color: hsl(359,calc(var(--saturation-factor, 1)*82.6%),59.4%);
+                        border: 1px solid hsl(359,calc(var(--saturation-factor, 1)*82.6%),59.4%);
+                    }
+                    button.red.inverted:hover {
+                        color: hsl(359,calc(var(--saturation-factor, 1)*56.7%),48%);
+                        border: 1px solid hsl(359,calc(var(--saturation-factor, 1)*56.7%),48%);
+                    }
+
+                    button.yellow.filled {
+                        color: white;
+                        background-color: ${this.colors.yellow};
+                    }
+                    button.yellow.filled:hover {
+                        background-color: ${this.colors.yellow};
+                    }
+                    button.yellow.inverted {
+                        color: ${this.colors.yellow};
+                        border: 1px solid ${this.colors.yellow};
+                    }
+                    button.yellow.inverted:hover {
+                        color: ${this.colors.yellow};
+                        border: 1px solid ${this.colors.yellow};
+                    }
+
+                    button.green.filled {
+                        color: white;
+                        background-color: hsl(139,calc(var(--saturation-factor, 1)*47.3%),43.9%);
+                    }
+                    button.green.filled:hover {
+                        background-color: hsl(139,calc(var(--saturation-factor, 1)*47.1%),33.3%);
+                    }
+                    button.green.inverted {
+                        color: hsl(139,calc(var(--saturation-factor, 1)*47.3%),43.9%);
+                        border: 1px solid hsl(139,calc(var(--saturation-factor, 1)*47.3%),43.9%);
+                    }
+                    button.green.inverted:hover {
+                        color: hsl(139,calc(var(--saturation-factor, 1)*47.1%),33.3%);
+                        border: 1px solid hsl(139,calc(var(--saturation-factor, 1)*47.1%),33.3%);
+                    }
+                    `
 
                     PluginUtilities.removeStyle('Animations-req');
                     setTimeout(() => {
-                        PluginUtilities.addStyle('Animations-req', this.reqStyles)
+                        PluginUtilities.addStyle('Animations-req', this.CompStyles)
                         this.changeStyles()
                     }, 100);
 
