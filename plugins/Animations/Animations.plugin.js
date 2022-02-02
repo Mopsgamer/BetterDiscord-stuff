@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.6
+ * @version 1.2.6.1
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,15 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.6',
+            version: '1.2.6.1',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            //{ "title": "New Stuff", "items": ["New animations animations."] },
+            //{ "title": "New Stuff", "items": [""] },
             { "title": "Improvements", "type": "improved", "items": ["Improvement of the buttons in the settings."] },
-            { "title": "Fixes", "type": "fixed", "items": ["The list of inactive members is now darker.", "Removed button to increase the indentation."] }
+            { "title": "Fixes", "type": "fixed", "items": ["The list of inactive members is now darker.", "Removed \"Spaces\" button."] }
         ],
         main: 'index.js',
     };
@@ -749,7 +749,7 @@ module.exports = (() => {
                             },
                             id: button.id,
                             class: `button-f2h6uQ sizeSmall-wU2dO- ${button.inverted ? 'inverted' : 'filled'} ${button.color ?? 'blurple'} ${button.class ?? ''}`,
-                            onClick: button.onclick, onLoad(e){console.log('LOADED')}
+                            onClick: button.onclick
                         },
                             BdApi.React.createElement('div', {
                                 style: {
@@ -1128,7 +1128,7 @@ module.exports = (() => {
                                     buttons: [
                                         {
                                             color: 'blurple',
-                                            label: 'Reset',
+                                            label: 'Reset all',
                                             svgView: '0 0 20 20',
                                             svgPath: 'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
                                             onclick: (e) => {
@@ -1356,6 +1356,38 @@ module.exports = (() => {
 
                         new Settings.SettingGroup('Lists').append(
 
+                            new Settings.SettingField(null, null, () => {},
+                                ButtonsPanel(null,
+                                    [
+                                        {
+                                            buttons: [
+                                                {
+                                                    color: 'blurple',
+                                                    label: 'Reset lists',
+                                                    svgView: '0 0 20 20',
+                                                    svgPath: 'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
+                                                    onclick: (e) => {
+        
+                                                        let button = e.currentTarget;
+        
+                                                        this.settings.lists = this.defaultSettings.lists
+                                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                                        this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
+                                                        this.changeStyles();
+                                                        button.innerText = 'Reseting...';
+                                                        this.closeSettings();
+                                                    },
+                                                }
+                                            ],
+                                            options: {
+                                                widthAll: '100%',
+                                                align: 'space-between'
+                                            }
+                                        }
+                                    ]
+                                )
+                            ),
+
                             new Settings.SettingField('Name', `[default ${this.defaultSettings.lists.name}] The name of the animation of the list items when they appear.`, () => { },
                                 PreviewsPanel([
                                     { label: 'In', value: 'in' },
@@ -1443,6 +1475,38 @@ module.exports = (() => {
 
                         new Settings.SettingGroup('Messages').append(
 
+                            new Settings.SettingField(null, null, () => {},
+                                ButtonsPanel(null,
+                                    [
+                                        {
+                                            buttons: [
+                                                {
+                                                    color: 'blurple',
+                                                    label: 'Reset messages',
+                                                    svgView: '0 0 20 20',
+                                                    svgPath: 'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
+                                                    onclick: (e) => {
+        
+                                                        let button = e.currentTarget;
+        
+                                                        this.settings.messages = this.defaultSettings.messages
+                                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                                        this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
+                                                        this.changeStyles();
+                                                        button.innerText = 'Reseting...';
+                                                        this.closeSettings();
+                                                    },
+                                                }
+                                            ],
+                                            options: {
+                                                widthAll: '100%',
+                                                align: 'space-between'
+                                            }
+                                        }
+                                    ]
+                                )
+                            ),
+
                             new Settings.SettingField('Name', `[default ${this.defaultSettings.messages.name}] The name of the animation of the messages when they appear.`, () => { },
                                 PreviewsPanel([
                                     { label: 'In', value: 'in' },
@@ -1515,6 +1579,38 @@ module.exports = (() => {
                         ),
 
                         new Settings.SettingGroup('Buttons').append(
+
+                            new Settings.SettingField(null, null, () => {},
+                                ButtonsPanel(null,
+                                    [
+                                        {
+                                            buttons: [
+                                                {
+                                                    color: 'blurple',
+                                                    label: 'Reset buttons',
+                                                    svgView: '0 0 20 20',
+                                                    svgPath: 'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
+                                                    onclick: (e) => {
+        
+                                                        let button = e.currentTarget;
+        
+                                                        this.settings.buttons = this.defaultSettings.buttons
+                                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                                        this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
+                                                        this.changeStyles();
+                                                        button.innerText = 'Reseting...';
+                                                        this.closeSettings();
+                                                    },
+                                                }
+                                            ],
+                                            options: {
+                                                widthAll: '100%',
+                                                align: 'space-between'
+                                            }
+                                        }
+                                    ]
+                                )
+                            ),
 
                             new Settings.SettingField('Name', `[default ${this.defaultSettings.buttons.name}] The name of the animation of the buttons when they appear.`, () => { },
                                 PreviewsPanel([
