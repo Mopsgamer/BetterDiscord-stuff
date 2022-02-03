@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.6.1
+ * @version 1.2.6.2
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,13 +21,13 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.6.1',
+            version: '1.2.6.2',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            //{ "title": "New Stuff", "items": [""] },
+            { "title": "New Stuff", "items": ["Tooltips."] },
             { "title": "Improvements", "type": "improved", "items": ["Improvement of the buttons in the settings."] },
             { "title": "Fixes", "type": "fixed", "items": ["The list of inactive members is now darker.", "Removed \"Spaces\" button."] }
         ],
@@ -79,7 +79,7 @@ module.exports = (() => {
                             },
                             duration: 0.3,
                             delay: 0.04,
-                            limit: 60
+                            limit: 65
                         },
                         messages: {
                             enabled: true,
@@ -784,15 +784,14 @@ module.exports = (() => {
 
                     /**
                      * Returns `class Panel extends BdApi.React.Component`.
-                     * @param {string} label White title.
                      * @param {Array<object>} containersTemp Array with button container templates.
                      * @param {object} options Panel optinons.
                      * @param {string} [options.widthAll] The width of each button, if the template does not specify a different width.
                      * @param {string} [options.heightAll] The height of each button, if the template does not specify a different height.
-                     * @param {string} [options.align="flex-start"] `justify-content` css value for each button container.
+                     * @param {string} [options.align="flex-start"] `justify-content` css value for each button container. Default - `flex-start`.
                      */
 
-                    var ButtonsPanel = (label, containersTemp = [], options = {}) => {
+                    var ButtonsPanel = (containersTemp = [], options = {}) => {
                         var containerNodes = [];
                         containersTemp.forEach(containerTemp=>{
                             var buttonNodes = [];
@@ -832,9 +831,6 @@ module.exports = (() => {
                                     class: `buttonsPanel`
                                 },
                                     [
-                                        label ? BdApi.React.createElement('label', {
-                                            class: 'title-31JmR4'
-                                        }, label) : null,
                                         ...containerNodes
                                     ]
                                 )
@@ -843,6 +839,15 @@ module.exports = (() => {
 
                         return Panel;
                     }
+
+                    /**
+                     * Returns `class Panel extends BdApi.React.Component`.
+                     * @param {Array<object>} previewsTemp Array with previews templates.
+                     * @param {object} options Panel optinons.
+                     * @param {string} [options.type] `*class*-name`, `*class*-sequence`, ...
+                     * @param {string} [options.class] `lists`, `messages`, `buttons`
+                     * @param {(e:MouseEvent)=>void} [onclick]
+                     */
 
                     var PreviewsPanel = (previewsTemp = [], options = {}, value, onclick) => {
 
@@ -875,7 +880,7 @@ module.exports = (() => {
                             previews.push(
                                 BdApi.React.createElement('div', {
                                     'data-animation': template.value,
-                                    class: `animPreview ${value == template.value ? 'enabled' : ''} preview-rua1rr group-spacing-16 cardPrimaryOutline-1ofwVz card-16VQ8C`,
+                                    class: `animPreview ${value == template.value ? 'enabled' : ''}`,
                                     onClick: (e) => {
                                         onclick({value: template.value, page: openedPage});
 
@@ -885,7 +890,8 @@ module.exports = (() => {
                                     }
                                 },
                                     [...tempBlocks, BdApi.React.createElement('div', {
-                                        class: 'animPreviewLabel'
+                                        class: 'animPreviewLabel',
+                                        title: template.label
                                     }, template.label
                                     )]
                                 )
@@ -1119,16 +1125,33 @@ module.exports = (() => {
                         return Panel;
                     }
 
+                    setTimeout(()=>{
+                        Tooltip.create(document.getElementById('animations-reset'), 'Resets all settings', {side: 'left'})
+                        Tooltip.create(document.getElementById('animations-version-check'), 'Checks for updates', {side: 'right'})
+                        Tooltip.create(document.getElementById('animations-issues'), 'Link to GitHub', {side: 'left'})
+                        Tooltip.create(document.getElementById('animations-discussions'), 'Link to GitHub', {side: 'right'})
+
+                        Tooltip.create(document.getElementById('lists-switch-button'), 'Lists switch', {side: 'bottom'})
+                        Tooltip.create(document.getElementById('messages-switch-button'), 'Messages switch', {side: 'bottom'})
+                        Tooltip.create(document.getElementById('buttons-switch-button'), 'Buttons switch', {side: 'bottom'})
+
+                        Tooltip.create(document.getElementById('animations-reset-lists'), 'Resets lists settings', {side: 'bottom'})
+                        Tooltip.create(document.getElementById('animations-reset-messages'), 'Resets messages settings', {side: 'bottom'})
+                        Tooltip.create(document.getElementById('animations-reset-buttons'), 'Resets buttons settings', {side: 'bottom'})
+                    }, 500)
+
                     return Settings.SettingPanel.build(
                         this.saveSettings.bind(this),
 
-                        new Settings.SettingField(null, null, () => { },
-                            ButtonsPanel(null, [
+                        new Settings.SettingField(null, null, null,
+                            ButtonsPanel(
+                            [
                                 {
                                     buttons: [
                                         {
                                             color: 'blurple',
                                             label: 'Reset all',
+                                            id: 'animations-reset',
                                             svgView: '0 0 20 20',
                                             svgPath: 'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
                                             onclick: (e) => {
@@ -1268,6 +1291,7 @@ module.exports = (() => {
                                         {
                                             label: 'Issues',
                                             color: 'grey',
+                                            id: 'animations-issues',
                                             svgPath: 'm12 .5c-6.63 0-12 5.28-12 11.792 0 5.211 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.361-1.335-1.725-1.335-1.725-1.087-.731.084-.716.084-.716 1.205.082 1.838 1.215 1.838 1.215 1.07 1.803 2.809 1.282 3.495.981.108-.763.417-1.282.76-1.577-2.665-.295-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.235-3.164-.135-.298-.54-1.497.105-3.121 0 0 1.005-.316 3.3 1.209.96-.262 1.98-.392 3-.398 1.02.006 2.04.136 3 .398 2.28-1.525 3.285-1.209 3.285-1.209.645 1.624.24 2.823.12 3.121.765.825 1.23 1.877 1.23 3.164 0 4.53-2.805 5.527-5.475 5.817.42.354.81 1.077.81 2.182 0 1.578-.015 2.846-.015 3.229 0 .309.21.678.825.56 4.801-1.548 8.236-5.97 8.236-11.173 0-6.512-5.373-11.792-12-11.792z',
                                             onclick: (e) => {
                                                 window.open('https://github.com/Mopsgamer/BetterDiscord-codes/issues')
@@ -1276,6 +1300,7 @@ module.exports = (() => {
                                         {
                                             label: 'Discussions',
                                             color: 'grey',
+                                            id: 'animations-discussions',
                                             svgPath: 'm12 .5c-6.63 0-12 5.28-12 11.792 0 5.211 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.361-1.335-1.725-1.335-1.725-1.087-.731.084-.716.084-.716 1.205.082 1.838 1.215 1.838 1.215 1.07 1.803 2.809 1.282 3.495.981.108-.763.417-1.282.76-1.577-2.665-.295-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.235-3.164-.135-.298-.54-1.497.105-3.121 0 0 1.005-.316 3.3 1.209.96-.262 1.98-.392 3-.398 1.02.006 2.04.136 3 .398 2.28-1.525 3.285-1.209 3.285-1.209.645 1.624.24 2.823.12 3.121.765.825 1.23 1.877 1.23 3.164 0 4.53-2.805 5.527-5.475 5.817.42.354.81 1.077.81 2.182 0 1.578-.015 2.846-.015 3.229 0 .309.21.678.825.56 4.801-1.548 8.236-5.97 8.236-11.173 0-6.512-5.373-11.792-12-11.792z',
                                             onclick: (e) => {
                                                 window.open('https://github.com/Mopsgamer/BetterDiscord-codes/discussions')
@@ -1288,7 +1313,7 @@ module.exports = (() => {
                                         {
                                             color: this.settings.lists.enabled ? 'green' : 'red',
                                             label: 'Lists',
-                                            id: 'lists-enable-button',
+                                            id: 'lists-switch-button',
                                             onclick: (e) => {
 
                                                 let button = e.currentTarget
@@ -1308,7 +1333,7 @@ module.exports = (() => {
                                         {
                                             color: this.settings.messages.enabled ? 'green' : 'red',
                                             label: 'Messages',
-                                            id: 'messages-enable-button',
+                                            id: 'messages-switch-button',
                                             onclick: (e) => {
 
                                                 let button = e.currentTarget
@@ -1328,7 +1353,7 @@ module.exports = (() => {
                                         {
                                             color: this.settings.buttons.enabled ? 'green' : 'red',
                                             label: 'Buttons',
-                                            id: 'buttons-enable-button',
+                                            id: 'buttons-switch-button',
                                             onclick: (e) => {
 
                                                 let button = e.currentTarget
@@ -1356,14 +1381,15 @@ module.exports = (() => {
 
                         new Settings.SettingGroup('Lists').append(
 
-                            new Settings.SettingField(null, null, () => {},
-                                ButtonsPanel(null,
+                            new Settings.SettingField(null, null, null,
+                                ButtonsPanel(
                                     [
                                         {
                                             buttons: [
                                                 {
                                                     color: 'blurple',
                                                     label: 'Reset lists',
+                                                    id: 'animations-reset-lists',
                                                     svgView: '0 0 20 20',
                                                     svgPath: 'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
                                                     onclick: (e) => {
@@ -1388,7 +1414,7 @@ module.exports = (() => {
                                 )
                             ),
 
-                            new Settings.SettingField('Name', `[default ${this.defaultSettings.lists.name}] The name of the animation of the list items when they appear.`, () => { },
+                            new Settings.SettingField('Name', `[default ${this.defaultSettings.lists.name}] The name of the animation of the list items when they appear.`, null,
                                 PreviewsPanel([
                                     { label: 'In', value: 'in' },
                                     { label: 'Out', value: 'out' },
@@ -1427,7 +1453,7 @@ module.exports = (() => {
                                 { noteOnTop: true }
                             ),
 
-                            new Settings.SettingField('Sequence', `[default ${this.defaultSettings.lists.sequence}] The sequence in which the list items are built.`, () => { },
+                            new Settings.SettingField('Sequence', `[default ${this.defaultSettings.lists.sequence}] The sequence in which the list items are built.`, null,
                                 PreviewsPanel([
                                     { label: '↓', value: 'fromFirst' },
                                     { label: '↑', value: 'fromLast' },
@@ -1475,14 +1501,15 @@ module.exports = (() => {
 
                         new Settings.SettingGroup('Messages').append(
 
-                            new Settings.SettingField(null, null, () => {},
-                                ButtonsPanel(null,
+                            new Settings.SettingField(null, null, null,
+                                ButtonsPanel(
                                     [
                                         {
                                             buttons: [
                                                 {
                                                     color: 'blurple',
                                                     label: 'Reset messages',
+                                                    id: 'animations-reset-messages',
                                                     svgView: '0 0 20 20',
                                                     svgPath: 'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
                                                     onclick: (e) => {
@@ -1507,7 +1534,7 @@ module.exports = (() => {
                                 )
                             ),
 
-                            new Settings.SettingField('Name', `[default ${this.defaultSettings.messages.name}] The name of the animation of the messages when they appear.`, () => { },
+                            new Settings.SettingField('Name', `[default ${this.defaultSettings.messages.name}] The name of the animation of the messages when they appear.`, null,
                                 PreviewsPanel([
                                     { label: 'In', value: 'in' },
                                     { label: 'Out', value: 'out' },
@@ -1580,14 +1607,15 @@ module.exports = (() => {
 
                         new Settings.SettingGroup('Buttons').append(
 
-                            new Settings.SettingField(null, null, () => {},
-                                ButtonsPanel(null,
+                            new Settings.SettingField(null, null, null,
+                                ButtonsPanel(
                                     [
                                         {
                                             buttons: [
                                                 {
                                                     color: 'blurple',
                                                     label: 'Reset buttons',
+                                                    id: 'animations-reset-buttons',
                                                     svgView: '0 0 20 20',
                                                     svgPath: 'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
                                                     onclick: (e) => {
@@ -1612,7 +1640,7 @@ module.exports = (() => {
                                 )
                             ),
 
-                            new Settings.SettingField('Name', `[default ${this.defaultSettings.buttons.name}] The name of the animation of the buttons when they appear.`, () => { },
+                            new Settings.SettingField('Name', `[default ${this.defaultSettings.buttons.name}] The name of the animation of the buttons when they appear.`, null,
                                 PreviewsPanel([
                                     { label: 'In', value: 'in' },
                                     { label: 'Out', value: 'out' },
@@ -1652,7 +1680,7 @@ module.exports = (() => {
                                 { noteOnTop: true }
                             ),
 
-                            new Settings.SettingField('Sequence', `[default ${this.defaultSettings.buttons.sequence}] The sequence in which the buttons are built.`, () => { },
+                            new Settings.SettingField('Sequence', `[default ${this.defaultSettings.buttons.sequence}] The sequence in which the buttons are built.`, null,
                                 PreviewsPanel([
                                     { label: '→', value: 'fromFirst' },
                                     { label: '←', value: 'fromLast' },
@@ -1782,7 +1810,7 @@ module.exports = (() => {
                         justify-content: space-between;
                         line-height: initial;
                         width: 120px;
-                        padding: 5px 10px;
+                        padding: 3px 8px;
                         transition: 0.2s background;
                         background-size: cover;
                         background: linear-gradient(90deg, transparent 0%, var(--brand-experiment) 0%, var(--brand-experiment) 100%, transparent 100%) no-repeat;
@@ -1866,6 +1894,13 @@ module.exports = (() => {
                     .animPageCircleButton.enabled {
                         color: white;
                         background-color: var(--brand-experiment);
+                    }
+
+                    .animPreview {
+                        background-color: var(--background-secondary);
+                        border: 1px solid var(--background-tertiary);
+                        border-radius: 3px;
+                        overflow: hidden;
                     }
 
                     .vertical .animPreview {
