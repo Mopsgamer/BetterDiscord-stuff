@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.6.2
+ * @version 1.2.7
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,15 +21,15 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.6.2',
+            version: '1.2.7',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            { "title": "New Stuff", "items": ["Tooltips."] },
-            { "title": "Improvements", "type": "improved", "items": ["Improvement of the buttons in the settings."] },
-            { "title": "Fixes", "type": "fixed", "items": ["The list of inactive members is now darker.", "Removed \"Spaces\" button."] }
+            { "title": "New Stuff", "items": ["Added selector settings for lists and buttons.", "The \"Rebuild animations\" button."] },
+            { "title": "Improvements", "type": "improved", "items": ["The editor has been improved.", "Now the default animation is opacity."] },
+            { "title": "Fixes", "type": "fixed", "items": ["Sometimes missing animations."] }
         ],
         main: 'index.js',
     };
@@ -69,9 +69,10 @@ module.exports = (() => {
                     this.defaultSettings = {
                         lists: {
                             enabled: true,
-                            name: 'slide-up',
+                            name: 'opacity',
                             page: 0,
                             sequence: 'fromFirst',
+                            selectors: '',
                             custom: {
                                 enabled: false,
                                 frames: ['', '', '', ''],
@@ -83,7 +84,7 @@ module.exports = (() => {
                         },
                         messages: {
                             enabled: true,
-                            name: 'slide-right',
+                            name: 'opacity',
                             page: 0,
                             custom: {
                                 enabled: false,
@@ -96,9 +97,10 @@ module.exports = (() => {
                         },
                         buttons: {
                             enabled: true,
-                            name: 'in',
+                            name: 'opacity',
                             page: 0,
                             sequence: 'fromLast',
+                            selectors: '',
                             custom: {
                                 enabled: false,
                                 frames: ['', '', '', ''],
@@ -135,7 +137,7 @@ module.exports = (() => {
                     /*member-groups*/
                     'h2.membersGroup-2eiWxl',
                     /*servers*/
-                    '#app-mount .guilds-2JjMmN [class*=listItem]:not([class*=listItemWrapper])',
+                    '#app-mount .guilds-2JjMmN [class*="listItem"]:not([class*="listItemWrapper"])',
                     /*friends*/
                     '.peopleListItem-u6dGxF',
                     /*channels*/
@@ -199,8 +201,10 @@ module.exports = (() => {
                 get countStyles() {
                     let result = '';
 
-                    Animations.selectorsLists.forEach((selector, i) => { if(!this.settings.lists.enabled) return;
-                        let count = Math.min(document.querySelectorAll(selector).length, this.settings.lists.limit)
+                    ;((this.isValidSelector(this.settings.lists.selectors)&&this.settings.lists.selectors.trim()!='')?this.settings.lists.selectors.split(",").map(item => item.trim()):Animations.selectorsLists)
+                    .forEach((selector, i) => { if(!this.settings.lists.enabled) return;
+
+                        let count = this.settings.lists.limit;
 
                         if (this.settings.lists.sequence == 'fromFirst') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-child(${i}) `
@@ -210,12 +214,13 @@ module.exports = (() => {
                             result += `${selector}:nth-last-child(${i}) `
                                 + `{animation-delay: ${((i - 1) * this.settings.lists.delay).toFixed(2)}s}\n\n`
                         }
-
+                    
                     })
 
-                    Animations.selectorsButtons.forEach(selector => {
+                    ;((this.isValidSelector(this.settings.buttons.selectors)&&this.settings.buttons.selectors.trim()!='')?this.settings.buttons.selectors.split(",").map(item => item.trim()):Animations.selectorsButtons)
+                    .forEach(selector => { if(!this.settings.buttons.enabled) return;
 
-                        let count = 20
+                        let count = 20;
 
                         if (this.settings.buttons.sequence == 'fromFirst') for (var i = 1; i < count + 1; i++) {
                             result += `${selector}:nth-child(${i}) `
@@ -235,9 +240,10 @@ module.exports = (() => {
                 threadsWithChannels = (removeAnimations = false)=>{
                     if(!this.settings.lists.enabled) return
                     var channelsListElements = document.querySelectorAll('#channels .content-2a4AW9 > [class]');
-                    
-                    for (var i = 0, threadsCount = 0; i < channelsListElements.length; i++) {
-                        let children = channelsListElements[(this.settings.lists.sequence=="fromFirst"?i:channelsListElements.length-i-1)];
+                    var count = this.settings.messages.limit
+
+                    for (var i = 0, threadsCount = 0; i < count; i++) {
+                        let children = channelsListElements[(this.settings.lists.sequence=="fromFirst"?i:count-i-1)];
                         
                         if (children.classList.contains('containerDefault-YUSmu3')
                          || children.classList.contains('containerDefault-3TQ5YN')
@@ -248,7 +254,10 @@ module.exports = (() => {
                             }
                             else {
                                 children.style.animationDelay = `${((i+threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
-                                children.style.animationName = this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name;
+                                children.style.animationName = this.settings.lists.custom.enabled &&
+                                                            this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' &&
+                                                            this.isValidCSS(this.settings.lists.custom.frames[this.settings.lists.custom.page])
+                                                            ? 'custom-lists' : this.settings.lists.name;
                             }
                         }
 
@@ -275,7 +284,7 @@ module.exports = (() => {
                     }
                 }
 
-                changeStyles() {
+                changeStyles(delay=0) {
 
                     var createKeyFrame = function(name, originalName, rotate=0, opacity=1) {
                         var keyframes = {
@@ -633,10 +642,13 @@ module.exports = (() => {
                     animation-name: ${this.settings.lists.name}_offline !important;
                 }
 
-                ${Animations.selectorsLists.join(', ')}
+                ${this.settings.lists.selectors?this.settings.lists.selectors:Animations.selectorsLists.join(', ')}
                 {
                     transform: scaleX(0);
-                    animation-name: ${this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name};
+                    animation-name: ${this.settings.lists.custom.enabled &&
+                                    this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' &&
+                                    this.isValidCSS(this.settings.lists.custom.frames[this.settings.lists.custom.page])
+                                    ? 'custom-lists' : this.settings.lists.name};
                     animation-fill-mode: forwards;
                     animation-duration: ${this.settings.lists.duration}s;
                 }
@@ -655,7 +667,10 @@ module.exports = (() => {
                 {
                     transform: scale(0);
                     animation-fill-mode: forwards;
-                    animation-name: ${this.settings.messages.custom.enabled && this.settings.messages.custom.frames[this.settings.messages.custom.page].trim() != '' ? 'custom-messages' : this.settings.messages.name};
+                    animation-name: ${this.settings.messages.custom.enabled &&
+                                    this.settings.messages.custom.frames[this.settings.messages.custom.page].trim() != '' &&
+                                    this.isValidCSS(this.settings.messages.custom.frames[this.settings.messages.custom.page])
+                                    ? 'custom-messages' : this.settings.messages.name};
                     animation-duration: ${this.settings.messages.duration}s;
                 }
 
@@ -664,10 +679,13 @@ module.exports = (() => {
                 `}
 
                 ${!this.settings.buttons.enabled ? '' : `
-                ${Animations.selectorsButtons.join(', ')}
+                ${this.settings.buttons.selectors?this.settings.buttons.selectors:Animations.selectorsButtons.join(', ')}
                 {
                     transform: scaleX(0);
-                    animation-name: ${this.settings.buttons.custom.enabled && this.settings.buttons.custom.frames[this.settings.buttons.custom.page].trim() != '' ? 'custom-buttons' : this.settings.buttons.name};
+                    animation-name: ${this.settings.buttons.custom.enabled &&
+                                    this.settings.buttons.custom.frames[this.settings.buttons.custom.page].trim() != '' &&
+                                    this.isValidCSS(this.settings.buttons.custom.frames[this.settings.buttons.custom.page])
+                                    ? 'custom-buttons' : this.settings.buttons.name};
                     animation-fill-mode: forwards;
                     animation-duration: ${this.settings.buttons.duration}s;
                 }
@@ -712,12 +730,13 @@ module.exports = (() => {
                 `;
 
                     PluginUtilities.removeStyle('Animations-main');
-                    PluginUtilities.addStyle('Animations-main', this.styles);
-
                     PluginUtilities.removeStyle('Animations-count');
-                    PluginUtilities.addStyle('Animations-count', this.countStyles);
-
-                    this.threadsWithChannels()
+                    
+                    setTimeout(()=>{
+                        PluginUtilities.addStyle('Animations-main', this.styles);
+                        PluginUtilities.addStyle('Animations-count', this.countStyles);
+                        this.threadsWithChannels();
+                    }, delay)
                 }
 
                 closeSettings() {
@@ -732,6 +751,13 @@ module.exports = (() => {
                     var isValid = document.querySelector("head > bd-head > bd-styles > #" + id).sheet.rules[0]?.cssText.replace(/;| |\n/g, "") === css.replace(/;| |\n/g, "")
                     BdApi.clearCSS(id)
                     return isValid
+                }
+
+                isValidSelector(text) {
+                    try{
+                        document.querySelectorAll(text)
+                    } catch {return false}
+                    return true
                 }
 
                 getSettingsPanel() {
@@ -749,7 +775,7 @@ module.exports = (() => {
                             },
                             id: button.id,
                             class: `button-f2h6uQ sizeSmall-wU2dO- ${button.inverted ? 'inverted' : 'filled'} ${button.color ?? 'blurple'} ${button.class ?? ''}`,
-                            onClick: button.onclick
+                            onClick: button.onclick ?? null
                         },
                             BdApi.React.createElement('div', {
                                 style: {
@@ -783,12 +809,12 @@ module.exports = (() => {
                     }
 
                     /**
-                     * Returns `class Panel extends BdApi.React.Component`.
+                     * Returns object - `class`, `render`.
                      * @param {Array<object>} containersTemp Array with button container templates.
                      * @param {object} options Panel optinons.
                      * @param {string} [options.widthAll] The width of each button, if the template does not specify a different width.
                      * @param {string} [options.heightAll] The height of each button, if the template does not specify a different height.
-                     * @param {string} [options.align="flex-start"] `justify-content` css value for each button container. Default - `flex-start`.
+                     * @param {string} [options.align="inline-flex"] `justify-content` css value for each button container. Default - `flex-start`.
                      */
 
                     var ButtonsPanel = (containersTemp = [], options = {}) => {
@@ -819,34 +845,90 @@ module.exports = (() => {
                             )
                         })
 
+                        var result = BdApi.React.createElement('div', {
+                            style: {
+                                display: 'flex',
+                                width: '100%',
+                                'flex-direction': 'column',
+                                'justify-content': options.align ?? 'inline-flex'
+                            },
+                            class: `buttonsPanel`
+                        },
+                            [
+                                ...containerNodes
+                            ]
+                        )
+
                         class Panel extends BdApi.React.Component {
                             render() {
-                                return BdApi.React.createElement('div', {
-                                    style: {
-                                        display: 'flex',
-                                        width: '100%',
-                                        'flex-direction': 'column',
-                                        'justify-content': options.align ?? 'flex-start'
-                                    },
-                                    class: `buttonsPanel`
-                                },
-                                    [
-                                        ...containerNodes
-                                    ]
-                                )
+                                return result
                             }
                         }
 
-                        return Panel;
+                        return {class: Panel, render: result};
                     }
 
                     /**
-                     * Returns `class Panel extends BdApi.React.Component`.
+                     * Returns object - `class`, `render`.
+                     * @param {object} options Textarea options.
+                     * @param {string} [options.height] Textarea height.
+                     * @param {string} [options.type='text'] Input type: `button`, `checkbox`, `file`, `hidden`, `image`, `password`, `radio`, `reset`, `submit` or `text`. Default - `text`.
+                     * @param {string} [options.placeholder] Hint text.
+                     * @param {object} [options.buttonsPanel] ButtonsPanel.
+                     * @param {Array<object>} [options.buttonsPanel.containersTemp] Array with button container templates.
+                     * @param {object} [options.buttonsPanel.options] ButtonsPanel options.
+                     * @param {string} [options.buttonsPanel.options.widthAll] The width of each button, if the template does not specify a different width.
+                     * @param {string} [options.buttonsPanel.options.heightAll] The height of each button, if the template does not specify a different height.
+                     * @param {string} [options.buttonsPanel.options.align="inline-flex"] `justify-content` css value for each button container. Default - `flex-start`.
+                     * @param {string} [options.class]
+                     * @param {(e:InputEvent)=>void} onchange Event at each change.
+                     * @param {string} value
+                     */
+
+                    var TextareaPanel = (options={}, value, onchange) => {
+                        var result = BdApi.React.createElement('div', {
+                            style: {
+                                margin: options.margin ?? null,
+                                padding: options.padding ?? null
+                            },
+                            class: `animTextareaPanel ${options.class}`
+                        },
+                            [
+                                options.buttonsPanel?(ButtonsPanel(options.buttonsPanel.containersTemp, options.buttonsPanel.options ?? {}).render):null,
+                                BdApi.React.createElement('textarea',
+                                    {
+                                        style: {
+                                            height: options?.textarea?.height ?? '270px',
+                                            width: options?.textarea?.width ?? '100%'
+                                        },
+                                        spellcheck: 'false',
+                                        type: options.textarea?.type ?? 'text',
+                                        placeholder: options.textarea?.placeholder ?? '',
+                                        class: `animTextarea ${options.textarea?.class ?? ''} inputDefault-3FGxgL input-2g-os5 textArea-3WXAeD scrollbarDefault-2w-Dyz scrollbar-3vVt8d`,
+                                        onChange: onchange ?? null
+                                    },
+                                    value
+                                )
+                            ]
+                        )
+
+                        class Panel extends BdApi.React.Component {
+                            render() {
+                                return result
+                            }
+                        }
+
+                        return {class: Panel, render: result}
+                    }
+
+                    /**
+                     * Returns object - `class`, `render`.
                      * @param {Array<object>} previewsTemp Array with previews templates.
                      * @param {object} options Panel optinons.
                      * @param {string} [options.type] `*class*-name`, `*class*-sequence`, ...
                      * @param {string} [options.class] `lists`, `messages`, `buttons`
                      * @param {(e:MouseEvent)=>void} [onclick]
+                     * @param {string} value
                      */
 
                     var PreviewsPanel = (previewsTemp = [], options = {}, value, onclick) => {
@@ -944,30 +1026,73 @@ module.exports = (() => {
 
                             for (var i = 0; i < 4; i++) {
                                 textareas.push(
-                                    BdApi.React.createElement('textarea',
+                                    TextareaPanel(
                                         {
-                                            type: 'text',
-                                            placeholder: '/*\nAnimated elements have scale(0) in the transformation,\nso your animation must contain scale(1) on the final frame(100%).\n*/\n\n0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}',
-                                            class: `customKeyframeTextArea inputDefault-3FGxgL input-2g-os5 textArea-3WXAeD scrollbarDefault-2w-Dyz scrollbar-3vVt8d ${this.settings[options.class].custom.enabled && i == this.settings[options.class].custom.page ? 'show' : ''}`,
-                                            onChange: (e) => {
-                                                var textarea = e.currentTarget;
-                                                var value = e.currentTarget.value;
-                                                if (this.isValidCSS(value) || value == "") {
-                                                    textarea.classList.add('valid');
-                                                    textarea.classList.remove('invalid');
-                                                    this.settings[options.class].custom.frames[this.settings[options.class].custom.page] = value;
-                                                    PluginUtilities.saveSettings("Animations", this.settings);
-                                                    this.changeStyles()
-                                                } else {
-                                                    textarea.classList.add('invalid');
-                                                    textarea.classList.remove('valid');
+                                            buttonsPanel: {
+                                                containersTemp: [
+                                                    {
+                                                        buttons: [
+                                                            {
+                                                                label: 'Template',
+                                                                onclick: (e) => {
+                                                                    e.currentTarget.closest('.animTextareaPanel')
+                                                                    .querySelector('.animTextarea').value = `0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}`;
+                                                                }
+                                                            },
+                                                            {
+                                                                label: 'Clear',
+                                                                onclick: (e) => {
+                                                                    var textarea = e.currentTarget.closest('.animTextareaPanel').querySelector('.animTextarea')
+                                                                    textarea.value = '';
+                                                                    textarea.focus();
+                                                                }
+                                                            },
+                                                            {
+                                                                color: 'green',
+                                                                label: 'Load',
+                                                                onclick: (e) => {
+                                                                    e.currentTarget.closest('.animTextareaPanel')
+                                                                    .querySelector('.animTextarea').value = this.settings[options.class].custom.frames[this.settings[options.class].custom.page]
+                                                                }
+                                                            },
+                                                            {
+                                                                color: 'green',
+                                                                label: 'Save',
+                                                                onclick: (e) => {
+                                                                    this.settings[options.class].custom.frames[this.settings[options.class].custom.page] = e.currentTarget.closest('.animTextareaPanel')
+                                                                    .querySelector('.animTextarea').value;
+                                                                    PluginUtilities.saveSettings("Animations", this.settings);
+                                                                    this.changeStyles()
+                                                                }
+                                                            },
+                                                        ]
+                                                    }
+                                                ],
+                                                options: {
+                                                    widthAll: '100%'
                                                 }
-
-                                                options.custom.onchange(e)
-                                            }
+                                            },
+                                            textarea: {
+                                                height: '281px',
+                                                placeholder: '/*\nAnimated elements have scale(0) in the transformation,\nso your animation must contain scale(1) on the final frame(100%).\n*/\n\n0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}',
+                                            },
+                                            class: `${this.settings[options.class].custom.enabled && i == this.settings[options.class].custom.page ? 'show' : ''}`,
                                         },
-                                        options.custom.data.frames[i]
-                                    )
+                                        options.custom.data.frames[i],
+                                        (e) => {
+                                            var textarea = e.currentTarget;
+                                            var value = e.currentTarget.value;
+                                            if (this.isValidCSS(value) || value == "") {
+                                                textarea.classList.add('valid');
+                                                textarea.classList.remove('invalid');
+                                            } else {
+                                                textarea.classList.add('invalid');
+                                                textarea.classList.remove('valid');
+                                            }
+
+                                            options.custom?.onchange(e)
+                                        }
+                                    ).render
                                 );
 
                                 swipeButtonsCustom.push(
@@ -976,9 +1101,9 @@ module.exports = (() => {
                                             class: `animPageCircleButton ${this.settings[options.class].custom.page == i ? 'enabled' : ''}`,
                                             'data-page': i,
                                             onClick: (e) => {
-                                                for (var containerElem of e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .customKeyframeTextArea`)) containerElem.classList.remove('show');
+                                                for (var containerElem of e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.animPreviewsContainer, .animTextareaPanel`)) containerElem.classList.remove('show');
 
-                                                e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.customKeyframeTextArea`)[e.currentTarget.getAttribute('data-page')].classList.add('show');
+                                                e.currentTarget.closest('.animPreviewsPanel').querySelectorAll(`.animTextareaPanel`)[e.currentTarget.getAttribute('data-page')].classList.add('show');
 
                                                 var sections = document.querySelectorAll(`[data-type="${options.type}"] .custom .animPageCircleButton`);
                                                 for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
@@ -993,27 +1118,10 @@ module.exports = (() => {
                                 );
                             };
 
-                            swipeButtonsCustom.push(
-                                BdApi.React.createElement('div',
-                                    {
-                                        class: `animPageCircleButton`,
-                                        onClick: (e) => {
-                                            e.currentTarget.closest('.animPreviewsPanel').querySelector(`.customKeyframeTextArea.show`).value
-                                                = `0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}`;
 
-                                            this.settings[options.class].custom.frames[this.settings[options.class].custom.page]
-                                                = `0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}`;
-
-                                            PluginUtilities.saveSettings("Animations", this.settings);
-                                            this.changeStyles()
-                                        }
-                                    },
-                                    'template'
-                                )
-                            );
                         }
 
-                        var build = BdApi.React.createElement('div',
+                        var result = BdApi.React.createElement('div',
                             {
                                 class: `animPreviewsPanel ${options.horizontal ? 'horizontal' : 'vertical'}`,
                                 'data-type': options.type
@@ -1032,12 +1140,12 @@ module.exports = (() => {
                                                 this.changeStyles();
 
                                                 var panel = e.currentTarget.closest('.animPreviewsPanel');
-                                                var all = panel.querySelectorAll(`.animPreviewsContainer, .customKeyframeTextArea`)
+                                                var all = panel.querySelectorAll(`.animPreviewsContainer, .animTextareaPanel`)
                                                 all.forEach(elem => elem.classList.remove('show'));
                                                 if (this.settings[options.class].custom.enabled) {
                                                     e.currentTarget.classList.add('editing')
                                                     e.currentTarget.classList.remove('selecting')
-                                                    panel.getElementsByClassName(`customKeyframeTextArea`)[this.settings[options.class].custom.page].classList.add('show');
+                                                    panel.getElementsByClassName(`animTextareaPanel`)[this.settings[options.class].custom.page].classList.add('show');
                                                     panel.getElementsByClassName('animPageButtons default')[0].classList.remove('show');
                                                     panel.getElementsByClassName('animPageButtons custom')[0].classList.add('show');
                                                 } else {
@@ -1118,16 +1226,18 @@ module.exports = (() => {
 
                         class Panel extends BdApi.React.Component {
                             render() {
-                                return build
+                                return result
                             }
                         }
 
-                        return Panel;
+                        return {class: Panel, render: result};
                     }
 
                     setTimeout(()=>{
                         Tooltip.create(document.getElementById('animations-reset'), 'Resets all settings', {side: 'left'})
+                        Tooltip.create(document.getElementById('animations-rebuild'), 'Recreates styles. When the plugin is restarted, the styles are recreates too', {side: 'top'})
                         Tooltip.create(document.getElementById('animations-version-check'), 'Checks for updates', {side: 'right'})
+
                         Tooltip.create(document.getElementById('animations-issues'), 'Link to GitHub', {side: 'left'})
                         Tooltip.create(document.getElementById('animations-discussions'), 'Link to GitHub', {side: 'right'})
 
@@ -1138,6 +1248,12 @@ module.exports = (() => {
                         Tooltip.create(document.getElementById('animations-reset-lists'), 'Resets lists settings', {side: 'bottom'})
                         Tooltip.create(document.getElementById('animations-reset-messages'), 'Resets messages settings', {side: 'bottom'})
                         Tooltip.create(document.getElementById('animations-reset-buttons'), 'Resets buttons settings', {side: 'bottom'})
+
+                        Tooltip.create(document.getElementById('lists-selectors-default'), 'Restores default selectors', {side: 'bottom'})
+                        Tooltip.create(document.getElementById('lists-selectors-clear'), 'Clears the textarea', {side: 'bottom'})
+
+                        Tooltip.create(document.getElementById('buttons-selectors-default'), 'Restores default selectors', {side: 'bottom'})
+                        Tooltip.create(document.getElementById('buttons-selectors-clear'), 'Clears the textarea', {side: 'bottom'})
                     }, 500)
 
                     return Settings.SettingPanel.build(
@@ -1160,10 +1276,17 @@ module.exports = (() => {
 
                                                 PluginUtilities.saveSettings("Animations", this.defaultSettings);
                                                 this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
-                                                this.changeStyles();
+                                                this.changeStyles(200);
                                                 button.innerText = 'Reseting...';
                                                 this.closeSettings();
                                             }
+                                        },
+                                        {
+                                            color: 'blurple',
+                                            label: 'Rebuild animations',
+                                            id: 'animations-rebuild',
+                                            svgPath: 'M 13 3 c -4.97 0 -9 4.03 -9 9 H 1 l 3.89 3.89 l 0.07 0.14 L 9 12 H 6 c 0 -3.87 3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 z',
+                                            onclick: (e) => this.changeStyles(200)
                                         },
                                         {
                                             color: 'blurple',
@@ -1376,7 +1499,7 @@ module.exports = (() => {
                                 {
                                     widthAll: '100%',
                                     align: 'space-between'
-                                })
+                                }).class
                         ),
 
                         new Settings.SettingGroup('Lists').append(
@@ -1411,7 +1534,7 @@ module.exports = (() => {
                                             }
                                         }
                                     ]
-                                )
+                                ).class
                             ),
 
                             new Settings.SettingField('Name', `[default ${this.defaultSettings.lists.name}] The name of the animation of the list items when they appear.`, null,
@@ -1441,7 +1564,6 @@ module.exports = (() => {
                                     class: 'lists',
                                     custom: {
                                         data: this.settings.lists.custom,
-                                        onchange: (e) => { }
                                     }
                                 },
                                     this.settings.lists.name, (e) => {
@@ -1449,7 +1571,7 @@ module.exports = (() => {
                                         this.settings.lists.page = e.page;
                                         PluginUtilities.saveSettings("Animations", this.settings);
                                         this.changeStyles()
-                                    }),
+                                    }).class,
                                 { noteOnTop: true }
                             ),
 
@@ -1463,7 +1585,7 @@ module.exports = (() => {
                                     this.settings.lists.sequence = e.value;
                                     PluginUtilities.saveSettings("Animations", this.settings);
                                     this.changeStyles()
-                                }),
+                                }).class,
                                 { noteOnTop: true }
                             ),
 
@@ -1495,8 +1617,7 @@ module.exports = (() => {
                                 markers: [0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1, 1.2, 1.5, 2],
                                 stickToMarkers: true
                             }
-                            )
-
+                            ),
                         ),
 
                         new Settings.SettingGroup('Messages').append(
@@ -1531,7 +1652,7 @@ module.exports = (() => {
                                             }
                                         }
                                     ]
-                                )
+                                ).class
                             ),
 
                             new Settings.SettingField('Name', `[default ${this.defaultSettings.messages.name}] The name of the animation of the messages when they appear.`, null,
@@ -1561,7 +1682,6 @@ module.exports = (() => {
                                     class: 'messages',
                                     custom: {
                                         data: this.settings.messages.custom,
-                                        onchange: (e) => { }
                                     }
                                 },
                                     this.settings.messages.name, (e) => {
@@ -1569,7 +1689,7 @@ module.exports = (() => {
                                         this.settings.messages.page = e.page;
                                         PluginUtilities.saveSettings("Animations", this.settings);
                                         this.changeStyles()
-                                    }),
+                                    }).class,
                                 { noteOnTop: true }
                             ),
 
@@ -1637,7 +1757,7 @@ module.exports = (() => {
                                             }
                                         }
                                     ]
-                                )
+                                ).class
                             ),
 
                             new Settings.SettingField('Name', `[default ${this.defaultSettings.buttons.name}] The name of the animation of the buttons when they appear.`, null,
@@ -1668,7 +1788,6 @@ module.exports = (() => {
                                     horizontal: true,
                                     custom: {
                                         data: this.settings.buttons.custom,
-                                        onchange: (e) => { }
                                     }
                                 },
                                     this.settings.buttons.name, (e) => {
@@ -1676,7 +1795,7 @@ module.exports = (() => {
                                         this.settings.buttons.page = e.page;
                                         PluginUtilities.saveSettings("Animations", this.settings);
                                         this.changeStyles()
-                                    }),
+                                    }).class,
                                 { noteOnTop: true }
                             ),
 
@@ -1691,7 +1810,7 @@ module.exports = (() => {
                                     this.settings.buttons.sequence = e.value;
                                     PluginUtilities.saveSettings("Animations", this.settings);
                                     this.changeStyles()
-                                }),
+                                }).class,
                                 { noteOnTop: true }
                             ),
 
@@ -1714,6 +1833,113 @@ module.exports = (() => {
                                 stickToMarkers: true
                             }
                             )
+                        ),
+
+                        new Settings.SettingGroup('Advanced').append(
+                            new Settings.SettingField('Selectors of lists', 'If you leave this field empty, the default selectors will appear here on reload. Changes to the selectors are saved when typing (if the code is valid). The separator is a comma(,).', null,
+                                TextareaPanel({
+                                    buttonsPanel: {
+                                        containersTemp: [
+                                            {
+                                                buttons: [
+                                                    {
+                                                        label: 'Default',
+                                                        id: 'lists-selectors-default',
+                                                        svgPath: 'M 13 3 c -4.97 0 -9 4.03 -9 9 H 1 l 3.89 3.89 l 0.07 0.14 L 9 12 H 6 c 0 -3.87 3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 z',
+                                                        onclick: (e) => {
+                                                            var textarea = e.currentTarget.closest('.animTextareaPanel').querySelector('.animTextarea')
+                                                            textarea.value = Animations.selectorsLists.join(',\n\n')
+                                                            textarea.style.color = '';
+
+                                                            this.settings.lists.selectors = '';
+                                                            PluginUtilities.saveSettings("Animations", this.settings);
+                                                        }
+                                                    },
+                                                    {
+                                                        label: 'Clear',
+                                                        id: 'lists-selectors-clear',
+                                                        onclick: (e) => {
+                                                            var textarea = e.currentTarget.closest('.animTextareaPanel').querySelector('.animTextarea')
+                                                            textarea.value = '';
+                                                            textarea.focus();
+                                                        }
+                                                    },
+                                                ]
+                                            }
+                                        ],
+                                        options: {
+                                            widthAll: '100%'
+                                        }
+                                    }
+                                },
+                                this.settings.lists.selectors ? this.settings.lists.selectors : Animations.selectorsLists.join(',\n\n'),
+                                (e) => {
+                                    var textarea = e.currentTarget;
+                                    var value = textarea.value;
+
+                                    if(value=='' || this.isValidSelector(value)) {
+                                        this.settings.lists.selectors = (value==Animations.selectorsLists?'':value)
+                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        this.changeStyles()
+                                        textarea.style.color = ''
+                                    } else {
+                                        textarea.style.color = this.colors.red
+                                    }
+                                }
+                                ).class
+                            ),
+                            new Settings.SettingField('Selectors of buttons', 'If you leave this field empty, the default selectors will appear here on reload. Changes to the selectors are saved when typing (if the code is valid). The separator is a comma (,).', null,
+                                TextareaPanel({
+                                    buttonsPanel: {
+                                        containersTemp: [
+                                            {
+                                                buttons: [
+                                                    {
+                                                        label: 'Default',
+                                                        id: 'buttons-selectors-default',
+                                                        svgPath: 'M 13 3 c -4.97 0 -9 4.03 -9 9 H 1 l 3.89 3.89 l 0.07 0.14 L 9 12 H 6 c 0 -3.87 3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 z',
+                                                        onclick: (e) => {
+                                                            var textarea = e.currentTarget.closest('.animTextareaPanel').querySelector('.animTextarea')
+                                                            textarea.value = Animations.selectorsButtons.join(',\n\n')
+                                                            textarea.style.color = '';
+
+                                                            this.settings.lists.selectors = '';
+                                                            PluginUtilities.saveSettings("Animations", this.settings);
+                                                        }
+                                                    },
+                                                    {
+                                                        label: 'Clear',
+                                                        id: 'buttons-selectors-clear',
+                                                        onclick: (e) => {
+                                                            var textarea = e.currentTarget.closest('.animTextareaPanel').querySelector('.animTextarea')
+                                                            textarea.value = '';
+                                                            textarea.focus();
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ],
+                                        options: {
+                                            widthAll: '100%'
+                                        }
+                                    }
+                                },
+                                this.settings.buttons.selectors ? this.settings.buttons.selectors : Animations.selectorsButtons.join(',\n\n'),
+                                (e) => {
+                                    var textarea = e.currentTarget;
+                                    var value = textarea.value;
+
+                                    if(value=='' || this.isValidSelector(value)) {
+                                        this.settings.buttons.selectors = (value==Animations.selectorsButtons?'':value)
+                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        this.changeStyles()
+                                        textarea.style.color = ''
+                                    } else {
+                                        textarea.style.color = this.colors.red
+                                    }
+                                }
+                                ).class
+                            ),
                         )
                     )
                 }
@@ -1723,15 +1949,17 @@ module.exports = (() => {
                     `/*components*/
 
                     .animPreviewsPanel {
-                        oveflow: hidden;
+                        overflow: hidden;
                     }
 
-                    .animPreviewsContainer {
+                    .animPreviewsContainer, .animPreviewsPanel .animTextareaPanel {
                         display: flex;
                         flex-wrap: wrap;
                         justify-content: space-evenly; 
                         align-content: space-evenly;
                         height: 0;
+                        margin: 0;
+                        padding: 0;
                         opacity: 0;
                         box-sizing: border-box;
                         border-radius: 3px;
@@ -1739,13 +1967,12 @@ module.exports = (() => {
                         transition: 0.5s opacity;
                     }
 
-                    .customKeyframeTextArea {
-                        opacity: 0;
+                    .animPreviewsPanel .animTextareaPanel {
+                        padding: 0 18px;
+                    }
+
+                    .animTextarea {
                         display: block;
-                        padding: 0;
-                        height: 0;
-                        border: none;
-                        transition: 0.2s opacity;
                         font-size: 0.875rem;
                         line-height: 1.125rem;
                         text-indent: 0;
@@ -1753,26 +1980,14 @@ module.exports = (() => {
                         font-family: Consolas, monospace;
                     }
 
-                    .customKeyframeTextArea::placeholder {
+                    .animTextarea::placeholder {
                         font-family: Consolas, monopoly;
                     }
 
-                    .customKeyframeTextArea.show {
-                        opacity: 1;
-                        padding: 10px;
-                        height: 374px;
-                        border: 1px solid var(--background-tertiary);
-                    }
-
-                    .customKeyframeTextArea.show:hover {
-                        border-color: var(--deprecated-text-input-border-hover);
-                        transition: 0.2s border;
-                    }
-
-                    .animPreviewsContainer.show {
+                    .animPreviewsContainer.show, .animPreviewsPanel .animTextareaPanel.show {
                         opacity: 1;
                         border: 1px solid var(--background-tertiary);
-                        height: 374px;
+                        height: 378px;
                     }
 
                     .animPreviewsContainer.compact {
