@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.7.1
+ * @version 1.2.7.2
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -10,7 +10,7 @@
  * @updateUrl https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/Animations/Animations.plugin.js
  */
 
-module.exports = (() => {
+ module.exports = (() => {
     const config = {
         info: {
             name: 'Animations',
@@ -21,7 +21,7 @@ module.exports = (() => {
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.7.1',
+            version: '1.2.7.2',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
@@ -29,7 +29,7 @@ module.exports = (() => {
         changelog: [
             { "title": "New Stuff", "items": ["Added selector settings for lists and buttons.", "The \"Rebuild animations\" button."] },
             { "title": "Improvements", "type": "improved", "items": ["The editor has been improved.", "Now the default animation is opacity."] },
-            { "title": "Fixes", "type": "fixed", "items": ["Sometimes missing animations."] }
+            { "title": "Fixes", "type": "fixed", "items": ["Sometimes missing animations.", "Update button."] }
         ],
         main: 'index.js',
     };
@@ -1322,8 +1322,8 @@ module.exports = (() => {
                                                     }
 
                                                     var responseCode = JSON.parse(Http.responseText)
-                                                    var response = window.atob(responseCode.content)
-                                                    var GitHubVersion = (/(\d+\.)*\d+/).exec((/^.*@version\s+(\d+\.)\d+.*$/m).exec(response))[0]
+                                                    var GitHubFileText = window.atob(responseCode.content)
+                                                    var GitHubVersion = (/(\d+\.)*\d+/).exec((/^.*@version\s+(\d+\.)\d+.*$/m).exec(GitHubFileText))[0]
 
                                                     function newerVersion(v1, v2) {
                                                         var v1Dots = v1.match(/\./g).length
@@ -1340,6 +1340,18 @@ module.exports = (() => {
                                                         return false
                                                     }
 
+                                                    var UpdatePlugin = () => {
+                                                        return new Promise((rs, rj)=>{
+                                                            try {
+                                                                var fs = require('fs');
+                                                                var path = require('path');
+                                                                fs.writeFile(path.join(BdApi.Plugins.folder, __filename), GitHubFileText, rs)
+                                                            } catch(error) {
+                                                                rj(error)
+                                                            }
+                                                        })
+                                                    }
+
                                                     switch (newerVersion(GitHubVersion, config.info.version)) {
                                                         case GitHubVersion:
                                                             button.innerText = `v${GitHubVersion} - Update`
@@ -1354,7 +1366,7 @@ module.exports = (() => {
                                                                         ],
                                                                         {
                                                                             onConfirm() {
-                                                                                PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js')
+                                                                                UpdatePlugin()
                                                                             }
                                                                         })
                                                                 },
@@ -1374,7 +1386,7 @@ module.exports = (() => {
                                                                         ],
                                                                         {
                                                                             onConfirm() {
-                                                                                PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js')
+                                                                                UpdatePlugin()
                                                                             }
                                                                         })
                                                                 },
@@ -1394,7 +1406,7 @@ module.exports = (() => {
                                                                         ],
                                                                         {
                                                                             onConfirm() {
-                                                                                PluginUpdater.downloadPlugin('Animations', 'https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js')
+                                                                                UpdatePlugin()
                                                                             }
                                                                         })
                                                                 },
