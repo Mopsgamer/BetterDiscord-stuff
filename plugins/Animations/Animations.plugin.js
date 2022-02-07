@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.7.2
+ * @version 1.2.7.3
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,7 +21,7 @@
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.7.2',
+            version: '1.2.7.3',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
@@ -59,7 +59,8 @@
 
             const
                 { DiscordSelectors, DiscordAPI, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules } = Api,
-                { Logger, Patcher, Settings, Tooltip, ReactComponents } = Library;
+                { Logger, Patcher, Settings, Tooltip, ReactComponents } = Library,
+                { React, ReactDOM } = BdApi;
 
             return class Animations extends Plugin {
 
@@ -111,11 +112,11 @@
                         }
                     }
 
-                    this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
+                    this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
                 }
 
                 getName() { return config.info.name }
-                getAuthor() { return config.info.authors.map(a => a.name).join(' / ') }
+                getAuthor() { return config.info.authors.map(a => a.name).join(', ') }
                 getDescription() { return config.info.description }
                 getVersion() { return config.info.version }
 
@@ -237,52 +238,52 @@
 
                 }
 
-                threadsWithChannels = (removeAnimations = false)=>{
-                    if(!this.settings.lists.enabled) return
-                    var channelsListElements = document.querySelectorAll('#channels .content-2a4AW9 > [class]');
-                    var count = this.settings.messages.limit
+                threadsWithChannels = (removeAnimations = false) => {
+                        if (!this.settings.lists.enabled) return;
+                        var channelsListElements = document.querySelectorAll('#channels .content-2a4AW9 > [class]');
+                        var count = document.querySelectorAll('#channels .content-2a4AW9 > [class]')?.length ?? 40;
 
-                    for (var i = 0, threadsCount = 0; i < count; i++) {
-                        let children = channelsListElements[(this.settings.lists.sequence=="fromFirst"?i:count-i-1)];
-                        if(!children) return;
-                        
-                        if (children.classList.contains('containerDefault-YUSmu3')
-                         || children.classList.contains('containerDefault-3TQ5YN')
-                         || children.classList.contains('wrapper-NhbLHG')
-                        ) {
-                            if(removeAnimations) {
-                                children.style.transform = 'none'
-                            }
-                            else {
-                                children.style.animationDelay = `${((i+threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
-                                children.style.animationName = this.settings.lists.custom.enabled &&
-                                                            this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' &&
-                                                            this.isValidCSS(this.settings.lists.custom.frames[this.settings.lists.custom.page])
-                                                            ? 'custom-lists' : this.settings.lists.name;
-                            }
-                        }
+                        for (var i = 0, threadsCount = 0; i < count; i++) {
+                            let children = channelsListElements[(this.settings.lists.sequence == "fromFirst" ? i : count - i - 1)];
+                            if (!children) return;
 
-                        else if (children.classList.contains('container-1Bj0eq')) {
-                            var threadsForkElement = children.querySelector('.container-1Bj0eq > svg');
-                            var threadsListElements = children.querySelectorAll('.containerDefault-YUSmu3');
-
-                            threadsForkElement.style.animationDelay = `${((i+threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
-                            threadsForkElement.style.animationName = 'slide-right';
-
-                            for (var j = 0; j < threadsListElements.length; j++) {
-                                threadsCount += (j?1:0);
-                                let thread = threadsListElements[(this.settings.lists.sequence=="fromFirst"?j:threadsListElements.length-j-1)];
-                                if(removeAnimations) {
-                                    thread.style.transform = 'none'
+                            if (children.classList.contains('containerDefault-YUSmu3')
+                                || children.classList.contains('containerDefault-3TQ5YN')
+                                || children.classList.contains('wrapper-NhbLHG')
+                            ) {
+                                if (removeAnimations) {
+                                    children.style.transform = 'none'
                                 }
                                 else {
-                                    thread.style.animationDelay = `${((i+threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
-                                    thread.style.animationName = this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name;
+                                    children.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                                    children.style.animationName = this.settings.lists.custom.enabled &&
+                                        this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' &&
+                                        this.isValidCSS(this.settings.lists.custom.frames[this.settings.lists.custom.page])
+                                        ? 'custom-lists' : this.settings.lists.name;
                                 }
                             }
+
+                            else if (children.classList.contains('container-1Bj0eq')) {
+                                var threadsForkElement = children.querySelector('.container-1Bj0eq > svg');
+                                var threadsListElements = children.querySelectorAll('.containerDefault-YUSmu3');
+
+                                threadsForkElement.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                                threadsForkElement.style.animationName = 'slide-right';
+
+                                for (var j = 0; j < threadsListElements.length; j++) {
+                                    threadsCount += (j ? 1 : 0);
+                                    let thread = threadsListElements[(this.settings.lists.sequence == "fromFirst" ? j : threadsListElements.length - j - 1)];
+                                    if (removeAnimations) {
+                                        thread.style.transform = 'none'
+                                    }
+                                    else {
+                                        thread.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                                        thread.style.animationName = this.settings.lists.custom.enabled && this.settings.lists.custom.frames[this.settings.lists.custom.page].trim() != '' ? 'custom-lists' : this.settings.lists.name;
+                                    }
+                                }
+                            }
+
                         }
-                        
-                    }
                 }
 
                 changeStyles(delay=0) {
@@ -765,7 +766,7 @@
 
                     var ElementButton = (button) => {
 
-                        return BdApi.React.createElement('button', {
+                        return React.createElement('button', {
                             style: {
                                 display: 'inline-block',
                                 width: button.width ?? 'fit-content',
@@ -778,7 +779,7 @@
                             class: `button-f2h6uQ sizeSmall-wU2dO- ${button.inverted ? 'inverted' : 'filled'} ${button.color ?? 'blurple'} ${button.class ?? ''}`,
                             onClick: button.onclick ?? null
                         },
-                            BdApi.React.createElement('div', {
+                            React.createElement('div', {
                                 style: {
                                     'pointer-events': 'none',
                                     'display': 'flex',
@@ -787,7 +788,7 @@
                                 }
                             },
                                 [
-                                    button.svgPath ? BdApi.React.createElement('svg',
+                                    button.svgPath ? React.createElement('svg',
                                         {
                                             viewBox: button.svgView ?? '0 0 24 24',
                                             fill: '#fff',
@@ -797,9 +798,9 @@
                                                 'margin-right': '4px'
                                             }
                                         },
-                                        BdApi.React.createElement('path', { d: button.svgPath })
+                                        React.createElement('path', { d: button.svgPath })
                                     ) : null,
-                                    BdApi.React.createElement('span', {
+                                    React.createElement('span', {
                                         class: 'buttonText-1c-l_x',
                                     },
                                         button.label
@@ -832,7 +833,7 @@
                                 )
                             })
                             containerNodes.push(
-                                BdApi.React.createElement('div',
+                                React.createElement('div',
                                     {
                                         style: {
                                             display: 'inline-flex',
@@ -846,7 +847,7 @@
                             )
                         })
 
-                        var result = BdApi.React.createElement('div', {
+                        var result = React.createElement('div', {
                             style: {
                                 display: 'flex',
                                 width: '100%',
@@ -860,7 +861,7 @@
                             ]
                         )
 
-                        class Panel extends BdApi.React.Component {
+                        class Panel extends React.Component {
                             render() {
                                 return result
                             }
@@ -887,7 +888,7 @@
                      */
 
                     var TextareaPanel = (options={}, value, onchange) => {
-                        var result = BdApi.React.createElement('div', {
+                        var result = React.createElement('div', {
                             style: {
                                 margin: options.margin ?? null,
                                 padding: options.padding ?? null
@@ -896,7 +897,7 @@
                         },
                             [
                                 options.buttonsPanel?(ButtonsPanel(options.buttonsPanel.containersTemp, options.buttonsPanel.options ?? {}).render):null,
-                                BdApi.React.createElement('textarea',
+                                React.createElement('textarea',
                                     {
                                         style: {
                                             height: options?.textarea?.height ?? '270px',
@@ -913,7 +914,7 @@
                             ]
                         )
 
-                        class Panel extends BdApi.React.Component {
+                        class Panel extends React.Component {
                             render() {
                                 return result
                             }
@@ -955,13 +956,13 @@
                             if (value == template.value) openedPage = Math.ceil((index + 1) / previewsCountOnPage)-1;
                             var tempBlocks = []
                             for (var i = 0; i < 4; i++) {
-                                tempBlocks[i] = BdApi.React.createElement('div', {
+                                tempBlocks[i] = React.createElement('div', {
                                     class: 'animTempBlock'
                                 })
                             }
 
                             previews.push(
-                                BdApi.React.createElement('div', {
+                                React.createElement('div', {
                                     'data-animation': template.value,
                                     class: `animPreview ${value == template.value ? 'enabled' : ''}`,
                                     onClick: (e) => {
@@ -972,7 +973,7 @@
                                         e.currentTarget.classList.add('enabled');
                                     }
                                 },
-                                    [...tempBlocks, BdApi.React.createElement('div', {
+                                    [...tempBlocks, React.createElement('div', {
                                         class: 'animPreviewLabel',
                                         title: template.label
                                     }, template.label
@@ -983,7 +984,7 @@
 
                         for (containersCount = 0; containersCount + 1 <= Math.ceil(previewsTemp.length / previewsCountOnPage); containersCount++) {
                             swipeButtonsDefault.push(
-                                BdApi.React.createElement('div',
+                                React.createElement('div',
                                     {
                                         class: `animPageCircleButton ${openedPage == containersCount ? 'enabled' : ''}`,
                                         'data-page': containersCount,
@@ -1013,7 +1014,7 @@
                             }
 
                             containers.push(
-                                BdApi.React.createElement('div',
+                                React.createElement('div',
                                     {
                                         class: `animPreviewsContainer ${(options.custom) ? (!this.settings[options.class].custom.enabled && openedPage == containersCount ? 'show' : '') : (openedPage == containersCount ? 'show' : '')} ${previewsTemp.length < previewsCountOnPage + 1 ? 'compact' : ''}`,
                                     },
@@ -1097,7 +1098,7 @@
                                 );
 
                                 swipeButtonsCustom.push(
-                                    BdApi.React.createElement('div',
+                                    React.createElement('div',
                                         {
                                             class: `animPageCircleButton ${this.settings[options.class].custom.page == i ? 'enabled' : ''}`,
                                             'data-page': i,
@@ -1122,17 +1123,17 @@
 
                         }
 
-                        var result = BdApi.React.createElement('div',
+                        var result = React.createElement('div',
                             {
                                 class: `animPreviewsPanel ${options.horizontal ? 'horizontal' : 'vertical'}`,
                                 'data-type': options.type
                             },
                             [
-                                options.custom ? BdApi.React.createElement('div',
+                                options.custom ? React.createElement('div',
                                     {
                                         class: 'animPreviewsActions'
                                     },
-                                    BdApi.React.createElement('div',
+                                    React.createElement('div',
                                         {
                                             class: `animPreviewActionButton ${this.settings[options.class].custom.enabled ? 'editing' : 'selecting'} title-3sZWYQ`,
                                             onClick: (e) => {
@@ -1159,47 +1160,47 @@
                                             }
                                         },
 
-                                        BdApi.React.createElement('div',
+                                        React.createElement('div',
                                             {
                                                 class: 'switchActionButton'
                                             },
                                             [
-                                                BdApi.React.createElement('div', {
+                                                React.createElement('div', {
                                                     class: 'switchActionButtonLabel'
                                                 },
                                                     'Selecting'
                                                 ),
-                                                BdApi.React.createElement("svg", {
+                                                React.createElement("svg", {
                                                     width: "24",
                                                     height: "24",
                                                     viewBox: "3 2 19 19"
                                                 },
-                                                    BdApi.React.createElement("path", {
+                                                    React.createElement("path", {
                                                         style: { fill: "none" },
                                                         d: "M0 0h24v24H0z"
                                                     }),
-                                                    BdApi.React.createElement("path", {
+                                                    React.createElement("path", {
                                                         d: options.horizontal ? "M 4 18 h 17 v -3 H 4 v 3 z M 4 10 v 3 h 17 v -3 h -17 M 4 5 v 3 h 17 V 5 H 4 z" : "M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"
                                                     })
                                                 )
                                             ]
                                         ),
-                                        BdApi.React.createElement('div',
+                                        React.createElement('div',
                                             {
                                                 class: 'switchActionButton'
                                             },
                                             [
-                                                BdApi.React.createElement('div', {
+                                                React.createElement('div', {
                                                     class: 'switchActionButtonLabel'
                                                 },
                                                     'Editing'
                                                 ),
-                                                BdApi.React.createElement("svg", {
+                                                React.createElement("svg", {
                                                     width: "24",
                                                     height: "24",
                                                     viewBox: "0 1 22 22"
                                                 },
-                                                    BdApi.React.createElement("path", {
+                                                    React.createElement("path", {
                                                         d: "M19.2929 9.8299L19.9409 9.18278C21.353 7.77064 21.353 5.47197 19.9409 4.05892C18.5287 2.64678 16.2292 2.64678 14.817 4.05892L14.1699 4.70694L19.2929 9.8299ZM12.8962 5.97688L5.18469 13.6906L10.3085 18.813L18.0201 11.0992L12.8962 5.97688ZM4.11851 20.9704L8.75906 19.8112L4.18692 15.239L3.02678 19.8796C2.95028 20.1856 3.04028 20.5105 3.26349 20.7337C3.48669 20.9569 3.8116 21.046 4.11851 20.9704Z",
                                                     })
                                                 )
@@ -1210,13 +1211,13 @@
                                 ...containers,
                                 ...textareas,
                                 containers.length > 1 ?
-                                    BdApi.React.createElement('div',
+                                    React.createElement('div',
                                         {
                                             class: `animPageButtons default ${options.custom ? (!this.settings[options.class].custom.enabled ? 'show' : '') : 'show'}`,
                                         },
                                         swipeButtonsDefault
                                     ) : null,
-                                BdApi.React.createElement('div',
+                                React.createElement('div',
                                     {
                                         class: `animPageButtons custom ${options.custom ? (this.settings[options.class].custom.enabled ? 'show' : '') : 'show'}`,
                                     },
@@ -1225,7 +1226,7 @@
                             ])
 
 
-                        class Panel extends BdApi.React.Component {
+                        class Panel extends React.Component {
                             render() {
                                 return result
                             }
@@ -1276,7 +1277,7 @@
                                                 let button = e.currentTarget;
 
                                                 PluginUtilities.saveSettings("Animations", this.defaultSettings);
-                                                this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
+                                                this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
                                                 this.changeStyles(200);
                                                 button.innerText = 'Reseting...';
                                                 this.closeSettings();
@@ -1321,8 +1322,13 @@
                                                         return
                                                     }
 
-                                                    var responseCode = JSON.parse(Http.responseText)
-                                                    var GitHubFileText = window.atob(responseCode.content)
+                                                    var responseCode = JSON.parse(Http.responseText);
+                                                    var fromBinary = (encoded) => {
+                                                        return decodeURIComponent(atob(encoded).split('').map(function(c) {
+                                                            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+                                                        }).join(''));
+                                                    }
+                                                    var GitHubFileText = fromBinary(responseCode.content);
                                                     var GitHubVersion = (/(\d+\.)*\d+/).exec((/^.*@version\s+(\d+\.)\d+.*$/m).exec(GitHubFileText))[0]
 
                                                     function newerVersion(v1, v2) {
@@ -1352,7 +1358,7 @@
                                                         })
                                                     }
 
-                                                    switch (newerVersion(GitHubVersion, config.info.version)) {
+                                                    switch (newerVersion(GitHubVersion, this.getVersion())) {
                                                         case GitHubVersion:
                                                             button.innerText = `v${GitHubVersion} - Update`
                                                             button.classList.remove('blurple')
@@ -1361,8 +1367,8 @@
                                                                 () => {
                                                                     BdApi.showConfirmationModal('Your version is older',
                                                                         [
-                                                                            `v${config.info.version} (your)  →  v${GitHubVersion} (github)`,
-                                                                            BdApi.React.createElement('span', { style: { color: this.colors.green, 'text-transform': 'uppercase' } }, 'The plugin will be updated.')
+                                                                            `v${this.getVersion()} (your)  →  v${GitHubVersion} (github)`,
+                                                                            React.createElement('span', { style: { color: this.colors.green, 'text-transform': 'uppercase' } }, 'The plugin will be updated.')
                                                                         ],
                                                                         {
                                                                             onConfirm() {
@@ -1373,16 +1379,16 @@
                                                                 { once: true }
                                                             )
                                                             break;
-                                                        case config.info.version:
-                                                            button.innerText = `v${config.info.version} - Your own version`
+                                                        case this.getVersion():
+                                                            button.innerText = `v${this.getVersion()} - Your own version`
                                                             button.classList.remove('blurple')
                                                             button.classList.add('grey')
                                                             button.addEventListener('click',
                                                                 () => {
                                                                     BdApi.showConfirmationModal('Your version is newer',
                                                                         [
-                                                                            `v${config.info.version} (your)  →  v${GitHubVersion} (github)`,
-                                                                            BdApi.React.createElement('span', { style: { color: this.colors.red, 'text-transform': 'uppercase' } }, 'The plugin will be downdated.')
+                                                                            `v${this.getVersion()} (your)  ←  v${GitHubVersion} (github)`,
+                                                                            React.createElement('span', { style: { color: this.colors.red, 'text-transform': 'uppercase' } }, 'The plugin will be downdated.')
                                                                         ],
                                                                         {
                                                                             onConfirm() {
@@ -1394,15 +1400,15 @@
                                                             )
                                                             break;
                                                         case false:
-                                                            button.innerText = `v${config.info.version} - Latest version`
+                                                            button.innerText = `v${this.getVersion()} - Latest version`
                                                             button.classList.remove('blurple')
                                                             button.classList.add('grey')
                                                             button.addEventListener('click',
                                                                 () => {
                                                                     BdApi.showConfirmationModal('Your version is latest',
                                                                         [
-                                                                            `v${config.info.version} (your)  ↔  v${GitHubVersion} (github)`,
-                                                                            BdApi.React.createElement('span', { style: { color: this.colors.yellow, 'text-transform': 'uppercase' } }, 'The plugin will be restored.')
+                                                                            `v${this.getVersion()} (your)  ↔  v${GitHubVersion} (github)`,
+                                                                            React.createElement('span', { style: { color: this.colors.yellow, 'text-transform': 'uppercase' } }, 'The plugin will be restored.')
                                                                         ],
                                                                         {
                                                                             onConfirm() {
@@ -1534,7 +1540,7 @@
         
                                                         this.settings.lists = this.defaultSettings.lists
                                                         PluginUtilities.saveSettings("Animations", this.settings);
-                                                        this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
+                                                        this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
                                                         this.changeStyles();
                                                         button.innerText = 'Reseting...';
                                                         this.closeSettings();
@@ -1652,7 +1658,7 @@
         
                                                         this.settings.messages = this.defaultSettings.messages
                                                         PluginUtilities.saveSettings("Animations", this.settings);
-                                                        this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
+                                                        this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
                                                         this.changeStyles();
                                                         button.innerText = 'Reseting...';
                                                         this.closeSettings();
@@ -1757,7 +1763,7 @@
         
                                                         this.settings.buttons = this.defaultSettings.buttons
                                                         PluginUtilities.saveSettings("Animations", this.settings);
-                                                        this.settings = PluginUtilities.loadSettings("Animations", this.defaultSettings);
+                                                        this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
                                                         this.changeStyles();
                                                         button.innerText = 'Reseting...';
                                                         this.closeSettings();
