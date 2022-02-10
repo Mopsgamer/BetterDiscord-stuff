@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.8
+ * @version 1.2.8.1
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,7 +21,7 @@
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.8',
+            version: '1.2.8.1',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
@@ -79,7 +79,7 @@
                                 frames: ['', '', '', ''],
                                 page: 0
                             },
-                            duration: 0.3,
+                            duration: 0.4,
                             delay: 0.04,
                             limit: 65
                         },
@@ -184,7 +184,7 @@
                 ]
 
                 static selectorsPopouts = [
-                    '[role="dialog"] > *:not(.bd-addon-modal)'
+                    '[role="dialog"].focusLock-2tveLW > *:not(.bd-addon-modal)'
                 ]
 
                 static names = [
