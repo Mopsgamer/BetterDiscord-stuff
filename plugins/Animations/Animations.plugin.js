@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.8.1
+ * @version 1.2.8.2
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,14 +21,14 @@
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.8.1',
+            version: '1.2.8.2',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
             { "title": "New Stuff", "items": ["Changelog button.", "New animations: Circle, Polygon.", "Added settings for popout animation. Does not apply to the plugin settings window."] },
-            { "title": "Improvements", "type": "improved", "items": ["Reworking text labels. (~850 line in the code, you can translate it)"] },
+            { "title": "Improvements", "type": "improved", "items": ["Reworking text labels. (~850 line in the code, you can translate it)", "WebpackModules: now discord updates are not so scary."] },
             //{ "title": "Fixes", "type": "fixed", "items": ["Sometimes missing animations.", "Update button."] }
         ],
         main: 'index.js',
@@ -140,51 +140,50 @@
 
                 static selectorsLists = [
                     /*active threads button*/
-                    '.wrapper-NhbLHG',
+                    `.${WebpackModules.getByProps('channelName', 'icon').wrapper}`,
                     /*threads button > list*/
-                    '.container-2rzKKA',
+                    `.${WebpackModules.getByProps('container', 'bullet').container}`,
                     /*search*/
-                    '.searchResultGroup-1lU_-i',
+                    `.${WebpackModules.getByProps('searchResultGroup').searchResultGroup}`,
                     /*members*/
-                    '.member-2gU6Ar:not(.placeholder-1WgmVn)',
+                    `.${WebpackModules.getByProps('botTag', 'member').member}:not([class*=placeholder])`,
                     /*member-groups*/
-                    'h2.membersGroup-2eiWxl',
+                    `h2.${WebpackModules.getByProps('membersGroup').membersGroup}`,
                     /*servers*/
-                    '#app-mount .guilds-2JjMmN [class*="listItem"]:not([class*="listItemWrapper"])',
+                    `#app-mount .${WebpackModules.getByProps('guilds', 'sidebar').guilds} [class*="listItem"]:not([class*="listItemWrapper"])`,
                     /*friends*/
-                    '.peopleListItem-u6dGxF',
+                    `.${WebpackModules.getByProps('peopleListItem').peopleListItem}`,
                     /*channels*/
-                    '.channel-1Shao0',
-                    '.privateChannelsHeaderContainer-1UWASm',
+                    `.${WebpackModules.getByProps('channel', 'subtext').channel}`,
+                    `.${WebpackModules.getByProps('privateChannelsHeaderContainer').privateChannelsHeaderContainer}`,
                     /*discovery categories*/
-                    '.categoryItem-Kc_HK_',
+                    `.${WebpackModules.getByProps('categoryItem').categoryItem}`,
                     /*discord settings list*/
-                    '.side-2ur1Qk *',
+                    `.${WebpackModules.getByProps('side').side} *`,
                     /*discord settings*/
-                    'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:first-child > *:not(.image-141SOA)',
-                    'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:not(.bd-settings-group):not(:first-child)',
-                    'main.contentColumnDefault-3eyv5o > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > h2',
-                    '.bd-addon-card',
+                    `main.${WebpackModules.getByProps('contentColumnDefault').contentColumnDefault} > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:first-child > *:not(.${WebpackModules.getByProps('image', 'desaturate').image})`,
+                    `main.${WebpackModules.getByProps('contentColumnDefault').contentColumnDefault} > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:not(.bd-settings-group):not(:first-child)`,
+                    `main.${WebpackModules.getByProps('contentColumnDefault').contentColumnDefault} > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > h2`,
+                    `.bd-addon-card`,
                     /*alert elements*/
-                    '.focusLock-2tveLW .scrollerBase-_bVAAt:not(.bd-addon-modal-settings) > div',
-                    '.templatesList-uohY49 > *',
+                    `.${WebpackModules.getByProps('focusLock').focusLock} .${WebpackModules.getByProps('scrollerBase', 'thin').scrollerBase}:not(.bd-addon-modal-settings) > div`,
                     /*public servers*/
-                    '.guildList-3GXKvP > .loaded-igpmmx'
+                    `.${WebpackModules.getAllByProps('guildList', 'subtitle')[1].guildList} > .${WebpackModules.getByProps('loaded', 'card').loaded}`
                 ]
 
                 static selectorsButtons = [
                     /*chat input buttons*/
-                    '.actionButtons-2vEOUh button',
+                    `.${WebpackModules.getByProps('actionButtons', 'wrapper').actionButtons} button`,
                     /*voice opened buttons*/
-                    '.buttons-uaqb-5 > *',
+                    `.${WebpackModules.getByProps('buttons', 'focusRing').buttons} > *`,
                     /*toolbar*/
-                    '.toolbar-3_r2xA > *',
-                    '.children-3xh0VB > *',
-                    '.tabBar-ra-EuL > .item-3mHhwr'
+                    `.${WebpackModules.getByProps('toolbar', 'container').toolbar} > *`,
+                    `.${WebpackModules.getByProps('toolbar', 'children').children} > *`,
+                    `.${WebpackModules.getByProps('tabBar', 'peopleColumn').tabBar} > .${WebpackModules.getByProps('item', 'peopleColumn').item}`
                 ]
 
                 static selectorsPopouts = [
-                    '[role="dialog"].focusLock-2tveLW > *:not(.bd-addon-modal)'
+                    `[role="dialog"].${WebpackModules.getByProps('focusLock').focusLock} > *:not(.bd-addon-modal)`
                 ]
 
                 static names = [
@@ -258,16 +257,16 @@
 
                 threadsWithChannels = (removeAnimations = false) => {
                         if (!this.settings.lists.enabled) return;
-                        var channelsListElements = document.querySelectorAll('#channels .content-2a4AW9 > [class]');
-                        var count = document.querySelectorAll('#channels .content-2a4AW9 > [class]')?.length ?? 40;
+                        var channelsListElements = document.querySelectorAll(`#channels .${WebpackModules.getByProps('content', 'thin').content} > [class]`);
+                        var count = document.querySelectorAll(`#channels .${WebpackModules.getByProps('content', 'thin').content} > [class]`)?.length ?? 40;
 
                         for (var i = 0, threadsCount = 0; i < count; i++) {
                             let children = channelsListElements[(this.settings.lists.sequence == "fromFirst" ? i : count - i - 1)];
                             if (!children) return;
 
-                            if (children.classList.contains('containerDefault-YUSmu3')
-                                || children.classList.contains('containerDefault-3TQ5YN')
-                                || children.classList.contains('wrapper-NhbLHG')
+                            if (children.classList.contains(WebpackModules.getByProps('containerDefault').containerDefault)
+                                || children.classList.contains(WebpackModules.getByProps('containerDefault', 'spaceBeforeCategory').containerDefault)
+                                || children.classList.contains(WebpackModules.getByProps('wrapper', 'typeThread').wrapper)
                             ) {
                                 if (removeAnimations) {
                                     children.style.transform = 'none'
@@ -281,9 +280,9 @@
                                 }
                             }
 
-                            else if (children.classList.contains('container-1Bj0eq')) {
-                                var threadsForkElement = children.querySelector('.container-1Bj0eq > svg');
-                                var threadsListElements = children.querySelectorAll('.containerDefault-YUSmu3');
+                            else if (children.classList.contains(WebpackModules.getByProps('container', 'spine').container)) {
+                                var threadsForkElement = children.querySelector(`.${WebpackModules.getByProps('container', 'spine').container} > svg`);
+                                var threadsListElements = children.querySelectorAll(`.${WebpackModules.getByProps('containerDefault').containerDefault}`);
 
                                 threadsForkElement.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
                                 threadsForkElement.style.animationName = 'slide-right';
@@ -663,7 +662,7 @@
                         }
 
                         for (var i = 1; i < this.settings.messages.limit; i++) {
-                            result += `.messageListItem-ZZ7v6g:nth-last-child(${i}) > .message-2CShn3
+                            result += `.${WebpackModules.getByProps('messageListItem').messageListItem}:nth-last-child(${i}) > .${WebpackModules.getByProps('message').message}
                             {animation-delay:${((i - 1) * this.settings.messages.delay).toFixed(2)}s}\n`
                         }
 
@@ -671,18 +670,16 @@
                     })()
 
                     this.styles = `
-                /*ANIMATED DISCORD*/
-
                 /*lists limit*/
-                .side-2ur1Qk > :nth-child(n+${this.settings.lists.limit}),
-                .content-2a4AW9 > :nth-child(n+${this.settings.lists.limit})
+                .${WebpackModules.getByProps('side').side} > :nth-child(n+${this.settings.lists.limit}),
+                .${WebpackModules.getByProps('content', 'thin').content} > :nth-child(n+${this.settings.lists.limit})
                 {animation: none !important; transform: none !important}
 
                 ${!this.settings.lists.enabled ? '' : `
                 /* wawes */
                 /*channels*/
-                .containerDefault-3TQ5YN,
-                .containerDefault-YUSmu3
+                .${WebpackModules.getByProps('containerDefault', 'spaceBeforeCategory').containerDefault},
+                .${WebpackModules.getByProps('containerDefault').containerDefault}
                 {
                     transform: scaleX(0);
                     animation-fill-mode: forwards;
@@ -690,7 +687,7 @@
                 }
 
                 /* members offline */
-                .offline-22aM7E
+                .${WebpackModules.getByProps('offline').offline}
                 {
                     animation-name: ${this.settings.lists.name}_offline !important;
                 }
@@ -707,7 +704,7 @@
                 }
 
                 ${!BdApi.Themes.isEnabled('Horizontal Server List')? '' : `
-                #app-mount .guilds-2JjMmN [class*=listItem]:not([class*=listItemWrapper]) {
+                #app-mount .${WebpackModules.getByProps('guilds', 'sidebar').guilds} [class*=listItem]:not([class*=listItemWrapper]) {
                     transform: scaleX(0) rotate(90deg);
                     animation-name: ${this.settings.lists.name}_90;
                 }
@@ -741,7 +738,7 @@
 
                 ${!this.settings.messages.enabled ? '' : `
                 /* messages */
-                .messageListItem-ZZ7v6g > .message-2CShn3
+                .${WebpackModules.getByProps('messageListItem').messageListItem} > .${WebpackModules.getByProps('message').message}
                 {
                     transform: scale(0);
                     animation-fill-mode: forwards;
@@ -753,13 +750,13 @@
                 }
 
                 /*lines-forward-messages fix*/
-                .divider-IqmEqJ {z-index: 0}
+                .${WebpackModules.getByProps('divider', 'replying').divider} {z-index: 0}
                 `}
 
                 /**Non-custom**/
 
                 /*threads fork*/
-                .container-1Bj0eq > svg {
+                .${WebpackModules.getByProps('container', 'spine').container} > svg {
                     transform: scale(0);
                     transform-oringin: 100% 50%;
                     animation-timing-function: linear;
@@ -768,7 +765,7 @@
                 }
 
                 /*discord changelog video*/
-                .video-8B-TdZ {
+                .${WebpackModules.getByProps('video', 'lead').video} {
                     animation-name: out !important;
                 }
 
@@ -996,7 +993,7 @@
                                 'transition': 'background-color .17s ease, color .17s ease, opacity 250ms ease',
                             },
                             id: button.id,
-                            class: `button-f2h6uQ sizeSmall-wU2dO- ${button.inverted ? 'inverted' : 'filled'} ${button.color ?? 'blurple'} ${button.class ?? ''}`,
+                            class: `${WebpackModules.getByProps('button', 'sizeIcon').button} ${WebpackModules.getByProps('button', 'sizeIcon').sizeSmall} ${button.inverted ? 'inverted' : 'filled'} ${button.color ?? 'blurple'} ${button.class ?? ''}`,
                             onClick: button.onclick ?? null
                         },
                             React.createElement('div', {
@@ -1028,7 +1025,7 @@
                                         style: {
                                             'max-width': 'none'
                                         },
-                                        class: 'buttonText-1c-l_x',
+                                        class: `${WebpackModules.getByProps('buttonText', 'giftIcon').buttonText}`,
                                     },
                                         button.label
                                     )
@@ -1139,7 +1136,7 @@
                                         spellcheck: 'false',
                                         type: options.textarea?.type ?? 'text',
                                         placeholder: options.textarea?.placeholder ?? '',
-                                        class: `animTextarea ${options.textarea?.class ?? ''} inputDefault-3FGxgL input-2g-os5 textArea-3WXAeD scrollbarDefault-2w-Dyz scrollbar-3vVt8d`,
+                                        class: `animTextarea ${options.textarea?.class ?? ''} ${WebpackModules.getByProps('inputDefault', 'focused').inputDefault} ${WebpackModules.getByProps('textArea').textArea} ${WebpackModules.getByProps('scrollbarDefault').scrollbarDefault}`,
                                         onChange: onchange ?? null
                                     },
                                     value
@@ -1385,7 +1382,7 @@
                                     },
                                     React.createElement('div',
                                         {
-                                            class: `animPreviewActionButton ${this.settings[options.class].custom.enabled ? 'editing' : 'selecting'} title-3sZWYQ`,
+                                            class: `animPreviewActionButton ${this.settings[options.class].custom.enabled ? 'editing' : 'selecting'}`,
                                             onClick: async (e) => {
                                                 this.settings[options.class].custom.enabled = !this.settings[options.class].custom.enabled;
                                                 PluginUtilities.saveSettings(this.getName(), this.settings);
@@ -2782,18 +2779,18 @@
 
                     button.yellow.filled {
                         color: white;
-                        background-color: ${this.colors.yellow};
+                        background-color: hsl(38,calc(var(--saturation-factor, 1)*95.7%),54.1%);
                     }
                     button.yellow.filled:hover {
-                        background-color: ${this.colors.yellow};
+                        background-color: hsl(38,calc(var(--saturation-factor, 1)*95.7%),54.1%);
                     }
                     button.yellow.inverted {
-                        color: ${this.colors.yellow};
-                        border: 1px solid ${this.colors.yellow};
+                        color: hsl(38,calc(var(--saturation-factor, 1)*95.7%),54.1%);
+                        border: 1px solid hsl(38,calc(var(--saturation-factor, 1)*95.7%),54.1%);
                     }
                     button.yellow.inverted:hover {
-                        color: ${this.colors.yellow};
-                        border: 1px solid ${this.colors.yellow};
+                        color: hsl(38,calc(var(--saturation-factor, 1)*95.7%),54.1%);
+                        border: 1px solid hsl(38,calc(var(--saturation-factor, 1)*95.7%),54.1%);
                     }
 
                     button.green.filled {
@@ -2821,18 +2818,20 @@
 
                     this.BadSendingStyles = (e)=>{
                         if(e.key=="Enter") { // finding parent
-                            var BadSendingTextNode = document.getElementsByClassName('chatContent-3KubbW')[0].querySelector('.isSending-3SiDwE, .isFailed-2b8sCy')
+                            var BadSendingTextNode = document.getElementsByClassName(WebpackModules.getByProps('chatContent').chatContent)[0]
+                            .querySelector(`.${WebpackModules.getByProps('isSending').isSending}, .${WebpackModules.getByProps('isFailed').isFailed}`)
+
                             if(!BadSendingTextNode) {
                                 setTimeout(()=>{
                                     BadSendingTextNode = this.BadSendingStyles(e)
                                     return BadSendingTextNode
                                 }, 50)// frequency of checks after pressing Enter
                             } else {
-                            var result = BadSendingTextNode.closest('.message-2CShn3');// this is where we found it
-                            Logger.log('done')
-                            // there styles for parent
-                            result.style.animation = 'none'
-                            result.style.transform = 'none'
+                                var result = BadSendingTextNode.closest(`.${WebpackModules.getByProps('message').message}`);// this is where we found it
+                                Logger.log('done')
+                                // there styles for parent
+                                result.style.animation = 'none'
+                                result.style.transform = 'none'
                             }
                         }
                     }
