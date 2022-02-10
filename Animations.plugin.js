@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.7.3
+ * @version 1.2.8
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,15 +21,15 @@
                     github_username: 'Mopsgamer',
                 },
             ],
-            version: '1.2.7.3',
+            version: '1.2.8',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            { "title": "New Stuff", "items": ["Added selector settings for lists and buttons.", "The \"Rebuild animations\" button."] },
-            { "title": "Improvements", "type": "improved", "items": ["The editor has been improved.", "Now the default animation is opacity."] },
-            { "title": "Fixes", "type": "fixed", "items": ["Sometimes missing animations.", "Update button."] }
+            { "title": "New Stuff", "items": ["Changelog button.", "New animations: Circle, Polygon.", "Added settings for popout animation. Does not apply to the plugin settings window."] },
+            { "title": "Improvements", "type": "improved", "items": ["Reworking text labels. (~850 line in the code, you can translate it)"] },
+            //{ "title": "Fixes", "type": "fixed", "items": ["Sometimes missing animations.", "Update button."] }
         ],
         main: 'index.js',
     };
@@ -58,7 +58,7 @@
         const plugin = (Plugin, Library) => {
 
             const
-                { DiscordSelectors, DiscordAPI, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules } = Api,
+                { DiscordModules, DiscordAPI, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules } = Api,
                 { Logger, Patcher, Settings, Tooltip, ReactComponents } = Library,
                 { React, ReactDOM } = BdApi;
 
@@ -83,19 +83,6 @@
                             delay: 0.04,
                             limit: 65
                         },
-                        messages: {
-                            enabled: true,
-                            name: 'opacity',
-                            page: 0,
-                            custom: {
-                                enabled: false,
-                                frames: ['', '', '', ''],
-                                page: 0
-                            },
-                            duration: 0.4,
-                            delay: 0.04,
-                            limit: 30
-                        },
                         buttons: {
                             enabled: true,
                             name: 'opacity',
@@ -109,6 +96,31 @@
                             },
                             duration: 0.3,
                             delay: 0.2
+                        },
+                        messages: {
+                            enabled: true,
+                            name: 'opacity',
+                            page: 0,
+                            custom: {
+                                enabled: false,
+                                frames: ['', '', '', ''],
+                                page: 0
+                            },
+                            duration: 0.4,
+                            delay: 0.04,
+                            limit: 30
+                        },
+                        popouts: {
+                            enabled: true,
+                            name: 'opacity',
+                            page: 0,
+                            selectors: '',
+                            custom: {
+                                enabled: false,
+                                frames: ['', '', '', ''],
+                                page: 0
+                            },
+                            duration: 0.5
                         }
                     }
 
@@ -171,7 +183,13 @@
                     '.tabBar-ra-EuL > .item-3mHhwr'
                 ]
 
+                static selectorsPopouts = [
+                    '[role="dialog"] > *:not(.bd-addon-modal)'
+                ]
+
                 static names = [
+                    'circle',
+                    'polygon',
                     'opacity',
                     'slime',
                     'brick-right',
@@ -355,6 +373,34 @@
                                     transform-origin: 50%;
                                     transform: scale(1) rotate(${rotate}deg);
                                     opacity: ${opacity};
+                                }
+                            }`,
+                            "polygon":
+                            `@keyframes ${name} {
+                                0% {
+                                    clip-path:  polygon(40% 40%, 50% 25%, 60% 40%, 75% 50%, 60% 60%, 50% 75%, 40% 60%, 25% 50%);
+                                    transform: rotate(${rotate}deg);
+                                }
+                                99% {
+                                    clip-path: polygon(0 0, 50% 0, 100% 0, 100% 50%, 100% 100%, 50% 100%, 0 100%, 0 50%);
+                                    transform: rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform: rotate(${rotate}deg);
+                                }
+                            }`,
+                            "circle":
+                            `@keyframes ${name} {
+                                0% {
+                                    clip-path: circle(25%);
+                                    transform: rotate(${rotate}deg);
+                                }
+                                99% {
+                                    clip-path: circle(100%);
+                                    transform: rotate(${rotate}deg);
+                                }
+                                100% {
+                                    transform: rotate(${rotate}deg);
                                 }
                             }`,
                             "brick-up":
@@ -574,24 +620,29 @@
                     let animPrevStyles = (() => {
                         let result = '';
 
-                        ;(["lists", "messages", "buttons"]).forEach(type=>{
+                        ;(["lists", "buttons", "messages", "popouts"]).forEach(type=>{
                             if (!Animations.names.includes(this.settings[type].name)) {
                                 this.settings[type].name = this.defaultSettings[type].name;
-                                PluginUtilities.saveSettings("Animations", this.settings);
+                                PluginUtilities.saveSettings(this.getName(), this.settings);
                             }
                         });
 
                         ;(["lists", "buttons"]).forEach(type=>{
                             if (!Animations.sequences.includes(this.settings[type].sequence)) {
                                 this.settings[type].sequence = this.defaultSettings[type].sequence;
-                                PluginUtilities.saveSettings("Animations", this.settings);
+                                PluginUtilities.saveSettings(this.getName(), this.settings);
                             }
                         });
 
                         Animations.names.forEach(animName => {
                             for (var i = 1; i < 5; i++) {
                                 result += `.animPreview[data-animation="${animName}"]:hover > .animTempBlock:nth-child(${i})`
-                                    + ` {transform: scale(0); animation-name: ${animName}; animation-fill-mode: forwards; animation-duration: 0.3s; animation-delay: ${(i - 1) * 0.06}s;}\n`
+                                    + ` {
+                                        transform: scale(0); animation-name: ${animName};
+                                        animation-fill-mode: forwards;
+                                        animation-duration: 0.3s;
+                                        animation-delay: ${(i - 1) * 0.06}s;
+                                    }\n`
                             }
                         })
 
@@ -663,6 +714,31 @@
                 `}
                 `}
 
+                ${!this.settings.buttons.enabled ? '' : `
+                ${this.settings.buttons.selectors?this.settings.buttons.selectors:Animations.selectorsButtons.join(', ')}
+                {
+                    transform: scaleX(0);
+                    animation-name: ${this.settings.buttons.custom.enabled &&
+                                    this.settings.buttons.custom.frames[this.settings.buttons.custom.page].trim() != '' &&
+                                    this.isValidCSS(this.settings.buttons.custom.frames[this.settings.buttons.custom.page])
+                                    ? 'custom-buttons' : this.settings.buttons.name};
+                    animation-fill-mode: forwards;
+                    animation-duration: ${this.settings.buttons.duration}s;
+                }
+                `}
+
+                ${!this.settings.popouts.enabled ? '' : `
+                ${this.settings.popouts.selectors?this.settings.popouts.selectors:Animations.selectorsPopouts.join(', ')}
+                {
+                    transform: scaleX(0);
+                    animation-name: ${this.settings.popouts.custom.enabled &&
+                                    this.settings.popouts.custom.frames[this.settings.popouts.custom.page].trim() != '' &&
+                                    this.isValidCSS(this.settings.popouts.custom.frames[this.settings.popouts.custom.page])
+                                    ? 'custom-popouts' : this.settings.popouts.name};
+                    animation-duration: ${this.settings.popouts.duration}s;
+                }
+                `}
+
                 ${!this.settings.messages.enabled ? '' : `
                 /* messages */
                 .messageListItem-ZZ7v6g > .message-2CShn3
@@ -678,19 +754,6 @@
 
                 /*lines-forward-messages fix*/
                 .divider-IqmEqJ {z-index: 0}
-                `}
-
-                ${!this.settings.buttons.enabled ? '' : `
-                ${this.settings.buttons.selectors?this.settings.buttons.selectors:Animations.selectorsButtons.join(', ')}
-                {
-                    transform: scaleX(0);
-                    animation-name: ${this.settings.buttons.custom.enabled &&
-                                    this.settings.buttons.custom.frames[this.settings.buttons.custom.page].trim() != '' &&
-                                    this.isValidCSS(this.settings.buttons.custom.frames[this.settings.buttons.custom.page])
-                                    ? 'custom-buttons' : this.settings.buttons.name};
-                    animation-fill-mode: forwards;
-                    animation-duration: ${this.settings.buttons.duration}s;
-                }
                 `}
 
                 /**Non-custom**/
@@ -722,12 +785,16 @@
                     ${this.settings.lists.custom.frames[this.settings.lists.custom.page]}
                 }
 
+                @keyframes custom-buttons {
+                    ${this.settings.buttons.custom.frames[this.settings.buttons.custom.page]}
+                }
+
                 @keyframes custom-messages {
                     ${this.settings.messages.custom.frames[this.settings.messages.custom.page]}
                 }
 
-                @keyframes custom-buttons {
-                    ${this.settings.buttons.custom.frames[this.settings.buttons.custom.page]}
+                @keyframes custom-popouts {
+                    ${this.settings.popouts.custom.frames[this.settings.popouts.custom.page]}
                 }
                 `;
 
@@ -742,7 +809,11 @@
                 }
 
                 closeSettings() {
-                    document.querySelector('.bd-addon-modal-footer > .bd-button').click()
+                    document.querySelector('.bd-addon-modal-footer > .bd-button')?.click()
+                }
+
+                wait(ms) {
+                    return new Promise((rs, rj)=>setTimeout(rs, ms))
                 }
 
                 isValidCSS(text){
@@ -763,6 +834,155 @@
                 }
 
                 getSettingsPanel() {
+
+                    switch(DiscordModules.UserSettingsStore.locale) {
+
+                        //This is for translating the plugin (I won't do that, of course, a hundred labels) (possibly)
+
+                        // case '*your language code*':
+                        //     TEMPS = *...copy from the bottom and translate*
+                        // break;
+
+                        case 'en-US':
+                        case 'en-GB':
+                        default:
+                        var TEMPS = {
+                            TOOLTIPS: {
+                                BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Latest changes',
+                                BUTTON_ANIMATIONS_VERSION_CHECK: 'Checks for updates',
+                                BUTTON_ANIMATIONS_RESET: 'Resets all settings',
+                                BUTTON_ANIMATIONS_REBUILD: 'Recreates styles. When the plugin is restarted, the styles are recreates too',
+                                BUTTON_ANIMATIONS_ISSUES: 'Link to GitHub',
+                                BUTTON_ANIMATIONS_DISCUSSIONS: 'Link to GitHub',
+                                BUTTON_LISTS_SWITCH: 'Lists switch',
+                                BUTTON_BUTTONS_SWITCH: 'Buttons switch',
+                                BUTTON_MESSAGES_SWITCH: 'Messages switch',                                
+                                BUTTON_POPOUTS_SWITCH: 'Popouts switch',                                
+                                BUTTON_RESET_LISTS: 'Resets lists settings',
+                                BUTTON_RESET_BUTTONS: 'Resets buttons settings',
+                                BUTTON_RESET_MESSAGES: 'Resets messages settings',
+                                BUTTON_RESET_POPOUTS: 'Resets popouts settings',
+                                BUTTON_SELECTORS_LISTS_DEFAULT: 'Restores default selectors',
+                                BUTTON_SELECTORS_LISTS_CLEAR: 'Clears the textarea',
+                                BUTTON_SELECTORS_BUTTONS_DEFAULT: 'Restores default selectors',
+                                BUTTON_SELECTORS_BUTTONS_CLEAR: 'Clears the textarea',
+                                BUTTON_SELECTORS_POPOUTS_DEFAULT: 'Restores default selectors',
+                                BUTTON_SELECTORS_POPOUTS_CLEAR: 'Clears the textarea'
+                            },
+                            LABELS: {
+                                BUTTON_ANIMATIONS_RESET: 'Reset all',
+                                BUTTON_ANIMATIONS_RESET_RESETING: 'Reseting...',
+                                BUTTON_ANIMATIONS_REBUILD: 'Rebuild animations',
+                                BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Changelog',
+                                BUTTON_ANIMATIONS_VERSION_CHECK: 'Update',
+                                BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING: 'Searching for updates...',
+                                BUTTON_ANIMATIONS_VERSION_CHECK_TIMEOUT: 'Timeout exceeded',
+                                BUTTON_ANIMATIONS_VERSION_CHECK_ERROR: 'An error occurred',
+                                BUTTON_ANIMATIONS_VERSION_CHECK_OLDER: (version_='{version}')=>`v${version_} - Update`,
+                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_TITLE: 'Your version is older',
+                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_COMPARE: (yourV_, githubV_)=>`v${yourV_} (your)  →  v${githubV_} (github)`,
+                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_NOTE: 'The plugin will be updated.',
+                                BUTTON_ANIMATIONS_VERSION_CHECK_NEWER: (version_='{version}')=>`v${version_} - Your own version`,
+                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_TITLE: 'Your version is newer',
+                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_COMPARE: (yourV_, githubV_)=>`v${yourV_} (your)  ←  v${githubV_} (github)`,
+                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_NOTE: 'The plugin will be downdated.',
+                                BUTTON_ANIMATIONS_VERSION_CHECK_LATEST: (version_='{version}')=>`v${version_} - Latest version`,
+                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_TITLE: 'Your version is latest',
+                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_COMPARE: (yourV_, githubV_)=>`v${yourV_} (your)  ↔  v${githubV_} (github)`,
+                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_NOTE: 'The plugin will be restored.',
+                                BUTTON_ANIMATIONS_ISSUES: 'Issues',
+                                BUTTON_ANIMATIONS_DISCUSSIONS: 'Discussions',
+                                BUTTON_LISTS_SWITCH: 'Lists',
+                                BUTTON_BUTTONS_SWITCH: 'Buttons',
+                                BUTTON_MESSAGES_SWITCH: 'Messages',
+                                BUTTON_POPOUTS_SWITCH: 'Popouts',
+                                BUTTON_RESET_LISTS: 'Reset lists',
+                                BUTTON_RESET_BUTTONS: 'Reset buttons',
+                                BUTTON_RESET_MESSAGES: 'Reset messages',
+                                BUTTON_RESET_POPOUTS: 'Reset popouts',
+                                BUTTON_SELECTORS_LISTS_DEFAULT: 'Default',
+                                BUTTON_SELECTORS_LISTS_CLEAR: 'Clear',
+                                BUTTON_SELECTORS_BUTTONS_DEFAULT: 'Default',
+                                BUTTON_SELECTORS_BUTTONS_CLEAR: 'Clear',
+                                BUTTON_SELECTORS_POPOUTS_DEFAULT: 'Default',
+                                BUTTON_SELECTORS_POPOUTS_CLEAR: 'Clear',
+
+                                FIELD_NAME: 'Name',
+                                FIELD_SEQUENCE: 'Sequence',
+                                FIELD_DELAY: 'Delay',
+                                FIELD_LIMIT: 'Limit',
+                                FIELD_DURATION: 'Duration',
+
+                                FIELD_LISTS_NAME_NOTE: (default_='{default}')=>`[${default_}] The name of the animation of the list items when they appear.`,
+                                FIELD_LISTS_SEQUENCE_NOTE: (default_='{default}')=>`[${default_}] The sequence in which the list items are built.`,
+                                FIELD_LISTS_DELAY_NOTE: (default_='{default}')=>`[${default_}] Delay before appearing for each list item in seconds.`,
+                                FIELD_LISTS_LIMIT_NOTE: (default_='{default}')=>`[${default_}] The maximum number of items in the list for which the animation will be played.`,
+                                FIELD_LISTS_DURATION_NOTE: (default_='{default}')=>`[${default_}] Animation playback speed in seconds for each list item after the delay.`,
+
+                                FIELD_BUTTONS_NAME_NOTE: (default_='{default}')=>`[${default_}] The name of the animation of the buttons when they appear.`,
+                                FIELD_BUTTONS_SEQUENCE_NOTE: (default_='{default}')=>`[${default_}] The sequence in which the buttons are built.`,
+                                FIELD_BUTTONS_DELAY_NOTE: (default_='{default}')=>`[${default_}] Delay before appearing for each button in seconds.`,
+                                FIELD_BUTTONS_DURATION_NOTE: (default_='{default}')=>`[${default_}] Animation playback speed in seconds for each button after the delay.`,
+
+                                FIELD_MESSAGES_NAME_NOTE: (default_='{default}')=>`[${default_}] The name of the animation of the messages when they appear.`,
+                                FIELD_MESSAGES_DELAY_NOTE: (default_='{default}')=>`[${default_}] Delay before appearing for each message in seconds.`,
+                                FIELD_MESSAGES_LIMIT_NOTE: (default_='{default}')=>`[${default_}] The maximum number of messages in the list for which the animation will be played.`,
+                                FIELD_MESSAGES_DURATION_NOTE: (default_='{default}')=>`[${default_}] Animation playback speed in seconds for each message after the delay.`,
+
+                                FIELD_POPOUTS_NAME_NOTE: (default_='{default}')=>`[${default_}] The name of the animation of the popouts when they appear.`,
+                                FIELD_POPOUTS_DURATION_NOTE: (default_='{default}')=>`[${default_}] Animation playback speed in seconds for a popout.`,
+
+                                FIELD_LISTS_SELECTORS: 'Selectors of lists',
+                                FIELD_LISTS_SELECTORS_NOTE: 'If you leave this field empty, the default selectors will appear here on reload. Changes to the selectors are saved when typing (if the code is valid). The separator is a comma (,).',
+                                FIELD_BUTTONS_SELECTORS: 'Selectors of buttons',
+                                FIELD_BUTTONS_SELECTORS_NOTE: 'If you leave this field empty, the default selectors will appear here on reload. Changes to the selectors are saved when typing (if the code is valid). The separator is a comma (,).',
+                                FIELD_POPOUTS_SELECTORS: 'Selectors of popouts',
+                                FIELD_POPOUTS_SELECTORS_NOTE: 'If you leave this field empty, the default selectors will appear here on reload. Changes to the selectors are saved when typing (if the code is valid). The separator is a comma (,).',
+
+                                PREVIEW_SELECTING: 'Selecting',
+                                PREVIEW_EDITING: 'Editing',
+                                PREVIEW_BUTTON_TEMPLATE: 'Template',
+                                PREVIEW_BUTTON_CLEAR: 'Clear',
+                                PREVIEW_BUTTON_LOAD: 'Load',
+                                PREVIEW_BUTTON_SAVE: 'Save',
+                                PREVIEW_PLACEHOLDER_HINT: 'Animated elements have "scale(0)" in the transformation,\nso your animation must contain "scale(1)" on the final frame(100%).',
+                                PREVIEW_IN: 'In',
+                                PREVIEW_OUT: 'Out',
+                                PREVIEW_CIRCLE: 'Circle',
+                                PREVIEW_POLYGON: 'Polygon',
+                                PREVIEW_OPACITY: 'Opacity',
+                                PREVIEW_SLIME: 'Slime',
+                                PREVIEW_BRICK_RIGHT: 'Brick right',
+                                PREVIEW_BRICK_LEFT: 'Brick left',
+                                PREVIEW_BRICK_UP: 'Brick up',
+                                PREVIEW_BRICK_DOWN: 'Brick down',
+                                PREVIEW_SLIDE_RIGHT: 'Slide right',
+                                PREVIEW_SLIDE_LEFT: 'Slide left',
+                                PREVIEW_SLIDE_UP: 'Slide up',
+                                PREVIEW_SLIDE_DOWN: 'Slide down',
+                                PREVIEW_SLIDE_UP_RIGHT: 'Slide up (right)',
+                                PREVIEW_SLIDE_UP_LEFT: 'Slide up (left)',
+                                PREVIEW_SLIDE_DOWN_RIGHT: 'Slide down (right)',
+                                PREVIEW_SLIDE_DOWN_LEFT: 'Slide down (left)',
+                                PREVIEW_SKEW_RIGHT: 'Skew right',
+                                PREVIEW_SKEW_LEFT: 'Skew left',
+                                PREVIEW_WIDE_SKEW_RIGHT: 'Wide skew right',
+                                PREVIEW_WIDE_SKEW_LEFT: 'Wide skew left',
+
+                                PREVIEW_VERTICAL_FROM_FIRST: '↓',
+                                PREVIEW_VERTICAL_FROM_LAST: '↑',
+                                PREVIEW_HORIZONTAL_FROM_FIRST: '→',
+                                PREVIEW_HORIZONTAL_FROM_LAST: '←',
+
+                                GROUP_LISTS: 'Lists',
+                                GROUP_BUTTONS: 'Buttons',
+                                GROUP_MESSAGES: 'Messages',
+                                GROUP_POPOUTS: 'Popouts',
+                                
+                                GROUP_ADVANCED: 'Advanced',
+                            }
+                        }
+                    }
 
                     var ElementButton = (button) => {
 
@@ -788,7 +1008,7 @@
                                 }
                             },
                                 [
-                                    button.svgPath ? React.createElement('svg',
+                                    Array.isArray(button.svgPaths) ? React.createElement('svg',
                                         {
                                             viewBox: button.svgView ?? '0 0 24 24',
                                             fill: '#fff',
@@ -798,9 +1018,16 @@
                                                 'margin-right': '4px'
                                             }
                                         },
-                                        React.createElement('path', { d: button.svgPath })
+                                        (()=>{
+                                            var result = []
+                                            button.svgPaths.forEach(path=>result.push(React.createElement('path', { d: path })));
+                                            return result;
+                                        })()
                                     ) : null,
                                     React.createElement('span', {
+                                        style: {
+                                            'max-width': 'none'
+                                        },
                                         class: 'buttonText-1c-l_x',
                                     },
                                         button.label
@@ -872,10 +1099,10 @@
 
                     /**
                      * Returns object - `class`, `render`.
-                     * @param {object} options Textarea options.
-                     * @param {string} [options.height] Textarea height.
-                     * @param {string} [options.type='text'] Input type: `button`, `checkbox`, `file`, `hidden`, `image`, `password`, `radio`, `reset`, `submit` or `text`. Default - `text`.
-                     * @param {string} [options.placeholder] Hint text.
+                     * @param {object} options TextareaPanel options.
+                     * @param {string} [options.margin]
+                     * @param {string} [options.padding]
+                     * @param {string} [options.class]
                      * @param {object} [options.buttonsPanel] ButtonsPanel.
                      * @param {Array<object>} [options.buttonsPanel.containersTemp] Array with button container templates.
                      * @param {object} [options.buttonsPanel.options] ButtonsPanel options.
@@ -883,8 +1110,14 @@
                      * @param {string} [options.buttonsPanel.options.heightAll] The height of each button, if the template does not specify a different height.
                      * @param {string} [options.buttonsPanel.options.align="inline-flex"] `justify-content` css value for each button container. Default - `flex-start`.
                      * @param {string} [options.class]
-                     * @param {(e:InputEvent)=>void} onchange Event at each change.
-                     * @param {string} value
+                     * @param {object} [options.textarea] Textarea options.
+                     * @param {string} [options.textarea.width]
+                     * @param {string} [options.textarea.height]
+                     * @param {string} [options.textarea.type]
+                     * @param {string} [options.textarea.placeholder]
+                     * @param {string} [options.textarea.class] Addition classes.
+                     * @param {(e:InputEvent)=>void} onchange Event at each change of the textarea.
+                     * @param {string} value Value of the textarea.
                      */
 
                     var TextareaPanel = (options={}, value, onchange) => {
@@ -927,10 +1160,21 @@
                      * Returns object - `class`, `render`.
                      * @param {Array<object>} previewsTemp Array with previews templates.
                      * @param {object} options Panel optinons.
+                     * @param {boolean} horizontal Preview positioning.
                      * @param {string} [options.type] `*class*-name`, `*class*-sequence`, ...
                      * @param {string} [options.class] `lists`, `messages`, `buttons`
+                     * @param {object} [options.custom] Editor options.
+                     * @param {boolean} [options.custom.enabled] Editor availability.
+                     * @param {Array<string>} [options.custom.frames] Editor frames default.
+                     * @param {number} [options.custom.page] Editor page default.
+                     * @param {number} [options.custom.data] Editor data `this.settings.*type*.custom`.
+                     * @param {object} [options.tempBlocks] TempBlocks options.
+                     * @param {string} [options.tempBlocks.count=4] TempBlocks count.
+                     * @param {string} [options.tempBlocks.margin='4px'] TempBlocks margin.
+                     * @param {string} [options.tempBlocks.height] TempBlock height.
+                     * @param {string} [options.tempBlocks.width] TempBlock width.
                      * @param {(e:MouseEvent)=>void} [onclick]
-                     * @param {string} value
+                     * @param {string} value One of the values of `previevsTemp`
                      */
 
                     var PreviewsPanel = (previewsTemp = [], options = {}, value, onclick) => {
@@ -942,22 +1186,28 @@
                         var textareas = [];
                         var openedPage = 0;
                         var containersCount = 0;
-                        var previewsCountOnPage = (options.horizontal ? 6 : 8);
+                        var previewsCountOnPage = (options?.horizontal ? 6 : 8);
 
-                        if(options.custom)
+                        if(options?.custom)
                         if(this.settings[options.class].custom.enabled)
                         if(!this.isValidCSS(this.settings[options.class].custom.frames[this.settings[options.class].custom.page]))
                         {
                             this.settings[options.class].custom.enabled = false;
-                            PluginUtilities.saveSettings("Animations", this.settings);
+                            PluginUtilities.saveSettings(this.getName(), this.settings);
                         }
 
                         previewsTemp.forEach((template, index) => {
                             if (value == template.value) openedPage = Math.ceil((index + 1) / previewsCountOnPage)-1;
                             var tempBlocks = []
-                            for (var i = 0; i < 4; i++) {
+                            var tempCount = ((typeof options?.tempBlocks?.count == 'number')?options.tempBlocks.count:4)
+                            for (var i = 0; i < tempCount; i++) {
                                 tempBlocks[i] = React.createElement('div', {
-                                    class: 'animTempBlock'
+                                    class: 'animTempBlock',
+                                    style: {
+                                        width: options?.tempBlocks?.width ?? (options?.horizontal?'15%':'auto'),
+                                        height: options?.tempBlocks?.height ?? (options?.horizontal?'26px':'18%'),
+                                        margin: options?.tempBlocks?.margin ?? '4px'
+                                    }
                                 })
                             }
 
@@ -1035,14 +1285,14 @@
                                                     {
                                                         buttons: [
                                                             {
-                                                                label: 'Template',
+                                                                label: TEMPS.LABELS.PREVIEW_BUTTON_TEMPLATE,
                                                                 onclick: (e) => {
                                                                     e.currentTarget.closest('.animTextareaPanel')
                                                                     .querySelector('.animTextarea').value = `0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}`;
                                                                 }
                                                             },
                                                             {
-                                                                label: 'Clear',
+                                                                label: TEMPS.LABELS.PREVIEW_BUTTON_CLEAR,
                                                                 onclick: (e) => {
                                                                     var textarea = e.currentTarget.closest('.animTextareaPanel').querySelector('.animTextarea')
                                                                     textarea.value = '';
@@ -1051,7 +1301,7 @@
                                                             },
                                                             {
                                                                 color: 'green',
-                                                                label: 'Load',
+                                                                label: TEMPS.LABELS.PREVIEW_BUTTON_LOAD,
                                                                 onclick: (e) => {
                                                                     e.currentTarget.closest('.animTextareaPanel')
                                                                     .querySelector('.animTextarea').value = this.settings[options.class].custom.frames[this.settings[options.class].custom.page]
@@ -1059,11 +1309,11 @@
                                                             },
                                                             {
                                                                 color: 'green',
-                                                                label: 'Save',
+                                                                label: TEMPS.LABELS.PREVIEW_BUTTON_SAVE,
                                                                 onclick: (e) => {
                                                                     this.settings[options.class].custom.frames[this.settings[options.class].custom.page] = e.currentTarget.closest('.animTextareaPanel')
                                                                     .querySelector('.animTextarea').value;
-                                                                    PluginUtilities.saveSettings("Animations", this.settings);
+                                                                    PluginUtilities.saveSettings(this.getName(), this.settings);
                                                                     this.changeStyles()
                                                                 }
                                                             },
@@ -1076,7 +1326,7 @@
                                             },
                                             textarea: {
                                                 height: '281px',
-                                                placeholder: '/*\nAnimated elements have scale(0) in the transformation,\nso your animation must contain scale(1) on the final frame(100%).\n*/\n\n0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}',
+                                                placeholder: `/*\n${TEMPS.LABELS.PREVIEW_PLACEHOLDER_HINT}\n*/\n\n0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: translate(0, 0) scale(1);\n}`,
                                             },
                                             class: `${this.settings[options.class].custom.enabled && i == this.settings[options.class].custom.page ? 'show' : ''}`,
                                         },
@@ -1136,14 +1386,15 @@
                                     React.createElement('div',
                                         {
                                             class: `animPreviewActionButton ${this.settings[options.class].custom.enabled ? 'editing' : 'selecting'} title-3sZWYQ`,
-                                            onClick: (e) => {
+                                            onClick: async (e) => {
                                                 this.settings[options.class].custom.enabled = !this.settings[options.class].custom.enabled;
-                                                PluginUtilities.saveSettings("Animations", this.settings);
+                                                PluginUtilities.saveSettings(this.getName(), this.settings);
                                                 this.changeStyles();
 
                                                 var panel = e.currentTarget.closest('.animPreviewsPanel');
-                                                var all = panel.querySelectorAll(`.animPreviewsContainer, .animTextareaPanel`)
+                                                var all = panel.querySelectorAll(`.animPreviewsContainer, .animTextareaPanel`);
                                                 all.forEach(elem => elem.classList.remove('show'));
+
                                                 if (this.settings[options.class].custom.enabled) {
                                                     e.currentTarget.classList.add('editing')
                                                     e.currentTarget.classList.remove('selecting')
@@ -1168,7 +1419,7 @@
                                                 React.createElement('div', {
                                                     class: 'switchActionButtonLabel'
                                                 },
-                                                    'Selecting'
+                                                    TEMPS.LABELS.PREVIEW_SELECTING
                                                 ),
                                                 React.createElement("svg", {
                                                     width: "24",
@@ -1193,7 +1444,7 @@
                                                 React.createElement('div', {
                                                     class: 'switchActionButtonLabel'
                                                 },
-                                                    'Editing'
+                                                    TEMPS.LABELS.PREVIEW_EDITING
                                                 ),
                                                 React.createElement("svg", {
                                                     width: "24",
@@ -1236,26 +1487,31 @@
                     }
 
                     setTimeout(()=>{
-                        Tooltip.create(document.getElementById('animations-reset'), 'Resets all settings', {side: 'left'})
-                        Tooltip.create(document.getElementById('animations-rebuild'), 'Recreates styles. When the plugin is restarted, the styles are recreates too', {side: 'top'})
-                        Tooltip.create(document.getElementById('animations-version-check'), 'Checks for updates', {side: 'right'})
+                        Tooltip.create(document.getElementById('animations-version-changelog'), TEMPS.TOOLTIPS.BUTTON_ANIMATIONS_VERSION_CHANGELOG)
+                        Tooltip.create(document.getElementById('animations-version-check'), TEMPS.TOOLTIPS.BUTTON_ANIMATIONS_VERSION_CHECK)
 
-                        Tooltip.create(document.getElementById('animations-issues'), 'Link to GitHub', {side: 'left'})
-                        Tooltip.create(document.getElementById('animations-discussions'), 'Link to GitHub', {side: 'right'})
+                        Tooltip.create(document.getElementById('animations-reset'), TEMPS.TOOLTIPS.BUTTON_ANIMATIONS_RESET)
+                        Tooltip.create(document.getElementById('animations-rebuild'), TEMPS.TOOLTIPS.BUTTON_ANIMATIONS_REBUILD)
 
-                        Tooltip.create(document.getElementById('lists-switch-button'), 'Lists switch', {side: 'bottom'})
-                        Tooltip.create(document.getElementById('messages-switch-button'), 'Messages switch', {side: 'bottom'})
-                        Tooltip.create(document.getElementById('buttons-switch-button'), 'Buttons switch', {side: 'bottom'})
+                        Tooltip.create(document.getElementById('animations-issues'), TEMPS.TOOLTIPS.BUTTON_ANIMATIONS_ISSUES)
+                        Tooltip.create(document.getElementById('animations-discussions'), TEMPS.TOOLTIPS.BUTTON_ANIMATIONS_DISCUSSIONS)
 
-                        Tooltip.create(document.getElementById('animations-reset-lists'), 'Resets lists settings', {side: 'bottom'})
-                        Tooltip.create(document.getElementById('animations-reset-messages'), 'Resets messages settings', {side: 'bottom'})
-                        Tooltip.create(document.getElementById('animations-reset-buttons'), 'Resets buttons settings', {side: 'bottom'})
+                        Tooltip.create(document.getElementById('lists-switch-button'), TEMPS.TOOLTIPS.BUTTON_LISTS_SWITCH)
+                        Tooltip.create(document.getElementById('buttons-switch-button'), TEMPS.TOOLTIPS.BUTTON_BUTTONS_SWITCH)
+                        Tooltip.create(document.getElementById('messages-switch-button'), TEMPS.TOOLTIPS.BUTTON_MESSAGES_SWITCH)
+                        Tooltip.create(document.getElementById('popouts-switch-button'), TEMPS.TOOLTIPS.BUTTON_POPOUTS_SWITCH)
 
-                        Tooltip.create(document.getElementById('lists-selectors-default'), 'Restores default selectors', {side: 'bottom'})
-                        Tooltip.create(document.getElementById('lists-selectors-clear'), 'Clears the textarea', {side: 'bottom'})
+                        Tooltip.create(document.getElementById('animations-reset-lists'), TEMPS.TOOLTIPS.BUTTON_RESET_LISTS)
+                        Tooltip.create(document.getElementById('animations-reset-buttons'), TEMPS.TOOLTIPS.BUTTON_RESET_BUTTONS)
+                        Tooltip.create(document.getElementById('animations-reset-messages'), TEMPS.TOOLTIPS.BUTTON_RESET_MESSAGES)
+                        Tooltip.create(document.getElementById('animations-reset-popouts'), TEMPS.TOOLTIPS.BUTTON_RESET_POPOUTS)
 
-                        Tooltip.create(document.getElementById('buttons-selectors-default'), 'Restores default selectors', {side: 'bottom'})
-                        Tooltip.create(document.getElementById('buttons-selectors-clear'), 'Clears the textarea', {side: 'bottom'})
+                        Tooltip.create(document.getElementById('lists-selectors-default'), TEMPS.TOOLTIPS.BUTTON_SELECTORS_LISTS_DEFAULT)
+                        Tooltip.create(document.getElementById('lists-selectors-clear'), TEMPS.TOOLTIPS.BUTTON_SELECTORS_LISTS_CLEAR)
+                        Tooltip.create(document.getElementById('buttons-selectors-default'), TEMPS.TOOLTIPS.BUTTON_SELECTORS_BUTTONS_DEFAULT)
+                        Tooltip.create(document.getElementById('buttons-selectors-clear'), TEMPS.TOOLTIPS.BUTTON_SELECTORS_BUTTONS_CLEAR)
+                        Tooltip.create(document.getElementById('popouts-selectors-default'), TEMPS.TOOLTIPS.BUTTON_SELECTORS_POPOUTS_DEFAULT)
+                        Tooltip.create(document.getElementById('popouts-selectors-clear'), TEMPS.TOOLTIPS.BUTTON_SELECTORS_POPOUTS_CLEAR)
                     }, 500)
 
                     return Settings.SettingPanel.build(
@@ -1268,38 +1524,29 @@
                                     buttons: [
                                         {
                                             color: 'blurple',
-                                            label: 'Reset all',
-                                            id: 'animations-reset',
-                                            svgView: '0 0 20 20',
-                                            svgPath: 'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
+                                            label: TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHANGELOG,
+                                            svgPaths: [
+                                                'M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z',
+                                            ],
+                                            id: 'animations-version-changelog',
+                                            inverted: false,
                                             onclick: (e) => {
-
-                                                let button = e.currentTarget;
-
-                                                PluginUtilities.saveSettings("Animations", this.defaultSettings);
-                                                this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
-                                                this.changeStyles(200);
-                                                button.innerText = 'Reseting...';
-                                                this.closeSettings();
+                                                Modals.showChangelogModal(this.getName(), this.getVersion(), config.changelog)
                                             }
                                         },
                                         {
                                             color: 'blurple',
-                                            label: 'Rebuild animations',
-                                            id: 'animations-rebuild',
-                                            svgPath: 'M 13 3 c -4.97 0 -9 4.03 -9 9 H 1 l 3.89 3.89 l 0.07 0.14 L 9 12 H 6 c 0 -3.87 3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 z',
-                                            onclick: (e) => this.changeStyles(200)
-                                        },
-                                        {
-                                            color: 'blurple',
-                                            label: 'Update',
+                                            label: TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK,
+                                            svgPaths: [
+                                                'M16.293 9.293L17.707 10.707L12 16.414L6.29297 10.707L7.70697 9.293L11 12.586V2H13V12.586L16.293 9.293ZM18 20V18H20V20C20 21.102 19.104 22 18 22H6C4.896 22 4 21.102 4 20V18H6V20H18Z',
+                                            ],
                                             id: 'animations-version-check',
                                             inverted: false,
                                             onclick: (e) => {
 
                                                 let button = e.currentTarget;
 
-                                                button.innerText = 'Searching for updates...';
+                                                button.querySelector('span').innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING;
 
                                                 const Http = new XMLHttpRequest();
                                                 Http.open("GET", 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.plugin.js');
@@ -1307,7 +1554,7 @@
 
                                                 Http.timeout = 5000;
                                                 Http.ontimeout = function (e) {
-                                                    button.innerText = 'Timeout exceeded';
+                                                    button.querySelector('span').innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_TIMEOUT;
                                                     button.classList.remove('blurple')
                                                     button.classList.add('red')
                                                 };
@@ -1316,7 +1563,7 @@
                                                     if (e.currentTarget.readyState != 4) return
 
                                                     if (!Http.responseText) {
-                                                        button.innerText = 'An error occurred';
+                                                        button.querySelector('span').innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_ERROR;
                                                         button.classList.remove('blurple')
                                                         button.classList.add('red')
                                                         return
@@ -1360,15 +1607,18 @@
 
                                                     switch (newerVersion(GitHubVersion, this.getVersion())) {
                                                         case GitHubVersion:
-                                                            button.innerText = `v${GitHubVersion} - Update`
+                                                            button.querySelector('span').innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_OLDER(GitHubVersion)
                                                             button.classList.remove('blurple')
                                                             button.classList.add('green')
                                                             button.addEventListener('click',
                                                                 () => {
-                                                                    BdApi.showConfirmationModal('Your version is older',
+                                                                    BdApi.showConfirmationModal(TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_TITLE,
                                                                         [
-                                                                            `v${this.getVersion()} (your)  →  v${GitHubVersion} (github)`,
-                                                                            React.createElement('span', { style: { color: this.colors.green, 'text-transform': 'uppercase' } }, 'The plugin will be updated.')
+                                                                            TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_COMPARE(this.getVersion(), GitHubVersion),
+                                                                            React.createElement(
+                                                                                'span', { style: { color: this.colors.green, 'text-transform': 'uppercase' } },
+                                                                                TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_NOTE
+                                                                            )
                                                                         ],
                                                                         {
                                                                             onConfirm() {
@@ -1380,15 +1630,18 @@
                                                             )
                                                             break;
                                                         case this.getVersion():
-                                                            button.innerText = `v${this.getVersion()} - Your own version`
+                                                            button.querySelector('span').innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_NEWER(this.getVersion())
                                                             button.classList.remove('blurple')
                                                             button.classList.add('grey')
                                                             button.addEventListener('click',
                                                                 () => {
-                                                                    BdApi.showConfirmationModal('Your version is newer',
+                                                                    BdApi.showConfirmationModal(TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_TITLE,
                                                                         [
-                                                                            `v${this.getVersion()} (your)  ←  v${GitHubVersion} (github)`,
-                                                                            React.createElement('span', { style: { color: this.colors.red, 'text-transform': 'uppercase' } }, 'The plugin will be downdated.')
+                                                                            TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_COMPARE(this.getVersion(), GitHubVersion),
+                                                                            React.createElement(
+                                                                                'span', { style: { color: this.colors.red, 'text-transform': 'uppercase' } },
+                                                                                TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_NOTE
+                                                                            )
                                                                         ],
                                                                         {
                                                                             onConfirm() {
@@ -1400,15 +1653,18 @@
                                                             )
                                                             break;
                                                         case false:
-                                                            button.innerText = `v${this.getVersion()} - Latest version`
+                                                            button.querySelector('span').innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_LATEST(this.getVersion())
                                                             button.classList.remove('blurple')
                                                             button.classList.add('grey')
                                                             button.addEventListener('click',
                                                                 () => {
-                                                                    BdApi.showConfirmationModal('Your version is latest',
+                                                                    BdApi.showConfirmationModal(TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_TITLE,
                                                                         [
-                                                                            `v${this.getVersion()} (your)  ↔  v${GitHubVersion} (github)`,
-                                                                            React.createElement('span', { style: { color: this.colors.yellow, 'text-transform': 'uppercase' } }, 'The plugin will be restored.')
+                                                                            TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_COMPARE(this.getVersion(), GitHubVersion),
+                                                                            React.createElement(
+                                                                                'span', { style: { color: this.colors.yellow, 'text-transform': 'uppercase' } },
+                                                                                TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_NOTE
+                                                                            )
                                                                         ],
                                                                         {
                                                                             onConfirm() {
@@ -1431,19 +1687,56 @@
                                 {
                                     buttons: [
                                         {
-                                            label: 'Issues',
+                                            color: 'blurple',
+                                            label: TEMPS.LABELS.BUTTON_ANIMATIONS_RESET,
+                                            id: 'animations-reset',
+                                            svgView: '0 0 20 20',
+                                            svgPaths: [
+                                                'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
+                                            ],
+                                            onclick: async (e) => {
+
+                                                let button = e.currentTarget;
+                                                button.querySelector('span').innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_RESET_RESETING;
+                                                await this.wait(500);
+
+                                                PluginUtilities.saveSettings(this.getName(), this.defaultSettings);
+                                                this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
+                                                this.changeStyles(200);
+                                                this.closeSettings();
+                                            }
+                                        },
+                                        {
+                                            color: 'blurple',
+                                            label: TEMPS.LABELS.BUTTON_ANIMATIONS_REBUILD,
+                                            id: 'animations-rebuild',
+                                            svgPaths: [
+                                                'M 13 3 c -4.97 0 -9 4.03 -9 9 H 1 l 3.89 3.89 l 0.07 0.14 L 9 12 H 6 c 0 -3.87 3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 z',
+                                            ],
+                                            onclick: (e) => this.changeStyles(200)
+                                        }
+                                    ],
+                                },
+                                {
+                                    buttons: [
+                                        {
+                                            label: TEMPS.LABELS.BUTTON_ANIMATIONS_ISSUES,
                                             color: 'grey',
                                             id: 'animations-issues',
-                                            svgPath: 'm12 .5c-6.63 0-12 5.28-12 11.792 0 5.211 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.361-1.335-1.725-1.335-1.725-1.087-.731.084-.716.084-.716 1.205.082 1.838 1.215 1.838 1.215 1.07 1.803 2.809 1.282 3.495.981.108-.763.417-1.282.76-1.577-2.665-.295-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.235-3.164-.135-.298-.54-1.497.105-3.121 0 0 1.005-.316 3.3 1.209.96-.262 1.98-.392 3-.398 1.02.006 2.04.136 3 .398 2.28-1.525 3.285-1.209 3.285-1.209.645 1.624.24 2.823.12 3.121.765.825 1.23 1.877 1.23 3.164 0 4.53-2.805 5.527-5.475 5.817.42.354.81 1.077.81 2.182 0 1.578-.015 2.846-.015 3.229 0 .309.21.678.825.56 4.801-1.548 8.236-5.97 8.236-11.173 0-6.512-5.373-11.792-12-11.792z',
+                                            svgPaths: [
+                                                'm12 .5c-6.63 0-12 5.28-12 11.792 0 5.211 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.361-1.335-1.725-1.335-1.725-1.087-.731.084-.716.084-.716 1.205.082 1.838 1.215 1.838 1.215 1.07 1.803 2.809 1.282 3.495.981.108-.763.417-1.282.76-1.577-2.665-.295-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.235-3.164-.135-.298-.54-1.497.105-3.121 0 0 1.005-.316 3.3 1.209.96-.262 1.98-.392 3-.398 1.02.006 2.04.136 3 .398 2.28-1.525 3.285-1.209 3.285-1.209.645 1.624.24 2.823.12 3.121.765.825 1.23 1.877 1.23 3.164 0 4.53-2.805 5.527-5.475 5.817.42.354.81 1.077.81 2.182 0 1.578-.015 2.846-.015 3.229 0 .309.21.678.825.56 4.801-1.548 8.236-5.97 8.236-11.173 0-6.512-5.373-11.792-12-11.792z',
+                                            ],
                                             onclick: (e) => {
                                                 window.open('https://github.com/Mopsgamer/BetterDiscord-codes/issues')
                                             }
                                         },
                                         {
-                                            label: 'Discussions',
+                                            label: TEMPS.LABELS.BUTTON_ANIMATIONS_DISCUSSIONS,
                                             color: 'grey',
                                             id: 'animations-discussions',
-                                            svgPath: 'm12 .5c-6.63 0-12 5.28-12 11.792 0 5.211 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.361-1.335-1.725-1.335-1.725-1.087-.731.084-.716.084-.716 1.205.082 1.838 1.215 1.838 1.215 1.07 1.803 2.809 1.282 3.495.981.108-.763.417-1.282.76-1.577-2.665-.295-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.235-3.164-.135-.298-.54-1.497.105-3.121 0 0 1.005-.316 3.3 1.209.96-.262 1.98-.392 3-.398 1.02.006 2.04.136 3 .398 2.28-1.525 3.285-1.209 3.285-1.209.645 1.624.24 2.823.12 3.121.765.825 1.23 1.877 1.23 3.164 0 4.53-2.805 5.527-5.475 5.817.42.354.81 1.077.81 2.182 0 1.578-.015 2.846-.015 3.229 0 .309.21.678.825.56 4.801-1.548 8.236-5.97 8.236-11.173 0-6.512-5.373-11.792-12-11.792z',
+                                            svgPaths: [
+                                                'm12 .5c-6.63 0-12 5.28-12 11.792 0 5.211 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.361-1.335-1.725-1.335-1.725-1.087-.731.084-.716.084-.716 1.205.082 1.838 1.215 1.838 1.215 1.07 1.803 2.809 1.282 3.495.981.108-.763.417-1.282.76-1.577-2.665-.295-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.235-3.164-.135-.298-.54-1.497.105-3.121 0 0 1.005-.316 3.3 1.209.96-.262 1.98-.392 3-.398 1.02.006 2.04.136 3 .398 2.28-1.525 3.285-1.209 3.285-1.209.645 1.624.24 2.823.12 3.121.765.825 1.23 1.877 1.23 3.164 0 4.53-2.805 5.527-5.475 5.817.42.354.81 1.077.81 2.182 0 1.578-.015 2.846-.015 3.229 0 .309.21.678.825.56 4.801-1.548 8.236-5.97 8.236-11.173 0-6.512-5.373-11.792-12-11.792z',
+                                            ],
                                             onclick: (e) => {
                                                 window.open('https://github.com/Mopsgamer/BetterDiscord-codes/discussions')
                                             }
@@ -1454,7 +1747,7 @@
                                     buttons: [
                                         {
                                             color: this.settings.lists.enabled ? 'green' : 'red',
-                                            label: 'Lists',
+                                            label: TEMPS.LABELS.BUTTON_LISTS_SWITCH,
                                             id: 'lists-switch-button',
                                             onclick: (e) => {
 
@@ -1468,33 +1761,13 @@
                                                     button.classList.remove('red')
                                                     button.classList.add('green')
                                                 }
-                                                PluginUtilities.saveSettings("Animations", this.settings);
-                                                this.changeStyles();
-                                            }
-                                        },
-                                        {
-                                            color: this.settings.messages.enabled ? 'green' : 'red',
-                                            label: 'Messages',
-                                            id: 'messages-switch-button',
-                                            onclick: (e) => {
-
-                                                let button = e.currentTarget
-
-                                                this.settings.messages.enabled = !this.settings.messages.enabled;
-                                                if (!this.settings.messages.enabled) {
-                                                    button.classList.remove('green')
-                                                    button.classList.add('red')
-                                                } else {
-                                                    button.classList.remove('red')
-                                                    button.classList.add('green')
-                                                }
-                                                PluginUtilities.saveSettings("Animations", this.settings);
+                                                PluginUtilities.saveSettings(this.getName(), this.settings);
                                                 this.changeStyles();
                                             }
                                         },
                                         {
                                             color: this.settings.buttons.enabled ? 'green' : 'red',
-                                            label: 'Buttons',
+                                            label: TEMPS.LABELS.BUTTON_BUTTONS_SWITCH,
                                             id: 'buttons-switch-button',
                                             onclick: (e) => {
 
@@ -1508,7 +1781,47 @@
                                                     button.classList.remove('red')
                                                     button.classList.add('green')
                                                 }
-                                                PluginUtilities.saveSettings("Animations", this.settings);
+                                                PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                this.changeStyles();
+                                            }
+                                        },
+                                        {
+                                            color: this.settings.messages.enabled ? 'green' : 'red',
+                                            label: TEMPS.LABELS.BUTTON_MESSAGES_SWITCH,
+                                            id: 'messages-switch-button',
+                                            onclick: (e) => {
+
+                                                let button = e.currentTarget
+
+                                                this.settings.messages.enabled = !this.settings.messages.enabled;
+                                                if (!this.settings.messages.enabled) {
+                                                    button.classList.remove('green')
+                                                    button.classList.add('red')
+                                                } else {
+                                                    button.classList.remove('red')
+                                                    button.classList.add('green')
+                                                }
+                                                PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                this.changeStyles();
+                                            }
+                                        },
+                                        {
+                                            color: this.settings.popouts.enabled ? 'green' : 'red',
+                                            label: TEMPS.LABELS.BUTTON_POPOUTS_SWITCH,
+                                            id: 'popouts-switch-button',
+                                            onclick: (e) => {
+
+                                                let button = e.currentTarget
+
+                                                this.settings.popouts.enabled = !this.settings.popouts.enabled;
+                                                if (!this.settings.popouts.enabled) {
+                                                    button.classList.remove('green')
+                                                    button.classList.add('red')
+                                                } else {
+                                                    button.classList.remove('red')
+                                                    button.classList.add('green')
+                                                }
+                                                PluginUtilities.saveSettings(this.getName(), this.settings);
                                                 this.changeStyles();
                                             }
                                         }
@@ -1521,7 +1834,7 @@
                                 }).class
                         ),
 
-                        new Settings.SettingGroup('Lists').append(
+                        new Settings.SettingGroup(TEMPS.LABELS.GROUP_LISTS).append(
 
                             new Settings.SettingField(null, null, null,
                                 ButtonsPanel(
@@ -1530,19 +1843,22 @@
                                             buttons: [
                                                 {
                                                     color: 'blurple',
-                                                    label: 'Reset lists',
+                                                    label: TEMPS.LABELS.BUTTON_RESET_LISTS,
                                                     id: 'animations-reset-lists',
                                                     svgView: '0 0 20 20',
-                                                    svgPath: 'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
-                                                    onclick: (e) => {
+                                                    svgPaths: [
+                                                        'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
+                                                    ],
+                                                    onclick: async (e) => {
         
                                                         let button = e.currentTarget;
+                                                        button.querySelector('span').innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_RESET_RESETING;
+                                                        await this.wait(500);
         
                                                         this.settings.lists = this.defaultSettings.lists
-                                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                                        PluginUtilities.saveSettings(this.getName(), this.settings);
                                                         this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
                                                         this.changeStyles();
-                                                        button.innerText = 'Reseting...';
                                                         this.closeSettings();
                                                     },
                                                 }
@@ -1556,28 +1872,30 @@
                                 ).class
                             ),
 
-                            new Settings.SettingField('Name', `[default ${this.defaultSettings.lists.name}] The name of the animation of the list items when they appear.`, null,
+                            new Settings.SettingField(TEMPS.LABELS.FIELD_NAME, TEMPS.LABELS.FIELD_LISTS_NAME_NOTE(this.defaultSettings.lists.name), null,
                                 PreviewsPanel([
-                                    { label: 'In', value: 'in' },
-                                    { label: 'Out', value: 'out' },
-                                    { label: 'Opacity', value: 'opacity' },
-                                    { label: 'Slime', value: 'slime' },
-                                    { label: 'Brick right', value: 'brick-right' },
-                                    { label: 'Brick left', value: 'brick-left' },
-                                    { label: 'Brick up', value: 'brick-up' },
-                                    { label: 'Brick down', value: 'brick-down' },
-                                    { label: 'Slide right', value: 'slide-right' },
-                                    { label: 'Slide left', value: 'slide-left' },
-                                    { label: 'Slide up', value: 'slide-up' },
-                                    { label: 'Slide down', value: 'slide-down' },
-                                    { label: 'Slide up (right)', value: 'slide-up-right' },
-                                    { label: 'Slide up (left)', value: 'slide-up-left' },
-                                    { label: 'Slide down (right)', value: 'slide-down-right' },
-                                    { label: 'Slide down (left)', value: 'slide-down-left' },
-                                    { label: 'Skew right', value: 'skew-right' },
-                                    { label: 'Skew left', value: 'skew-left' },
-                                    { label: 'Wide skew right', value: 'wide-skew-right' },
-                                    { label: 'Wide skew left', value: 'wide-skew-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_IN, value: 'in' },
+                                    { label: TEMPS.LABELS.PREVIEW_OUT, value: 'out' },
+                                    { label: TEMPS.LABELS.PREVIEW_CIRCLE, value: 'circle' },
+                                    { label: TEMPS.LABELS.PREVIEW_POLYGON, value: 'polygon' },
+                                    { label: TEMPS.LABELS.PREVIEW_OPACITY, value: 'opacity' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIME, value: 'slime' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_RIGHT, value: 'brick-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_LEFT, value: 'brick-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_UP, value: 'brick-up' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_DOWN, value: 'brick-down' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_RIGHT, value: 'slide-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_LEFT, value: 'slide-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_UP, value: 'slide-up' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN, value: 'slide-down' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_RIGHT, value: 'slide-up-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_LEFT, value: 'slide-up-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_RIGHT, value: 'slide-down-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_LEFT, value: 'slide-down-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_SKEW_RIGHT, value: 'skew-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SKEW_LEFT, value: 'skew-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_RIGHT, value: 'wide-skew-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_LEFT, value: 'wide-skew-left' },
                                 ], {
                                     type: 'lists-name',
                                     class: 'lists',
@@ -1588,27 +1906,27 @@
                                     this.settings.lists.name, (e) => {
                                         this.settings.lists.name = e.value;
                                         this.settings.lists.page = e.page;
-                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        PluginUtilities.saveSettings(this.getName(), this.settings);
                                         this.changeStyles()
                                     }).class,
                                 { noteOnTop: true }
                             ),
 
-                            new Settings.SettingField('Sequence', `[default ${this.defaultSettings.lists.sequence}] The sequence in which the list items are built.`, null,
+                            new Settings.SettingField(TEMPS.LABELS.FIELD_SEQUENCE, TEMPS.LABELS.FIELD_LISTS_SEQUENCE_NOTE(this.defaultSettings.lists.sequence), null,
                                 PreviewsPanel([
-                                    { label: '↓', value: 'fromFirst' },
-                                    { label: '↑', value: 'fromLast' },
+                                    { label: TEMPS.LABELS.PREVIEW_VERTICAL_FROM_FIRST, value: 'fromFirst' },
+                                    { label: TEMPS.LABELS.PREVIEW_VERTICAL_FROM_LAST, value: 'fromLast' },
                                 ], {
                                     type: 'lists-sequence'
                                 }, this.settings.lists.sequence, (e) => {
                                     this.settings.lists.sequence = e.value;
-                                    PluginUtilities.saveSettings("Animations", this.settings);
+                                    PluginUtilities.saveSettings(this.getName(), this.settings);
                                     this.changeStyles()
                                 }).class,
                                 { noteOnTop: true }
                             ),
 
-                            new Settings.Slider('Delay', `[default ${this.defaultSettings.lists.delay}] Delay before appearing for each list item in seconds.`, 1, 10, this.settings.lists.delay,
+                            new Settings.Slider(TEMPS.LABELS.FIELD_DELAY, TEMPS.LABELS.FIELD_LISTS_DELAY_NOTE(this.defaultSettings.lists.delay), 1, 10, this.settings.lists.delay,
                                 (e) => {
                                     this.settings.lists.delay = e;
                                     this.changeStyles()
@@ -1618,7 +1936,7 @@
                             }
                             ),
 
-                            new Settings.Slider('Limit', `[default ${this.defaultSettings.lists.limit}] The maximum number of items in the list for which the animation will be played.`, 6, 54, this.settings.lists.limit,
+                            new Settings.Slider(TEMPS.LABELS.FIELD_LIMIT, TEMPS.LABELS.FIELD_LISTS_LIMIT_NOTE(this.defaultSettings.lists.limit), 6, 54, this.settings.lists.limit,
                                 (e) => {
                                     this.settings.lists.limit = e;
                                     this.changeStyles()
@@ -1628,7 +1946,7 @@
                             }
                             ),
 
-                            new Settings.Slider('Duration', `[default ${this.defaultSettings.lists.duration}] Animation playback speed in seconds for each list item after the delay.`, 1, 10, this.settings.lists.duration,
+                            new Settings.Slider(TEMPS.LABELS.FIELD_DURATION, TEMPS.LABELS.FIELD_LISTS_DURATION_NOTE(this.defaultSettings.lists.duration), 1, 10, this.settings.lists.duration,
                                 (e) => {
                                     this.settings.lists.duration = e;
                                     this.changeStyles()
@@ -1639,7 +1957,7 @@
                             ),
                         ),
 
-                        new Settings.SettingGroup('Messages').append(
+                        new Settings.SettingGroup(TEMPS.LABELS.GROUP_BUTTONS).append(
 
                             new Settings.SettingField(null, null, null,
                                 ButtonsPanel(
@@ -1648,124 +1966,22 @@
                                             buttons: [
                                                 {
                                                     color: 'blurple',
-                                                    label: 'Reset messages',
-                                                    id: 'animations-reset-messages',
-                                                    svgView: '0 0 20 20',
-                                                    svgPath: 'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
-                                                    onclick: (e) => {
-        
-                                                        let button = e.currentTarget;
-        
-                                                        this.settings.messages = this.defaultSettings.messages
-                                                        PluginUtilities.saveSettings("Animations", this.settings);
-                                                        this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
-                                                        this.changeStyles();
-                                                        button.innerText = 'Reseting...';
-                                                        this.closeSettings();
-                                                    },
-                                                }
-                                            ],
-                                            options: {
-                                                widthAll: '100%',
-                                                align: 'space-between'
-                                            }
-                                        }
-                                    ]
-                                ).class
-                            ),
-
-                            new Settings.SettingField('Name', `[default ${this.defaultSettings.messages.name}] The name of the animation of the messages when they appear.`, null,
-                                PreviewsPanel([
-                                    { label: 'In', value: 'in' },
-                                    { label: 'Out', value: 'out' },
-                                    { label: 'Opacity', value: 'opacity' },
-                                    { label: 'Slime', value: 'slime' },
-                                    { label: 'Brick right', value: 'brick-right' },
-                                    { label: 'Brick left', value: 'brick-left' },
-                                    { label: 'Brick up', value: 'brick-up' },
-                                    { label: 'Brick down', value: 'brick-down' },
-                                    { label: 'Slide right', value: 'slide-right' },
-                                    { label: 'Slide left', value: 'slide-left' },
-                                    { label: 'Slide up', value: 'slide-up' },
-                                    { label: 'Slide down', value: 'slide-down' },
-                                    { label: 'Slide up (right)', value: 'slide-up-right' },
-                                    { label: 'Slide up (left)', value: 'slide-up-left' },
-                                    { label: 'Slide down (right)', value: 'slide-down-right' },
-                                    { label: 'Slide down (left)', value: 'slide-down-left' },
-                                    { label: 'Skew right', value: 'skew-right' },
-                                    { label: 'Skew left', value: 'skew-left' },
-                                    { label: 'Wide skew right', value: 'wide-skew-right' },
-                                    { label: 'Wide skew left', value: 'wide-skew-left' },
-                                ], {
-                                    type: 'messages-name',
-                                    class: 'messages',
-                                    custom: {
-                                        data: this.settings.messages.custom,
-                                    }
-                                },
-                                    this.settings.messages.name, (e) => {
-                                        this.settings.messages.name = e.value;
-                                        this.settings.messages.page = e.page;
-                                        PluginUtilities.saveSettings("Animations", this.settings);
-                                        this.changeStyles()
-                                    }).class,
-                                { noteOnTop: true }
-                            ),
-
-                            new Settings.Slider('Delay', `[default ${this.defaultSettings.messages.delay}] Delay before appearing for each message in seconds.`, 1, 10, this.settings.messages.delay,
-                                (e) => {
-                                    this.settings.messages.delay = e;
-                                    this.changeStyles()
-                                }, {
-                                markers: [0, 0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.15, 0.2],
-                                stickToMarkers: true
-                            }
-                            ),
-
-                            new Settings.Slider('Limit', `[default ${this.defaultSettings.messages.limit}] The maximum number of items in the list for which the animation will be played.`, 6, 54, this.settings.messages.limit,
-                                (e) => {
-                                    this.settings.messages.limit = e;
-                                    this.changeStyles()
-                                }, {
-                                markers: [10, 15, 20, 25, 30, 35, 50, 65, 100],
-                                stickToMarkers: true
-                            }
-                            ),
-
-                            new Settings.Slider('Duration', `[default ${this.defaultSettings.messages.duration}] Animation playback speed in seconds for each message after the delay.`, 1, 10, this.settings.messages.duration,
-                                (e) => {
-                                    this.settings.messages.duration = e;
-                                    this.changeStyles()
-                                }, {
-                                markers: [0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1, 1.2, 1.5, 2],
-                                stickToMarkers: true
-                            }
-                            )
-
-                        ),
-
-                        new Settings.SettingGroup('Buttons').append(
-
-                            new Settings.SettingField(null, null, null,
-                                ButtonsPanel(
-                                    [
-                                        {
-                                            buttons: [
-                                                {
-                                                    color: 'blurple',
-                                                    label: 'Reset buttons',
+                                                    label: TEMPS.LABELS.BUTTON_RESET_BUTTONS,
                                                     id: 'animations-reset-buttons',
                                                     svgView: '0 0 20 20',
-                                                    svgPath: 'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
-                                                    onclick: (e) => {
+                                                    svgPaths: [
+                                                        'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
+                                                    ],
+                                                    onclick: async (e) => {
         
                                                         let button = e.currentTarget;
+                                                        button.querySelector('span').innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_RESET_RESETING;
+                                                        await this.wait(500);
         
                                                         this.settings.buttons = this.defaultSettings.buttons
-                                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                                        PluginUtilities.saveSettings(this.getName(), this.settings);
                                                         this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
                                                         this.changeStyles();
-                                                        button.innerText = 'Reseting...';
                                                         this.closeSettings();
                                                     },
                                                 }
@@ -1779,28 +1995,30 @@
                                 ).class
                             ),
 
-                            new Settings.SettingField('Name', `[default ${this.defaultSettings.buttons.name}] The name of the animation of the buttons when they appear.`, null,
+                            new Settings.SettingField(TEMPS.LABELS.FIELD_NAME, TEMPS.LABELS.FIELD_BUTTONS_NAME_NOTE(this.defaultSettings.buttons.name), null,
                                 PreviewsPanel([
-                                    { label: 'In', value: 'in' },
-                                    { label: 'Out', value: 'out' },
-                                    { label: 'Opacity', value: 'opacity' },
-                                    { label: 'Slime', value: 'slime' },
-                                    { label: 'Brick right', value: 'brick-right' },
-                                    { label: 'Brick left', value: 'brick-left' },
-                                    { label: 'Brick up', value: 'brick-up' },
-                                    { label: 'Brick down', value: 'brick-down' },
-                                    { label: 'Slide right', value: 'slide-right' },
-                                    { label: 'Slide left', value: 'slide-left' },
-                                    { label: 'Slide up', value: 'slide-up' },
-                                    { label: 'Slide down', value: 'slide-down' },
-                                    { label: 'Slide up (right)', value: 'slide-up-right' },
-                                    { label: 'Slide up (left)', value: 'slide-up-left' },
-                                    { label: 'Slide down (right)', value: 'slide-down-right' },
-                                    { label: 'Slide down (left)', value: 'slide-down-left' },
-                                    { label: 'Skew right', value: 'skew-right' },
-                                    { label: 'Skew left', value: 'skew-left' },
-                                    { label: 'Wide skew right', value: 'wide-skew-right' },
-                                    { label: 'Wide skew left', value: 'wide-skew-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_IN, value: 'in' },
+                                    { label: TEMPS.LABELS.PREVIEW_OUT, value: 'out' },
+                                    { label: TEMPS.LABELS.PREVIEW_CIRCLE, value: 'circle' },
+                                    { label: TEMPS.LABELS.PREVIEW_POLYGON, value: 'polygon' },
+                                    { label: TEMPS.LABELS.PREVIEW_OPACITY, value: 'opacity' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIME, value: 'slime' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_RIGHT, value: 'brick-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_LEFT, value: 'brick-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_UP, value: 'brick-up' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_DOWN, value: 'brick-down' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_RIGHT, value: 'slide-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_LEFT, value: 'slide-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_UP, value: 'slide-up' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN, value: 'slide-down' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_RIGHT, value: 'slide-up-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_LEFT, value: 'slide-up-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_RIGHT, value: 'slide-down-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_LEFT, value: 'slide-down-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_SKEW_RIGHT, value: 'skew-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SKEW_LEFT, value: 'skew-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_RIGHT, value: 'wide-skew-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_LEFT, value: 'wide-skew-left' },
                                 ], {
                                     type: 'buttons-name',
                                     class: 'buttons',
@@ -1812,28 +2030,28 @@
                                     this.settings.buttons.name, (e) => {
                                         this.settings.buttons.name = e.value;
                                         this.settings.buttons.page = e.page;
-                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        PluginUtilities.saveSettings(this.getName(), this.settings);
                                         this.changeStyles()
                                     }).class,
                                 { noteOnTop: true }
                             ),
 
-                            new Settings.SettingField('Sequence', `[default ${this.defaultSettings.buttons.sequence}] The sequence in which the buttons are built.`, null,
+                            new Settings.SettingField(TEMPS.LABELS.FIELD_SEQUENCE, TEMPS.LABELS.FIELD_BUTTONS_SEQUENCE_NOTE(this.defaultSettings.buttons.sequence), null,
                                 PreviewsPanel([
-                                    { label: '→', value: 'fromFirst' },
-                                    { label: '←', value: 'fromLast' },
+                                    { label: TEMPS.LABELS.PREVIEW_HORIZONTAL_FROM_FIRST, value: 'fromFirst' },
+                                    { label: TEMPS.LABELS.PREVIEW_HORIZONTAL_FROM_LAST, value: 'fromLast' },
                                 ], {
                                     type: 'buttons-sequence',
                                     horizontal: true
                                 }, this.settings.buttons.sequence, (e) => {
                                     this.settings.buttons.sequence = e.value;
-                                    PluginUtilities.saveSettings("Animations", this.settings);
+                                    PluginUtilities.saveSettings(this.getName(), this.settings);
                                     this.changeStyles()
                                 }).class,
                                 { noteOnTop: true }
                             ),
 
-                            new Settings.Slider('Delay', `[default ${this.defaultSettings.buttons.delay}] Delay before appearing for each button in seconds.`, 1, 10, this.settings.buttons.delay,
+                            new Settings.Slider(TEMPS.LABELS.FIELD_DELAY, TEMPS.LABELS.FIELD_BUTTONS_DELAY_NOTE(this.defaultSettings.buttons.delay), 1, 10, this.settings.buttons.delay,
                                 (e) => {
                                     this.settings.buttons.delay = e;
                                     this.changeStyles()
@@ -1843,7 +2061,7 @@
                             }
                             ),
 
-                            new Settings.Slider('Duration', `[default ${this.defaultSettings.buttons.duration}] Animation playback speed in seconds for each button after the delay.`, 1, 10, this.settings.buttons.duration,
+                            new Settings.Slider(TEMPS.LABELS.FIELD_DURATION, TEMPS.LABELS.FIELD_BUTTONS_DURATION_NOTE(this.defaultSettings.buttons.duration), 1, 10, this.settings.buttons.duration,
                                 (e) => {
                                     this.settings.buttons.duration = e;
                                     this.changeStyles()
@@ -1854,28 +2072,236 @@
                             )
                         ),
 
-                        new Settings.SettingGroup('Advanced').append(
-                            new Settings.SettingField('Selectors of lists', 'If you leave this field empty, the default selectors will appear here on reload. Changes to the selectors are saved when typing (if the code is valid). The separator is a comma(,).', null,
+                        new Settings.SettingGroup(TEMPS.LABELS.GROUP_MESSAGES).append(
+
+                            new Settings.SettingField(null, null, null,
+                                ButtonsPanel(
+                                    [
+                                        {
+                                            buttons: [
+                                                {
+                                                    color: 'blurple',
+                                                    label: TEMPS.LABELS.BUTTON_RESET_MESSAGES,
+                                                    id: 'animations-reset-messages',
+                                                    svgView: '0 0 20 20',
+                                                    svgPaths: [
+                                                        'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
+                                                    ],
+                                                    onclick: async (e) => {
+        
+                                                        let button = e.currentTarget;
+                                                        button.querySelector('span').innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_RESET_RESETING;
+                                                        await this.wait(500);
+        
+                                                        this.settings.messages = this.defaultSettings.messages
+                                                        PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                        this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
+                                                        this.changeStyles();
+                                                        this.closeSettings();
+                                                    },
+                                                }
+                                            ],
+                                            options: {
+                                                widthAll: '100%',
+                                                align: 'space-between'
+                                            }
+                                        }
+                                    ]
+                                ).class
+                            ),
+
+                            new Settings.SettingField(TEMPS.LABELS.FIELD_NAME, TEMPS.LABELS.FIELD_MESSAGES_NAME_NOTE(this.defaultSettings.messages.name), null,
+                                PreviewsPanel([
+                                    { label: TEMPS.LABELS.PREVIEW_IN, value: 'in' },
+                                    { label: TEMPS.LABELS.PREVIEW_OUT, value: 'out' },
+                                    { label: TEMPS.LABELS.PREVIEW_CIRCLE, value: 'circle' },
+                                    { label: TEMPS.LABELS.PREVIEW_POLYGON, value: 'polygon' },
+                                    { label: TEMPS.LABELS.PREVIEW_OPACITY, value: 'opacity' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIME, value: 'slime' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_RIGHT, value: 'brick-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_LEFT, value: 'brick-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_UP, value: 'brick-up' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_DOWN, value: 'brick-down' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_RIGHT, value: 'slide-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_LEFT, value: 'slide-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_UP, value: 'slide-up' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN, value: 'slide-down' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_RIGHT, value: 'slide-up-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_LEFT, value: 'slide-up-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_RIGHT, value: 'slide-down-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_LEFT, value: 'slide-down-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_SKEW_RIGHT, value: 'skew-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SKEW_LEFT, value: 'skew-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_RIGHT, value: 'wide-skew-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_LEFT, value: 'wide-skew-left' },
+                                ], {
+                                    type: 'messages-name',
+                                    class: 'messages',
+                                    custom: {
+                                        data: this.settings.messages.custom,
+                                    }
+                                },
+                                    this.settings.messages.name, (e) => {
+                                        this.settings.messages.name = e.value;
+                                        this.settings.messages.page = e.page;
+                                        PluginUtilities.saveSettings(this.getName(), this.settings);
+                                        this.changeStyles()
+                                    }).class,
+                                { noteOnTop: true }
+                            ),
+
+                            new Settings.Slider(TEMPS.LABELS.FIELD_DELAY, TEMPS.LABELS.FIELD_MESSAGES_DELAY_NOTE(this.defaultSettings.messages.delay), 1, 10, this.settings.messages.delay,
+                                (e) => {
+                                    this.settings.messages.delay = e;
+                                    this.changeStyles()
+                                }, {
+                                markers: [0, 0.01, 0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.15, 0.2],
+                                stickToMarkers: true
+                            }
+                            ),
+
+                            new Settings.Slider(TEMPS.LABELS.FIELD_LIMIT, TEMPS.LABELS.FIELD_MESSAGES_LIMIT_NOTE(this.defaultSettings.messages.limit), 6, 54, this.settings.messages.limit,
+                                (e) => {
+                                    this.settings.messages.limit = e;
+                                    this.changeStyles()
+                                }, {
+                                markers: [10, 15, 20, 25, 30, 35, 50, 65, 100],
+                                stickToMarkers: true
+                            }
+                            ),
+
+                            new Settings.Slider(TEMPS.LABELS.FIELD_DURATION, TEMPS.LABELS.FIELD_MESSAGES_DURATION_NOTE(this.defaultSettings.messages.duration), 1, 10, this.settings.messages.duration,
+                                (e) => {
+                                    this.settings.messages.duration = e;
+                                    this.changeStyles()
+                                }, {
+                                markers: [0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1, 1.2, 1.5, 2],
+                                stickToMarkers: true
+                            }
+                            )
+
+                        ),
+
+                        new Settings.SettingGroup(TEMPS.LABELS.GROUP_POPOUTS).append(
+
+                            new Settings.SettingField(null, null, null,
+                                ButtonsPanel(
+                                    [
+                                        {
+                                            buttons: [
+                                                {
+                                                    color: 'blurple',
+                                                    label: TEMPS.LABELS.BUTTON_RESET_POPOUTS,
+                                                    id: 'animations-reset-popouts',
+                                                    svgView: '0 0 20 20',
+                                                    svgPaths: [
+                                                        'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
+                                                    ],
+                                                    onclick: async (e) => {
+        
+                                                        let button = e.currentTarget;
+                                                        button.querySelector('span').innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_RESET_RESETING;
+                                                        await this.wait(500);
+        
+                                                        this.settings.popouts = this.defaultSettings.popouts
+                                                        PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                        this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
+                                                        this.changeStyles();
+                                                        this.closeSettings();
+                                                    },
+                                                }
+                                            ],
+                                            options: {
+                                                widthAll: '100%',
+                                                align: 'space-between'
+                                            }
+                                        }
+                                    ]
+                                ).class
+                            ),
+
+                            new Settings.SettingField(TEMPS.LABELS.FIELD_NAME, TEMPS.LABELS.FIELD_POPOUTS_NAME_NOTE(this.defaultSettings.popouts.name), null,
+                                PreviewsPanel([
+                                    { label: TEMPS.LABELS.PREVIEW_IN, value: 'in' },
+                                    { label: TEMPS.LABELS.PREVIEW_OUT, value: 'out' },
+                                    { label: TEMPS.LABELS.PREVIEW_CIRCLE, value: 'circle' },
+                                    { label: TEMPS.LABELS.PREVIEW_POLYGON, value: 'polygon' },
+                                    { label: TEMPS.LABELS.PREVIEW_OPACITY, value: 'opacity' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIME, value: 'slime' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_RIGHT, value: 'brick-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_LEFT, value: 'brick-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_UP, value: 'brick-up' },
+                                    { label: TEMPS.LABELS.PREVIEW_BRICK_DOWN, value: 'brick-down' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_RIGHT, value: 'slide-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_LEFT, value: 'slide-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_UP, value: 'slide-up' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN, value: 'slide-down' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_RIGHT, value: 'slide-up-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_LEFT, value: 'slide-up-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_RIGHT, value: 'slide-down-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_LEFT, value: 'slide-down-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_SKEW_RIGHT, value: 'skew-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_SKEW_LEFT, value: 'skew-left' },
+                                    { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_RIGHT, value: 'wide-skew-right' },
+                                    { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_LEFT, value: 'wide-skew-left' },
+                                ], {
+                                    type: 'popouts-name',
+                                    class: 'popouts',
+                                    horizontal: false,
+                                    tempBlocks: {
+                                        count: 1,
+                                        height: '36%',
+                                        margin: '36px 4px'
+                                    },
+                                    custom: {
+                                        data: this.settings.popouts.custom,
+                                    }
+                                },
+                                    this.settings.popouts.name, (e) => {
+                                        this.settings.popouts.name = e.value;
+                                        this.settings.popouts.page = e.page;
+                                        PluginUtilities.saveSettings(this.getName(), this.settings);
+                                        this.changeStyles()
+                                    }).class,
+                                { noteOnTop: true }
+                            ),
+
+                            new Settings.Slider(TEMPS.LABELS.FIELD_DURATION, TEMPS.LABELS.FIELD_POPOUTS_DURATION_NOTE(this.defaultSettings.popouts.duration), 1, 10, this.settings.popouts.duration,
+                                (e) => {
+                                    this.settings.popouts.duration = e;
+                                    this.changeStyles()
+                                }, {
+                                markers: [0.2, 0.3, 0.4, 0.5, 0.6, 0.8, 1, 1.2, 1.5, 2],
+                                stickToMarkers: true
+                            }
+                            )
+                        ),
+
+                        new Settings.SettingGroup(TEMPS.LABELS.GROUP_ADVANCED).append(
+
+                            new Settings.SettingField(TEMPS.LABELS.FIELD_LISTS_SELECTORS, TEMPS.LABELS.FIELD_LISTS_SELECTORS_NOTE, null,
                                 TextareaPanel({
                                     buttonsPanel: {
                                         containersTemp: [
                                             {
                                                 buttons: [
                                                     {
-                                                        label: 'Default',
+                                                        label: TEMPS.LABELS.BUTTON_SELECTORS_LISTS_DEFAULT,
                                                         id: 'lists-selectors-default',
-                                                        svgPath: 'M 13 3 c -4.97 0 -9 4.03 -9 9 H 1 l 3.89 3.89 l 0.07 0.14 L 9 12 H 6 c 0 -3.87 3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 z',
+                                                        svgPaths: [
+                                                            'M 13 3 c -4.97 0 -9 4.03 -9 9 H 1 l 3.89 3.89 l 0.07 0.14 L 9 12 H 6 c 0 -3.87 3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 z',
+                                                        ],
                                                         onclick: (e) => {
                                                             var textarea = e.currentTarget.closest('.animTextareaPanel').querySelector('.animTextarea')
                                                             textarea.value = Animations.selectorsLists.join(',\n\n')
                                                             textarea.style.color = '';
 
                                                             this.settings.lists.selectors = '';
-                                                            PluginUtilities.saveSettings("Animations", this.settings);
+                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
                                                         }
                                                     },
                                                     {
-                                                        label: 'Clear',
+                                                        label: TEMPS.LABELS.BUTTON_SELECTORS_LISTS_CLEAR,
                                                         id: 'lists-selectors-clear',
                                                         onclick: (e) => {
                                                             var textarea = e.currentTarget.closest('.animTextareaPanel').querySelector('.animTextarea')
@@ -1898,7 +2324,7 @@
 
                                     if(value=='' || this.isValidSelector(value)) {
                                         this.settings.lists.selectors = (value==Animations.selectorsLists?'':value)
-                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        PluginUtilities.saveSettings(this.getName(), this.settings);
                                         this.changeStyles()
                                         textarea.style.color = ''
                                     } else {
@@ -1907,27 +2333,30 @@
                                 }
                                 ).class
                             ),
-                            new Settings.SettingField('Selectors of buttons', 'If you leave this field empty, the default selectors will appear here on reload. Changes to the selectors are saved when typing (if the code is valid). The separator is a comma (,).', null,
+
+                            new Settings.SettingField(TEMPS.LABELS.FIELD_BUTTONS_SELECTORS, TEMPS.LABELS.FIELD_BUTTONS_SELECTORS_NOTE, null,
                                 TextareaPanel({
                                     buttonsPanel: {
                                         containersTemp: [
                                             {
                                                 buttons: [
                                                     {
-                                                        label: 'Default',
+                                                        label: TEMPS.LABELS.BUTTON_SELECTORS_BUTTONS_DEFAULT,
                                                         id: 'buttons-selectors-default',
-                                                        svgPath: 'M 13 3 c -4.97 0 -9 4.03 -9 9 H 1 l 3.89 3.89 l 0.07 0.14 L 9 12 H 6 c 0 -3.87 3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 z',
+                                                        svgPaths: [
+                                                            'M 13 3 c -4.97 0 -9 4.03 -9 9 H 1 l 3.89 3.89 l 0.07 0.14 L 9 12 H 6 c 0 -3.87 3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 z',
+                                                        ],
                                                         onclick: (e) => {
                                                             var textarea = e.currentTarget.closest('.animTextareaPanel').querySelector('.animTextarea')
                                                             textarea.value = Animations.selectorsButtons.join(',\n\n')
                                                             textarea.style.color = '';
 
                                                             this.settings.lists.selectors = '';
-                                                            PluginUtilities.saveSettings("Animations", this.settings);
+                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
                                                         }
                                                     },
                                                     {
-                                                        label: 'Clear',
+                                                        label: TEMPS.LABELS.BUTTON_SELECTORS_BUTTONS_CLEAR,
                                                         id: 'buttons-selectors-clear',
                                                         onclick: (e) => {
                                                             var textarea = e.currentTarget.closest('.animTextareaPanel').querySelector('.animTextarea')
@@ -1950,7 +2379,7 @@
 
                                     if(value=='' || this.isValidSelector(value)) {
                                         this.settings.buttons.selectors = (value==Animations.selectorsButtons?'':value)
-                                        PluginUtilities.saveSettings("Animations", this.settings);
+                                        PluginUtilities.saveSettings(this.getName(), this.settings);
                                         this.changeStyles()
                                         textarea.style.color = ''
                                     } else {
@@ -1959,6 +2388,65 @@
                                 }
                                 ).class
                             ),
+
+                            new Settings.SettingField(TEMPS.LABELS.FIELD_POPOUTS_SELECTORS, TEMPS.LABELS.FIELD_POPOUTS_SELECTORS_NOTE, null,
+                                TextareaPanel({
+                                    buttonsPanel: {
+                                        containersTemp: [
+                                            {
+                                                buttons: [
+                                                    {
+                                                        label: TEMPS.LABELS.BUTTON_SELECTORS_POPOUTS_DEFAULT,
+                                                        id: 'popouts-selectors-default',
+                                                        svgPaths: [
+                                                            'M 13 3 c -4.97 0 -9 4.03 -9 9 H 1 l 3.89 3.89 l 0.07 0.14 L 9 12 H 6 c 0 -3.87 3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 z',
+                                                        ],
+                                                        onclick: (e) => {
+                                                            var textarea = e.currentTarget.closest('.animTextareaPanel').querySelector('.animTextarea')
+                                                            textarea.value = Animations.selectorsPopouts.join(',\n\n')
+                                                            textarea.style.color = '';
+
+                                                            this.settings.lists.selectors = '';
+                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                        }
+                                                    },
+                                                    {
+                                                        label: TEMPS.LABELS.BUTTON_SELECTORS_POPOUTS_CLEAR,
+                                                        id: 'popouts-selectors-clear',
+                                                        onclick: (e) => {
+                                                            var textarea = e.currentTarget.closest('.animTextareaPanel').querySelector('.animTextarea')
+                                                            textarea.value = '';
+                                                            textarea.focus();
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        ],
+                                        options: {
+                                            widthAll: '100%'
+                                        },
+                                    },
+                                    textarea: {
+                                        height: '92px'
+                                    },
+                                },
+                                this.settings.popouts.selectors ? this.settings.popouts.selectors : Animations.selectorsPopouts.join(',\n\n'),
+                                (e) => {
+                                    var textarea = e.currentTarget;
+                                    var value = textarea.value;
+
+                                    if(value=='' || this.isValidSelector(value)) {
+                                        this.settings.popouts.selectors = (value==Animations.selectorsPopouts?'':value)
+                                        PluginUtilities.saveSettings(this.getName(), this.settings);
+                                        this.changeStyles()
+                                        textarea.style.color = ''
+                                    } else {
+                                        textarea.style.color = this.colors.red
+                                    }
+                                },
+                                ).class
+                            ),
+
                         )
                     )
                 }
@@ -2173,9 +2661,6 @@
                     }
                     
                     .vertical .animPreview .animTempBlock {
-                        width: auto;
-                        height: 18%;
-                        margin: 4px;
                         border-radius: 3pt;
                         background-color: var(--interactive-normal)
                     }
@@ -2336,7 +2821,7 @@
 
                     this.BadSendingStyles = (e)=>{
                         if(e.key=="Enter") { // finding parent
-                            var BadSendingTextNode = document.querySelector('.isSending-3SiDwE, .isFailed-2b8sCy')
+                            var BadSendingTextNode = document.getElementsByClassName('chatContent-3KubbW')[0].querySelector('.isSending-3SiDwE, .isFailed-2b8sCy')
                             if(!BadSendingTextNode) {
                                 setTimeout(()=>{
                                     BadSendingTextNode = this.BadSendingStyles(e)
@@ -2344,6 +2829,7 @@
                                 }, 50)// frequency of checks after pressing Enter
                             } else {
                             var result = BadSendingTextNode.closest('.message-2CShn3');// this is where we found it
+                            Logger.log('done')
                             // there styles for parent
                             result.style.animation = 'none'
                             result.style.transform = 'none'
@@ -2369,6 +2855,7 @@
                     }
                     var chni = setInterval(chn, 100)
 
+                    // on themes switch
                     this.observer = new MutationObserver(
                         (event)=>{
                             const {removedNodes, addedNodes} = event[0];
@@ -2383,7 +2870,9 @@
                             )
                         }
                     )
-                    this.observer.observe(document.getElementsByTagName("bd-themes")[0], {"childList": true})
+
+                    var element_with_themes_switches = document.getElementsByTagName("bd-themes")[0]
+                    this.observer.observe(element_with_themes_switches, {"childList": true})
 
                 }
 
