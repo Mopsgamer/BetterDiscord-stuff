@@ -839,6 +839,7 @@
                         // case '*your language code*':
                         //     TEMPS = *...copy from the bottom and translate*
                         // break;
+                        
                         case 'fr-FR':
                             var TEMPS = {
                                 TOOLTIPS: {
@@ -872,7 +873,7 @@
                                     BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING: 'Recherche de mise à jour...',
                                     BUTTON_ANIMATIONS_VERSION_CHECK_TIMEOUT: 'Temps de recherche excéder',
                                     BUTTON_ANIMATIONS_VERSION_CHECK_ERROR: 'Une erreur est apparue',
-                                    BUTTON_ANIMATIONS_VERSION_CHECK_OLDER: (version_='{version}')=>`v${version_} - Update`,
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_OLDER: (version_='{version}')=>`v${version_} - Mise à jour`,
                                     BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_TITLE: 'Votre version est obsolète',
                                     BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_COMPARE: (yourV_, githubV_)=>`v${yourV_} (toi)  →  v${githubV_} (github)`,
                                     BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_NOTE: 'Le plugin va être mis à jour.',
