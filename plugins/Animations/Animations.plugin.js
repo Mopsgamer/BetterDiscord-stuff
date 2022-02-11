@@ -839,8 +839,8 @@
                         // case '*your language code*':
                         //     TEMPS = *...copy from the bottom and translate*
                         // break;
-                        
-                        case 'fr-FR':
+
+                        case 'fr':
                             var TEMPS = {
                                 TOOLTIPS: {
                                     BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Dernier changement',
