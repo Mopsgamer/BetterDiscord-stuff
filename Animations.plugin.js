@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.8.2
+ * @version 1.2.9
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -19,17 +19,17 @@
                     name: 'Mops',
                     discord_id: '538010208023347200',
                     github_username: 'Mopsgamer',
-                },
+                }
             ],
-            version: '1.2.8.2',
+            version: '1.2.9',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
         },
         changelog: [
-            { "title": "New Stuff", "items": ["Changelog button.", "New animations: Circle, Polygon.", "Added settings for popout animation. Does not apply to the plugin settings window."] },
-            { "title": "Improvements", "type": "improved", "items": ["Reworking text labels. (~850 line in the code, you can translate it)", "WebpackModules: now discord updates are not so scary."] },
-            //{ "title": "Fixes", "type": "fixed", "items": ["Sometimes missing animations.", "Update button."] }
+            { "title": "New Stuff", "items": ["Adding localization: French (Thanks Catif!), Russian."] },
+            //{ "title": "Improvements", "type": "improved", "items": ["Reworking text labels. (~850 line in the code, you can translate it)", "WebpackModules: now discord updates are not so scary."] },
+            { "title": "Fixes", "type": "fixed", "items": ["Fixed performance issues."] }
         ],
         main: 'index.js',
     };
@@ -216,6 +216,30 @@
                     'fromLast',
                 ]
 
+                static modules = {
+                    Button: WebpackModules.getByProps('button', 'sizeIcon').button,
+                    ButtonSizeSmall: WebpackModules.getByProps('button', 'sizeIcon').sizeSmall,
+                    ButtonText: WebpackModules.getByProps('buttonText', 'giftIcon').buttonText,
+                    ContentThin: WebpackModules.getByProps('content', 'thin').content,
+                    ContainerDefault: WebpackModules.getByProps('containerDefault').containerDefault,
+                    ContainerDefaultSpaceBeforeCategory: WebpackModules.getByProps('containerDefault', 'spaceBeforeCategory').containerDefault,
+                    ContainerSpine: WebpackModules.getByProps('container', 'spine').container,
+                    ChatContent: WebpackModules.getByProps('chatContent').chatContent,
+                    DividerReplying: WebpackModules.getByProps('divider', 'replying').divider,
+                    InputDefault: WebpackModules.getByProps('inputDefault', 'focused').inputDefault,
+                    IsSending: WebpackModules.getByProps('isSending').isSending,
+                    IsFailed: WebpackModules.getByProps('isFailed').isFailed,
+                    Message: WebpackModules.getByProps('message').message,
+                    MessageListItem: WebpackModules.getByProps('messageListItem').messageListItem,
+                    Side: WebpackModules.getByProps('side').side,
+                    ScrollbarDefault: WebpackModules.getByProps('scrollbarDefault').scrollbarDefault,
+                    TextArea: WebpackModules.getByProps('textArea').textArea,
+                    Offline: WebpackModules.getByProps('offline').offline,
+                    GuildsSidebar: WebpackModules.getByProps('guilds', 'sidebar').guilds,
+                    WrapperTypeThread: WebpackModules.getByProps('wrapper', 'typeThread').wrapper,
+                    VideoLead: WebpackModules.getByProps('video', 'lead').video
+                }
+
                 get countStyles() {
                     let result = '';
 
@@ -255,18 +279,21 @@
 
                 }
 
+
+
                 threadsWithChannels = (removeAnimations = false) => {
+
                         if (!this.settings.lists.enabled) return;
-                        var channelsListElements = document.querySelectorAll(`#channels .${WebpackModules.getByProps('content', 'thin').content} > [class]`);
-                        var count = document.querySelectorAll(`#channels .${WebpackModules.getByProps('content', 'thin').content} > [class]`)?.length ?? 40;
+                        var channelsListElements = document.querySelectorAll(`#channels .${Animations.modules.ContentThin} > [class]`);
+                        var count = document.querySelectorAll(`#channels .${Animations.modules.ContentThin} > [class]`)?.length ?? 40;
 
                         for (var i = 0, threadsCount = 0; i < count; i++) {
                             let children = channelsListElements[(this.settings.lists.sequence == "fromFirst" ? i : count - i - 1)];
                             if (!children) return;
 
-                            if (children.classList.contains(WebpackModules.getByProps('containerDefault').containerDefault)
-                                || children.classList.contains(WebpackModules.getByProps('containerDefault', 'spaceBeforeCategory').containerDefault)
-                                || children.classList.contains(WebpackModules.getByProps('wrapper', 'typeThread').wrapper)
+                            if (children.classList.contains(Animations.modules.ContainerDefault)
+                                || children.classList.contains(Animations.modules.ContainerDefaultSpaceBeforeCategory)
+                                || children.classList.contains(Animations.modules.WrapperTypeThread)
                             ) {
                                 if (removeAnimations) {
                                     children.style.transform = 'none'
@@ -280,9 +307,9 @@
                                 }
                             }
 
-                            else if (children.classList.contains(WebpackModules.getByProps('container', 'spine').container)) {
-                                var threadsForkElement = children.querySelector(`.${WebpackModules.getByProps('container', 'spine').container} > svg`);
-                                var threadsListElements = children.querySelectorAll(`.${WebpackModules.getByProps('containerDefault').containerDefault}`);
+                            else if (children.classList.contains(Animations.modules.ContainerSpine)) {
+                                var threadsForkElement = children.querySelector(`.${Animations.modules.ContainerSpine} > svg`);
+                                var threadsListElements = children.querySelectorAll(`.${Animations.modules.ContainerDefault}`);
 
                                 threadsForkElement.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
                                 threadsForkElement.style.animationName = 'slide-right';
@@ -304,7 +331,6 @@
                 }
 
                 changeStyles(delay=0) {
-
                     var createKeyFrame = function(name, originalName, rotate=0, opacity=1) {
                         var keyframes = {
                             "in":
@@ -635,7 +661,7 @@
 
                         Animations.names.forEach(animName => {
                             for (var i = 1; i < 5; i++) {
-                                result += `.animPreview[data-animation="${animName}"]:hover > .animTempBlock:nth-child(${i})`
+                                result += `.animPreview[data-animation="${animName}"]:hover > .animPreviewTempsContainer > .animTempBlock:nth-child(${i})`
                                     + ` {
                                         transform: scale(0); animation-name: ${animName};
                                         animation-fill-mode: forwards;
@@ -662,7 +688,7 @@
                         }
 
                         for (var i = 1; i < this.settings.messages.limit; i++) {
-                            result += `.${WebpackModules.getByProps('messageListItem').messageListItem}:nth-last-child(${i}) > .${WebpackModules.getByProps('message').message}
+                            result += `.${Animations.modules.MessageListItem}:nth-last-child(${i}) > .${Animations.modules.Message}
                             {animation-delay:${((i - 1) * this.settings.messages.delay).toFixed(2)}s}\n`
                         }
 
@@ -671,15 +697,15 @@
 
                     this.styles = `
                 /*lists limit*/
-                .${WebpackModules.getByProps('side').side} > :nth-child(n+${this.settings.lists.limit}),
-                .${WebpackModules.getByProps('content', 'thin').content} > :nth-child(n+${this.settings.lists.limit})
+                .${Animations.modules.Side} > :nth-child(n+${this.settings.lists.limit}),
+                .${Animations.modules.ContentThin} > :nth-child(n+${this.settings.lists.limit})
                 {animation: none !important; transform: none !important}
 
                 ${!this.settings.lists.enabled ? '' : `
                 /* wawes */
                 /*channels*/
-                .${WebpackModules.getByProps('containerDefault', 'spaceBeforeCategory').containerDefault},
-                .${WebpackModules.getByProps('containerDefault').containerDefault}
+                .${Animations.modules.ContainerDefaultSpaceBeforeCategory},
+                .${Animations.modules.ContainerDefault}
                 {
                     transform: scaleX(0);
                     animation-fill-mode: forwards;
@@ -687,7 +713,7 @@
                 }
 
                 /* members offline */
-                .${WebpackModules.getByProps('offline').offline}
+                .${Animations.modules.Offline}
                 {
                     animation-name: ${this.settings.lists.name}_offline !important;
                 }
@@ -704,7 +730,7 @@
                 }
 
                 ${!BdApi.Themes.isEnabled('Horizontal Server List')? '' : `
-                #app-mount .${WebpackModules.getByProps('guilds', 'sidebar').guilds} [class*=listItem]:not([class*=listItemWrapper]) {
+                #app-mount .${Animations.modules.GuildsSidebar} [class*=listItem]:not([class*=listItemWrapper]) {
                     transform: scaleX(0) rotate(90deg);
                     animation-name: ${this.settings.lists.name}_90;
                 }
@@ -738,7 +764,7 @@
 
                 ${!this.settings.messages.enabled ? '' : `
                 /* messages */
-                .${WebpackModules.getByProps('messageListItem').messageListItem} > .${WebpackModules.getByProps('message').message}
+                .${Animations.modules.MessageListItem} > .${Animations.modules.Message}
                 {
                     transform: scale(0);
                     animation-fill-mode: forwards;
@@ -750,13 +776,13 @@
                 }
 
                 /*lines-forward-messages fix*/
-                .${WebpackModules.getByProps('divider', 'replying').divider} {z-index: 0}
+                .${Animations.modules.DividerReplying} {z-index: 0}
                 `}
 
                 /**Non-custom**/
 
                 /*threads fork*/
-                .${WebpackModules.getByProps('container', 'spine').container} > svg {
+                .${Animations.modules.ContainerSpine} > svg {
                     transform: scale(0);
                     transform-oringin: 100% 50%;
                     animation-timing-function: linear;
@@ -765,7 +791,7 @@
                 }
 
                 /*discord changelog video*/
-                .${WebpackModules.getByProps('video', 'lead').video} {
+                .${Animations.modules.VideoLead} {
                     animation-name: out !important;
                 }
 
@@ -837,9 +863,286 @@
                         //This is for translating the plugin (I won't do that, of course, a hundred labels) (possibly)
 
                         // case '*your language code*':
-                        //     TEMPS = *...copy from the bottom and translate*
+                        //     var TEMPS = *...copy from the bottom and translate*
                         // break;
 
+                        case 'fr':
+                            var TEMPS = {
+                                TOOLTIPS: {
+                                    BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Dernier changement',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK: 'Rechercher des mises à jour',
+                                    BUTTON_ANIMATIONS_RESET: 'Réinitialise tous les paramètres',
+                                    BUTTON_ANIMATIONS_REBUILD: 'Récrer les styles. Quand le plugin sera redémarré, les styles seront recrées',
+                                    BUTTON_ANIMATIONS_ISSUES: 'Lien vers GitHub',
+                                    BUTTON_ANIMATIONS_DISCUSSIONS: 'Lien vers GitHub',
+                                    BUTTON_LISTS_SWITCH: 'Activer/désactiver l\'animation des listes',
+                                    BUTTON_BUTTONS_SWITCH: 'Activer/désactiver l\'animation des boutons',
+                                    BUTTON_MESSAGES_SWITCH: 'Activer/désactiver l\'animation des messages',                                
+                                    BUTTON_POPOUTS_SWITCH: 'Activer/désactiver l\'animation des pop-out',                                
+                                    BUTTON_RESET_LISTS: 'Réinitialise les paramètres de listes',
+                                    BUTTON_RESET_BUTTONS: 'Réinitialise les paramètres de boutons',
+                                    BUTTON_RESET_MESSAGES: 'Réinitialise les paramètres de messages',
+                                    BUTTON_RESET_POPOUTS: 'Réinitialise les paramètres de pop-out',
+                                    BUTTON_SELECTORS_LISTS_DEFAULT: 'Restore les selecteurs par défauts',
+                                    BUTTON_SELECTORS_LISTS_CLEAR: 'Vider le champs de texte',
+                                    BUTTON_SELECTORS_BUTTONS_DEFAULT: 'Restore les selecteurs par défauts',
+                                    BUTTON_SELECTORS_BUTTONS_CLEAR: 'Vider le champs de texte',
+                                    BUTTON_SELECTORS_POPOUTS_DEFAULT: 'Restore les selecteurs par défauts',
+                                    BUTTON_SELECTORS_POPOUTS_CLEAR: 'Vider le champs de texte'
+                                },
+                                LABELS: {
+                                    BUTTON_ANIMATIONS_RESET: 'Tout réinitialiser',
+                                    BUTTON_ANIMATIONS_RESET_RESETING: 'Réinitialisation...',
+                                    BUTTON_ANIMATIONS_REBUILD: 'Récréation des animations',
+                                    BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Changelog',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK: 'Mise à jour',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING: 'Recherche de mise à jour...',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_TIMEOUT: 'Temps de recherche excéder',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_ERROR: 'Une erreur est apparue',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_OLDER: (version_='{version}')=>`v${version_} - Mise à jour`,
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_TITLE: 'Votre version est obsolète',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_COMPARE: (yourV_, githubV_)=>`v${yourV_} (toi)  →  v${githubV_} (github)`,
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_NOTE: 'Le plugin va être mis à jour.',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_NEWER: (version_='{version}')=>`v${version_} - Votre version`,
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_TITLE: 'Votre version est la plus récente',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_COMPARE: (yourV_, githubV_)=>`v${yourV_} (toi)  ←  v${githubV_} (github)`,
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_NOTE: 'Votre version est la plus récente.',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_LATEST: (version_='{version}')=>`v${version_} - Dernière version`,
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_TITLE: 'Votre version est la plus récente',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_COMPARE: (yourV_, githubV_)=>`v${yourV_} (toi)  ↔  v${githubV_} (github)`,
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_NOTE: 'Le plugin va être restoré.',
+                                    BUTTON_ANIMATIONS_ISSUES: 'Problème',
+                                    BUTTON_ANIMATIONS_DISCUSSIONS: 'Discussions',
+                                    BUTTON_LISTS_SWITCH: 'Listes',
+                                    BUTTON_BUTTONS_SWITCH: 'Boutons',
+                                    BUTTON_MESSAGES_SWITCH: 'Messages',
+                                    BUTTON_POPOUTS_SWITCH: 'Popouts',
+                                    BUTTON_RESET_LISTS: 'Réinitialiser listes',
+                                    BUTTON_RESET_BUTTONS: 'Réinitialiser boutons',
+                                    BUTTON_RESET_MESSAGES: 'Réinitialiser messages',
+                                    BUTTON_RESET_POPOUTS: 'Réinitialiser popouts',
+                                    BUTTON_SELECTORS_LISTS_DEFAULT: 'Par défaut',
+                                    BUTTON_SELECTORS_LISTS_CLEAR: 'Vider',
+                                    BUTTON_SELECTORS_BUTTONS_DEFAULT: 'Par défaut',
+                                    BUTTON_SELECTORS_BUTTONS_CLEAR: 'Vider',
+                                    BUTTON_SELECTORS_POPOUTS_DEFAULT: 'Par défaut',
+                                    BUTTON_SELECTORS_POPOUTS_CLEAR: 'Vider',
+
+                                    FIELD_NAME: 'Nom',
+                                    FIELD_SEQUENCE: 'Séquence',
+                                    FIELD_DELAY: 'Delai',
+                                    FIELD_LIMIT: 'Limite',
+                                    FIELD_DURATION: 'Durée',
+
+                                    FIELD_LISTS_NAME_NOTE: (default_='{default}')=>`[${default_}] L'animation à utiliser pour l'animation des éléments d'une liste.`,
+                                    FIELD_LISTS_SEQUENCE_NOTE: (default_='{default}')=>`[${default_}] La séquence de comment se créer les éléments d'une liste.`,
+                                    FIELD_LISTS_DELAY_NOTE: (default_='{default}')=>`[${default_}] Le délai avant l'apparition de chaque éléments d'une liste en seconde.`,
+                                    FIELD_LISTS_LIMIT_NOTE: (default_='{default}')=>`[${default_}] Le nombre maximum d'élément d'une liste qui seront animé.`,
+                                    FIELD_LISTS_DURATION_NOTE: (default_='{default}')=>`[${default_}] La durée de l'animation de chaque éléments d'une liste.`,
+
+                                    FIELD_BUTTONS_NAME_NOTE: (default_='{default}')=>`[${default_}] L'animation à utiliser pour l'animation des boutons.`,
+                                    FIELD_BUTTONS_SEQUENCE_NOTE: (default_='{default}')=>`[${default_}] La séquence de comment se créer les boutons.`,
+                                    FIELD_BUTTONS_DELAY_NOTE: (default_='{default}')=>`[${default_}] Le délai avant l'apparition de chaque boutons en seconde.`,
+                                    FIELD_BUTTONS_DURATION_NOTE: (default_='{default}')=>`[${default_}] La durée de l'animation de chaque boutons.`,
+
+                                    FIELD_MESSAGES_NAME_NOTE: (default_='{default}')=>`[${default_}] L'animation à utiliser pour l'animation des messages.`,
+                                    FIELD_MESSAGES_DELAY_NOTE: (default_='{default}')=>`[${default_}] La séquence de comment se créer les messages.`,
+                                    FIELD_MESSAGES_LIMIT_NOTE: (default_='{default}')=>`[${default_}] Le délai avant l'apparition de chaque messages en seconde.`,
+                                    FIELD_MESSAGES_DURATION_NOTE: (default_='{default}')=>`[${default_}] La durée de l'animation de chaque messages.`,
+
+                                    FIELD_POPOUTS_NAME_NOTE: (default_='{default}')=>`[${default_}] L'animation à utiliser pour l'animation des popout.`,
+                                    FIELD_POPOUTS_DURATION_NOTE: (default_='{default}')=>`[${default_}] La durée de l'animation de chaque popout.`,
+
+                                    FIELD_LISTS_SELECTORS: 'Selecteurs de listes',
+                                    FIELD_LISTS_SELECTORS_NOTE: 'Si vous laissez le champ vide, les selecteurs par défaut réapparaitrons au redémarrage. Les changement de selecteurs sont sauvegardé dès l\'écriture (si le code est valide). Le séparateur est une virgule (,).',
+                                    FIELD_BUTTONS_SELECTORS: 'Selecteurs de boutons',
+                                    FIELD_BUTTONS_SELECTORS_NOTE: 'Si vous laissez le champ vide, les selecteurs par défaut réapparaitrons au redémarrage. Les changement de selecteurs sont sauvegardé dès l\'écriture (si le code est valide). Le séparateur est une virgule (,).',
+                                    FIELD_POPOUTS_SELECTORS: 'Selecteurs de popout',
+                                    FIELD_POPOUTS_SELECTORS_NOTE: 'Si vous laissez le champ vide, les selecteurs par défaut réapparaitrons au redémarrage. Les changement de selecteurs sont sauvegardé dès l\'écriture (si le code est valide). Le séparateur est une virgule (,).',
+
+                                    PREVIEW_SELECTING: 'Selection',
+                                    PREVIEW_EDITING: 'Edition',
+                                    PREVIEW_BUTTON_TEMPLATE: 'Modèle',
+                                    PREVIEW_BUTTON_CLEAR: 'Vider',
+                                    PREVIEW_BUTTON_LOAD: 'Charger',
+                                    PREVIEW_BUTTON_SAVE: 'Sauvegarder',
+                                    PREVIEW_PLACEHOLDER_HINT: 'L\'élément animé a "scale(0)" dans sa transformation,\n donc votre transmation doit contenir "scale(1)" dans la dernière étape(100%).',
+                                    PREVIEW_IN: 'Dessus',
+                                    PREVIEW_OUT: 'Dessous',
+                                    PREVIEW_CIRCLE: 'Cercle',
+                                    PREVIEW_POLYGON: 'Polygone',
+                                    PREVIEW_OPACITY: 'Opacité',
+                                    PREVIEW_SLIME: 'Slime',
+                                    PREVIEW_BRICK_RIGHT: 'Brique droite',
+                                    PREVIEW_BRICK_LEFT: 'Brique gauche',
+                                    PREVIEW_BRICK_UP: 'Brick du dessus',
+                                    PREVIEW_BRICK_DOWN: 'Brick du dessous',
+                                    PREVIEW_SLIDE_RIGHT: 'Glissade droite',
+                                    PREVIEW_SLIDE_LEFT: 'Glissade gauche',
+                                    PREVIEW_SLIDE_UP: 'Glissade du dessus',
+                                    PREVIEW_SLIDE_DOWN: 'Glissade du dessous',
+                                    PREVIEW_SLIDE_UP_RIGHT: 'Glissade dessus (droite)',
+                                    PREVIEW_SLIDE_UP_LEFT: 'Glissade dessus (gauche)',
+                                    PREVIEW_SLIDE_DOWN_RIGHT: 'Glissade dessous (droite)',
+                                    PREVIEW_SLIDE_DOWN_LEFT: 'Glissade dessous (gauche)',
+                                    PREVIEW_SKEW_RIGHT: 'Inclinaison droite',
+                                    PREVIEW_SKEW_LEFT: 'Inclinaison gauche',
+                                    PREVIEW_WIDE_SKEW_RIGHT: 'Grande Inclinaison droite',
+                                    PREVIEW_WIDE_SKEW_LEFT: 'Grande Inclinaison gauche',
+
+                                    PREVIEW_VERTICAL_FROM_FIRST: '↓',
+                                    PREVIEW_VERTICAL_FROM_LAST: '↑',
+                                    PREVIEW_HORIZONTAL_FROM_FIRST: '→',
+                                    PREVIEW_HORIZONTAL_FROM_LAST: '←',
+
+                                    GROUP_LISTS: 'Listes',
+                                    GROUP_BUTTONS: 'Boutons',
+                                    GROUP_MESSAGES: 'Messages',
+                                    GROUP_POPOUTS: 'Popout',
+                                    
+                                    GROUP_ADVANCED: 'Avancés',
+                                }
+                            }
+                        break;
+
+                        case 'ru':
+                            var TEMPS = {
+                                TOOLTIPS: {
+                                    BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Последние изменения',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK: 'Проверяет обновления',
+                                    BUTTON_ANIMATIONS_RESET: 'Сбрасывает все настройки',
+                                    BUTTON_ANIMATIONS_REBUILD: 'Пересоздаёт стили. При перезагрузке плагина стили пересоздаются тоже',
+                                    BUTTON_ANIMATIONS_ISSUES: 'Ссылка на GitHub',
+                                    BUTTON_ANIMATIONS_DISCUSSIONS: 'Ссылка на GitHub',
+                                    BUTTON_LISTS_SWITCH: 'Переключение списков',
+                                    BUTTON_BUTTONS_SWITCH: 'Переключение кнопок',
+                                    BUTTON_MESSAGES_SWITCH: 'Переключение сообщений',                                
+                                    BUTTON_POPOUTS_SWITCH: 'Переключение всплывающих окон',                                
+                                    BUTTON_RESET_LISTS: 'Сбрасывает настройки списков',
+                                    BUTTON_RESET_BUTTONS: 'Сбрасывает настройки кнопок',
+                                    BUTTON_RESET_MESSAGES: 'Сбрасывает настройки сообщений',
+                                    BUTTON_RESET_POPOUTS: 'Сбрасывает настройки всплывающих окон',
+                                    BUTTON_SELECTORS_LISTS_DEFAULT: 'Восстанавливает заводские селекторы',
+                                    BUTTON_SELECTORS_LISTS_CLEAR: 'Очищает тектовое поле',
+                                    BUTTON_SELECTORS_BUTTONS_DEFAULT: 'Восстанавливает заводские селекторы',
+                                    BUTTON_SELECTORS_BUTTONS_CLEAR: 'Очищает тектовое поле',
+                                    BUTTON_SELECTORS_POPOUTS_DEFAULT: 'Восстанавливает заводские селекторы',
+                                    BUTTON_SELECTORS_POPOUTS_CLEAR: 'Очищает тектовое поле'
+                                },
+                                LABELS: {
+                                    BUTTON_ANIMATIONS_RESET: 'Сбросить всё',
+                                    BUTTON_ANIMATIONS_RESET_RESETING: 'Сбрасывание...',
+                                    BUTTON_ANIMATIONS_REBUILD: 'Пересоздать анимации',
+                                    BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Список изменений',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK: 'Обновить',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING: 'Поиск обновлений...',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_TIMEOUT: 'Превышено вр. ожидания',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_ERROR: 'Случилась ошибка',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_OLDER: (version_='{version}')=>`v${version_} - Обновить`,
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_TITLE: 'Ваша версия устарела',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_COMPARE: (yourV_, githubV_)=>`v${yourV_} (ваша)  →  v${githubV_} (github)`,
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_NOTE: 'Плагин будет обновлён.',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_NEWER: (version_='{version}')=>`v${version_} - Ваша версия`,
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_TITLE: 'Ваша версия новее',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_COMPARE: (yourV_, githubV_)=>`v${yourV_} (ваша)  ←  v${githubV_} (github)`,
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_NOTE: 'Плагин будет деобновлен.',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_LATEST: (version_='{version}')=>`v${version_} - Последняя версия`,
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_TITLE: 'Ваша версия последняя',
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_COMPARE: (yourV_, githubV_)=>`v${yourV_} (ваша)  ↔  v${githubV_} (github)`,
+                                    BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_NOTE: 'Плагин будет переустановлен.',
+                                    BUTTON_ANIMATIONS_ISSUES: 'Проблемы',
+                                    BUTTON_ANIMATIONS_DISCUSSIONS: 'Обсуждения',
+                                    BUTTON_LISTS_SWITCH: 'Списки',
+                                    BUTTON_BUTTONS_SWITCH: 'Кнопки',
+                                    BUTTON_MESSAGES_SWITCH: 'Сообщения',
+                                    BUTTON_POPOUTS_SWITCH: 'Вспл. окна',
+                                    BUTTON_RESET_LISTS: 'Сбросить списки',
+                                    BUTTON_RESET_BUTTONS: 'Сбросить кнопки',
+                                    BUTTON_RESET_MESSAGES: 'Сбросить сообщения',
+                                    BUTTON_RESET_POPOUTS: 'Сбросить вспл. окна',
+                                    BUTTON_SELECTORS_LISTS_DEFAULT: 'По умолчанию',
+                                    BUTTON_SELECTORS_LISTS_CLEAR: 'Очистить',
+                                    BUTTON_SELECTORS_BUTTONS_DEFAULT: 'По умолчанию',
+                                    BUTTON_SELECTORS_BUTTONS_CLEAR: 'Очистить',
+                                    BUTTON_SELECTORS_POPOUTS_DEFAULT: 'По умолчанию',
+                                    BUTTON_SELECTORS_POPOUTS_CLEAR: 'Очистить',
+    
+                                    FIELD_NAME: 'Название',
+                                    FIELD_SEQUENCE: 'Напраление',
+                                    FIELD_DELAY: 'Задержка',
+                                    FIELD_LIMIT: 'Лимит',
+                                    FIELD_DURATION: 'Длительность',
+    
+                                    FIELD_LISTS_NAME_NOTE: (default_='{default}')=>`[${default_}] Название анимации элементов списка при их появлении.`,
+                                    FIELD_LISTS_SEQUENCE_NOTE: (default_='{default}')=>`[${default_}] Направление в котором будут выстраиваться элементы списка.`,
+                                    FIELD_LISTS_DELAY_NOTE: (default_='{default}')=>`[${default_}] Задержка перед появлением для каждого элемента списка в секундах.`,
+                                    FIELD_LISTS_LIMIT_NOTE: (default_='{default}')=>`[${default_}] Максимальное количество элементов в списке, для которых будет воспроизводиться анимация.`,
+                                    FIELD_LISTS_DURATION_NOTE: (default_='{default}')=>`[${default_}] Скорость воспроизведения анимации в секундах для каждого элемента списка после задержки.`,
+    
+                                    FIELD_BUTTONS_NAME_NOTE: (default_='{default}')=>`[${default_}] Название анимации кнопок при их появлении.`,
+                                    FIELD_BUTTONS_SEQUENCE_NOTE: (default_='{default}')=>`[${default_}] Последовательность, в которой выстраиваются кнопки.`,
+                                    FIELD_BUTTONS_DELAY_NOTE: (default_='{default}')=>`[${default_}] Задержка перед появлением каждой кнопки в секундах.`,
+                                    FIELD_BUTTONS_DURATION_NOTE: (default_='{default}')=>`[${default_}] Скорость воспроизведения анимации в секундах для каждой кнопки после задержки.`,
+    
+                                    FIELD_MESSAGES_NAME_NOTE: (default_='{default}')=>`[${default_}] Название анимации сообщений при их появлении.`,
+                                    FIELD_MESSAGES_DELAY_NOTE: (default_='{default}')=>`[${default_}] Задержка перед появлением каждого сообщения в секундах.`,
+                                    FIELD_MESSAGES_LIMIT_NOTE: (default_='{default}')=>`[${default_}] Максимальное количество сообщений в списке, для которых будет воспроизводиться анимация.`,
+                                    FIELD_MESSAGES_DURATION_NOTE: (default_='{default}')=>`[${default_}] Скорость воспроизведения анимации в секундах для каждого сообщения после задержки.`,
+    
+                                    FIELD_POPOUTS_NAME_NOTE: (default_='{default}')=>`[${default_}] Название анимации всплывающих окон при их появлении.`,
+                                    FIELD_POPOUTS_DURATION_NOTE: (default_='{default}')=>`[${default_}] Скорость воспроизведения анимации в секундах для всплывающих окон.`,
+    
+                                    FIELD_LISTS_SELECTORS: 'Селекторы списков',
+                                    FIELD_LISTS_SELECTORS_NOTE: 'Если оставить это поле пустым, при перезагрузке здесь будут отображаться селекторы по умолчанию. Изменения селекторов сохраняются при вводе (если код корректен). Разделителем является запятая (,).',
+                                    FIELD_BUTTONS_SELECTORS: 'Селекторы кнопок',
+                                    FIELD_BUTTONS_SELECTORS_NOTE: 'Если оставить это поле пустым, при перезагрузке здесь будут отображаться селекторы по умолчанию. Изменения селекторов сохраняются при вводе (если код корректен). Разделителем является запятая (,).',
+                                    FIELD_POPOUTS_SELECTORS: 'Селекторы всплывающих окон',
+                                    FIELD_POPOUTS_SELECTORS_NOTE: 'Если оставить это поле пустым, при перезагрузке здесь будут отображаться селекторы по умолчанию. Изменения селекторов сохраняются при вводе (если код корректен). Разделителем является запятая (,).',
+                                    PREVIEW_SELECTING: 'Выбирать',
+                                    PREVIEW_EDITING: 'Редактировать',
+                                    PREVIEW_BUTTON_TEMPLATE: 'Шаблон',
+                                    PREVIEW_BUTTON_CLEAR: 'Очистить',
+                                    PREVIEW_BUTTON_LOAD: 'Загрузить',
+                                    PREVIEW_BUTTON_SAVE: 'Сохранить',
+                                    PREVIEW_PLACEHOLDER_HINT: 'Анимированные элементы имеют "scale(0)" в трансформации,\nпоэтому ваша анимация должна содержать "scale(1)" на конечном кадре (100%).',
+                                    PREVIEW_IN: 'Вход',
+                                    PREVIEW_OUT: 'Выход',
+                                    PREVIEW_CIRCLE: 'Круг',
+                                    PREVIEW_POLYGON: 'Полигон',
+                                    PREVIEW_OPACITY: 'Прозрачность',
+                                    PREVIEW_SLIME: 'Слизь',
+                                    PREVIEW_BRICK_RIGHT: 'Кирпич враво',
+                                    PREVIEW_BRICK_LEFT: 'Кирпич влево',
+                                    PREVIEW_BRICK_UP: 'Кирпич вверх',
+                                    PREVIEW_BRICK_DOWN: 'Кирпич вниз',
+                                    PREVIEW_SLIDE_RIGHT: 'Скольжение вправо',
+                                    PREVIEW_SLIDE_LEFT: 'Скольжение влево',
+                                    PREVIEW_SLIDE_UP: 'Скольжение вверх',
+                                    PREVIEW_SLIDE_DOWN: 'Скольжение вниз',
+                                    PREVIEW_SLIDE_UP_RIGHT: 'Скольжение вверх (вправо)',
+                                    PREVIEW_SLIDE_UP_LEFT: 'Скольжение вверх (влево)',
+                                    PREVIEW_SLIDE_DOWN_RIGHT: 'Скольжение вниз (вправо)',
+                                    PREVIEW_SLIDE_DOWN_LEFT: 'Скольжение вниз (влево)',
+                                    PREVIEW_SKEW_RIGHT: 'Перекос вправо',
+                                    PREVIEW_SKEW_LEFT: 'Перекос влево',
+                                    PREVIEW_WIDE_SKEW_RIGHT: 'Широкий перекос вправо',
+                                    PREVIEW_WIDE_SKEW_LEFT: 'Широкий перекос влево',
+    
+                                    PREVIEW_VERTICAL_FROM_FIRST: '↓',
+                                    PREVIEW_VERTICAL_FROM_LAST: '↑',
+                                    PREVIEW_HORIZONTAL_FROM_FIRST: '→',
+                                    PREVIEW_HORIZONTAL_FROM_LAST: '←',
+    
+                                    GROUP_LISTS: 'Списки',
+                                    GROUP_BUTTONS: 'Кнопки',
+                                    GROUP_MESSAGES: 'Сообщения',
+                                    GROUP_POPOUTS: 'Вспл. окна',
+                                    
+                                    GROUP_ADVANCED: 'Расширенные',
+                                }
+                            }
+                        break;
+                        
                         case 'en-US':
                         case 'en-GB':
                         default:
@@ -993,7 +1296,7 @@
                                 'transition': 'background-color .17s ease, color .17s ease, opacity 250ms ease',
                             },
                             id: button.id,
-                            class: `${WebpackModules.getByProps('button', 'sizeIcon').button} ${WebpackModules.getByProps('button', 'sizeIcon').sizeSmall} ${button.inverted ? 'inverted' : 'filled'} ${button.color ?? 'blurple'} ${button.class ?? ''}`,
+                            class: `${Animations.modules.Button} ${Animations.modules.ButtonSizeSmall} ${button.inverted ? 'inverted' : 'filled'} ${button.color ?? 'blurple'} ${button.class ?? ''}`,
                             onClick: button.onclick ?? null
                         },
                             React.createElement('div', {
@@ -1025,7 +1328,7 @@
                                         style: {
                                             'max-width': 'none'
                                         },
-                                        class: `${WebpackModules.getByProps('buttonText', 'giftIcon').buttonText}`,
+                                        class: `${Animations.modules.ButtonText}`,
                                     },
                                         button.label
                                     )
@@ -1136,7 +1439,7 @@
                                         spellcheck: 'false',
                                         type: options.textarea?.type ?? 'text',
                                         placeholder: options.textarea?.placeholder ?? '',
-                                        class: `animTextarea ${options.textarea?.class ?? ''} ${WebpackModules.getByProps('inputDefault', 'focused').inputDefault} ${WebpackModules.getByProps('textArea').textArea} ${WebpackModules.getByProps('scrollbarDefault').scrollbarDefault}`,
+                                        class: `animTextarea ${options.textarea?.class ?? ''} ${Animations.modules.InputDefault} ${Animations.modules.TextArea} ${Animations.modules.ScrollbarDefault}`,
                                         onChange: onchange ?? null
                                     },
                                     value
@@ -1201,9 +1504,9 @@
                                 tempBlocks[i] = React.createElement('div', {
                                     class: 'animTempBlock',
                                     style: {
-                                        width: options?.tempBlocks?.width ?? (options?.horizontal?'15%':'auto'),
+                                        width: options?.tempBlocks?.width ?? (options?.horizontal?'100%':'auto'),
                                         height: options?.tempBlocks?.height ?? (options?.horizontal?'26px':'18%'),
-                                        margin: options?.tempBlocks?.margin ?? '4px'
+                                        margin: options?.tempBlocks?.margin ?? (options?.horizontal?'0 4px':'4px')
                                     }
                                 })
                             }
@@ -1220,10 +1523,17 @@
                                         e.currentTarget.classList.add('enabled');
                                     }
                                 },
-                                    [...tempBlocks, React.createElement('div', {
-                                        class: 'animPreviewLabel',
-                                        title: template.label
-                                    }, template.label
+                                [
+                                    React.createElement('div', {
+                                        class: 'animPreviewTempsContainer'
+                                    },
+                                        tempBlocks
+                                    ),
+
+                                    React.createElement('div', {
+                                        class: 'animPreviewLabel'
+                                    },
+                                        template.label
                                     )]
                                 )
                             )
@@ -1511,7 +1821,8 @@
                         Tooltip.create(document.getElementById('popouts-selectors-clear'), TEMPS.TOOLTIPS.BUTTON_SELECTORS_POPOUTS_CLEAR)
                     }, 500)
 
-                    return Settings.SettingPanel.build(
+                    var settings_panel =
+                    Settings.SettingPanel.build(
                         this.saveSettings.bind(this),
 
                         new Settings.SettingField(null, null, null,
@@ -1540,7 +1851,6 @@
                                             id: 'animations-version-check',
                                             inverted: false,
                                             onclick: (e) => {
-
                                                 let button = e.currentTarget;
 
                                                 button.querySelector('span').innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING;
@@ -1699,7 +2009,7 @@
 
                                                 PluginUtilities.saveSettings(this.getName(), this.defaultSettings);
                                                 this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
-                                                this.changeStyles(200);
+                                                this.changeStyles();
                                                 this.closeSettings();
                                             }
                                         },
@@ -1710,7 +2020,7 @@
                                             svgPaths: [
                                                 'M 13 3 c -4.97 0 -9 4.03 -9 9 H 1 l 3.89 3.89 l 0.07 0.14 L 9 12 H 6 c 0 -3.87 3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 z',
                                             ],
-                                            onclick: (e) => this.changeStyles(200)
+                                            onclick: (e) => this.changeStyles()
                                         }
                                     ],
                                 },
@@ -2247,8 +2557,7 @@
                                     horizontal: false,
                                     tempBlocks: {
                                         count: 1,
-                                        height: '36%',
-                                        margin: '36px 4px'
+                                        height: '36%'
                                     },
                                     custom: {
                                         data: this.settings.popouts.custom,
@@ -2446,6 +2755,8 @@
 
                         )
                     )
+
+                    return settings_panel
                 }
 
                 start() {
@@ -2528,7 +2839,7 @@
                         display: inline-flex;
                         justify-content: space-between;
                         line-height: initial;
-                        width: 120px;
+                        width: 180px;
                         padding: 3px 8px;
                         transition: 0.2s background;
                         background-size: cover;
@@ -2656,6 +2967,24 @@
                     .animPreview.enabled {
                         background-color: var(--brand-experiment);
                     }
+
+                    .vertical .animPreviewTempsContainer {
+                        display: flex;
+                        width: 100%;
+                        height: 100%;
+                        flex-direction: column;
+                        flex-wrap: nowrap;
+                        justify-content: space-evenly;
+                    }
+
+                    .horizontal .animPreviewTempsContainer {
+                        display: flex;
+                        width: 100%;
+                        height: 26px;
+                        flex-direction: row;
+                        flex-wrap: nowrap;
+                        justify-content: space-between;
+                    }
                     
                     .vertical .animPreview .animTempBlock {
                         border-radius: 3pt;
@@ -2663,9 +2992,6 @@
                     }
 
                     .horizontal .animPreview .animTempBlock {
-                        width: 15%;
-                        height: 26px;
-                        margin: 4px;
                         border-radius: 3pt;
                         background-color: var(--interactive-normal);
                         display: inline-block;
@@ -2682,8 +3008,6 @@
                     .animPreview .animPreviewLabel {
                         box-sizing: border-box;
                         overflow: hidden;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
                         color: var(--interactive-normal);
                         font-size: 10pt;
                         margin: 4px;
@@ -2691,16 +3015,16 @@
                     }
                     
                     .vertical .animPreview .animPreviewLabel {
-                        height: 25px;
+                        height: 50px;
                         width: auto;
                         bottom: 6pt;
-                        line-height: 150%;
+                        line-height: 100%;
                         text-align: center;
                     }
 
                     .horizontal .animPreview .animPreviewLabel {
                         height: 26px;
-                        width: 30%;
+                        width: 50%;
                         display: inline-block;
                         float: right;
                         line-height: 200%;
@@ -2818,8 +3142,8 @@
 
                     this.BadSendingStyles = (e)=>{
                         if(e.key=="Enter") { // finding parent
-                            var BadSendingTextNode = document.getElementsByClassName(WebpackModules.getByProps('chatContent').chatContent)[0]
-                            .querySelector(`.${WebpackModules.getByProps('isSending').isSending}, .${WebpackModules.getByProps('isFailed').isFailed}`)
+                            var BadSendingTextNode = document.getElementsByClassName(Animations.modules.ChatContent)[0]
+                            .querySelector(`.${Animations.modules.IsSending}, .${Animations.modules.IsFailed}`)
 
                             if(!BadSendingTextNode) {
                                 setTimeout(()=>{
@@ -2827,7 +3151,7 @@
                                     return BadSendingTextNode
                                 }, 50)// frequency of checks after pressing Enter
                             } else {
-                                var result = BadSendingTextNode.closest(`.${WebpackModules.getByProps('message').message}`);// this is where we found it
+                                var result = BadSendingTextNode.closest(`.${Animations.modules.Message}`);// this is where we found it
                                 Logger.log('done')
                                 // there styles for parent
                                 result.style.animation = 'none'
