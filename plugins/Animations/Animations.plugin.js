@@ -1280,8 +1280,6 @@
                                 }
                             }
                         break;
-
-
                         case 'en-US':
                         case 'en-GB':
                         default:
