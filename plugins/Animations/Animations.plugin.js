@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.2.10.1
+ * @version 1.2.10.2
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
@@ -21,7 +21,7 @@
                     github_username: 'Mopsgamer',
                 }
             ],
-            version: '1.2.10.1',
+            version: '1.2.10.2',
             description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
             github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
             github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
@@ -29,7 +29,7 @@
         changelog: [
             { "title": "New Stuff", "items": ["Adding localization: Japanese (Thanks mirukuPC!)."] },
             //{ "title": "Improvements", "type": "improved", "items": ["Reworked the tabs of the groups, now the setting will be more comfortable.", "Sliders have been replaced by input boxes."] },
-            //{ "title": "Fixes", "type": "fixed", "items": ["Fixed performance issues."] }
+            { "title": "Fixes", "type": "fixed", "items": ["Integer input fields."] }
         ],
         main: 'index.js',
     };
@@ -2925,7 +2925,7 @@
                                                             value: this.settings.lists.duration,
                                                             max: 3,
                                                             step: 0.1,
-                                                            type: 'integer',
+                                                            type: 'number',
                                                             onchange: (e) => {
                                                                 var value = Number(e.currentTarget.value);
             
@@ -3045,7 +3045,7 @@
                                                             value: this.settings.buttons.delay,
                                                             max: 0.5,
                                                             step: 0.01,
-                                                            type: 'integer',
+                                                            type: 'number',
                                                             onchange: (e) => {
                                                                 var value = Number(e.currentTarget.value);
             
@@ -3068,7 +3068,7 @@
                                                             value: this.settings.buttons.duration,
                                                             max: 3,
                                                             step: 0.1,
-                                                            type: 'integer',
+                                                            type: 'number',
                                                             onchange: (e) => {
                                                                 var value = Number(e.currentTarget.value);
             
@@ -3172,7 +3172,7 @@
                                                             value: this.settings.messages.delay,
                                                             max: 0.5,
                                                             step: 0.01,
-                                                            type: 'integer',
+                                                            type: 'number',
                                                             onchange: (e) => {
                                                                 var value = Number(e.currentTarget.value);
             
@@ -3218,7 +3218,7 @@
                                                             value: this.settings.messages.duration,
                                                             max: 3,
                                                             step: 0.01,
-                                                            type: 'integer',
+                                                            type: 'number',
                                                             onchange: (e) => {
                                                                 var value = Number(e.currentTarget.value);
             
@@ -3327,7 +3327,7 @@
                                                             value: this.settings.popouts.duration,
                                                             max: 3,
                                                             step: 0.01,
-                                                            type: 'integer',
+                                                            type: 'number',
                                                             onchange: (e) => {
                                                                 var value = Number(e.currentTarget.value);
             
