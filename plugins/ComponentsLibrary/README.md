@@ -7,15 +7,19 @@ ComponentsLibrary.testModal()
 ```js
 const {
 
-  IconPaths,
+  SvgPresets,
   
   Divider,
+  Text,
   Svg,
+  Switcher,
   Button,
   Input,
+  Textarea,
   Field,
-  ElementsRow,
-  ElementsColumn
+  Row,
+  Column,
+  Tabs
   
 } = ComponentsLibrary
 
