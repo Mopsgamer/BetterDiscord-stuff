@@ -1,7 +1,7 @@
 /**
  * @name MopsComponentsLib
- * @version 0.0.2
- * @description Library of preset components.
+ * @version 0.0.3
+ * @description Library of components.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
  * @authorId 538010208023347200
@@ -20,7 +20,9 @@ module.exports = class MopsComponentsLib {
 
         const { showConfirmationModal, React } = BdApi;
 
-        global.MopsComponentsLib = {}
+        global.MopsComponentsLib = {
+            version: '0.0.3'
+        }
 
         global.MopsComponentsLib.SvgPresets = {
             Logos: {
@@ -195,7 +197,7 @@ module.exports = class MopsComponentsLib {
             },
         }
 
-        global.MopsComponentsLib.Divider = class CL_Divider extends React.Component {
+        global.MopsComponentsLib.Divider = class MCL_Divider extends React.Component {
 
             constructor() {
                 super()
@@ -205,13 +207,13 @@ module.exports = class MopsComponentsLib {
 
                 return React.createElement('div',
                     {
-                        class: 'CL_Divider'
+                        class: 'MCL_Divider'
                     }
                 )
             }
         }
 
-        global.MopsComponentsLib.Text = class CL_Text extends React.Component {
+        global.MopsComponentsLib.Text = class MCL_Text extends React.Component {
 
             constructor(state) {
                 super(state)
@@ -224,18 +226,19 @@ module.exports = class MopsComponentsLib {
 
                 return React.createElement('div',
                     {
-                        class: `CL_Text ${text.link ? 'link' : ''}`,
+                        id: text.id ?? '',
+                        class: `MCL_Text ${text.link ? 'link' : ''}`,
                         style: (typeof text.style == 'object' && !Array.isArray(text.style) ? text.style : {}),
                         onClick: (e) => {
                             if(typeof text.link == 'string') window.open(text.link)
                         }
                     },
-                    text.content
+                    text.content ?? 'Text'
                 )
             }
         }
 
-        global.MopsComponentsLib.Svg = class CL_Svg extends React.Component {
+        global.MopsComponentsLib.Svg = class MCL_Svg extends React.Component {
 
             constructor(state) {
                 super(state)
@@ -264,7 +267,7 @@ module.exports = class MopsComponentsLib {
             }
         }
 
-        global.MopsComponentsLib.Switcher = class CL_Switcher extends React.Component {
+        global.MopsComponentsLib.Switcher = class MCL_Switcher extends React.Component {
 
             constructor(state) {
                 super(state)
@@ -280,7 +283,7 @@ module.exports = class MopsComponentsLib {
                         margin: switcher?.margin ?? '8px',
                     },
                     id: switcher?.id ?? '',
-                    class: `CL_Switcher ${switcher?.color ?? 'green'} ${switcher?.disabled ? 'disabled' : ''} ${switcher?.checked ? 'checked': 'unchecked'} ${switcher?.class ?? ''}`,
+                    class: `MCL_Switcher ${switcher?.color ?? 'green'} ${switcher?.disabled ? 'disabled' : ''} ${switcher?.checked ? 'checked': 'unchecked'} ${switcher?.class ?? ''}`,
                     onClick: (e) => {
                         this.setState({checked: !this.state?.checked})
 
@@ -289,7 +292,7 @@ module.exports = class MopsComponentsLib {
                 },
                     React.createElement('div',
                     {
-                       class: `CL_SwitcherCircle`
+                       class: `MCL_SwitcherCircle`
                     },
                         React.createElement(global.MopsComponentsLib.Svg, { viewBox: global.MopsComponentsLib.SvgPresets.ByDiscord.switcherTick.viewBox, paths: ['', ''] })
                     )
@@ -297,7 +300,7 @@ module.exports = class MopsComponentsLib {
             }
         }
 
-        global.MopsComponentsLib.Button = class CL_Button extends React.Component {
+        global.MopsComponentsLib.Button = class MCL_Button extends React.Component {
 
             constructor(state) {
                 super(state)
@@ -306,7 +309,7 @@ module.exports = class MopsComponentsLib {
 
             render() {
 
-                class CL_ButtonLabel extends React.Component {
+                class MCL_ButtonLabel extends React.Component {
 
                     constructor(props) {
                         super(props)
@@ -315,7 +318,7 @@ module.exports = class MopsComponentsLib {
 
                     render() {
                         return React.createElement('span', {
-                            class: `CL_ButtonLabel`,
+                            class: `MCL_ButtonLabel`,
                         },
                             this.label
                         )
@@ -333,7 +336,7 @@ module.exports = class MopsComponentsLib {
                         transition: 'background-color .17s ease, color .17s ease, opacity 250ms ease',
                     },
                     id: button.id ?? '',
-                    class: `CL_Button ${button.disabled ? 'disabled' : ''} ${(['filled', 'inverted', 'underline']).includes(button.fill) ? button.fill : 'filled'} ${(['blurple', 'grey', 'green', 'red']).includes(button.color) ? button.color : 'blurple'} ${button.class ?? ''}`,
+                    class: `MCL_Button ${button.disabled ? 'disabled' : ''} ${(['filled', 'inverted', 'underline']).includes(button.fill) ? button.fill : 'filled'} ${(['blurple', 'grey', 'green', 'red']).includes(button.color) ? button.color : 'blurple'} ${button.class ?? ''}`,
                     onClick: (e) => {
                         if (e.currentTarget.classList.contains('disabled')) return
                         if (typeof button.onclick == 'function') button.onclick(e)
@@ -350,7 +353,7 @@ module.exports = class MopsComponentsLib {
                     },
                         [
                             Array.isArray(button.svgs) ? button.svgs.map((svgTemp) => React.createElement(global.MopsComponentsLib.Svg, svgTemp)) : null,
-                            React.createElement(CL_ButtonLabel, { label: button.label }),
+                            React.createElement(MCL_ButtonLabel, { label: button.label }),
                             typeof button.link == 'string' ? React.createElement(global.MopsComponentsLib.Svg, {
                                 align: 'right',
                                 paths: [
@@ -363,7 +366,7 @@ module.exports = class MopsComponentsLib {
             }
         }
 
-        global.MopsComponentsLib.Input = class CL_Input extends React.Component {
+        global.MopsComponentsLib.Input = class MCL_Input extends React.Component {
 
             constructor(state) {
                 super(state)
@@ -390,7 +393,7 @@ module.exports = class MopsComponentsLib {
                         value: input.value ?? '',
                         type: (['text', 'password', 'email', 'number', 'integer']).includes(input.type) ? (input.type == 'integer' ? 'number' : input.type) : 'text',
                         id: input.id ?? '',
-                        class: `CL_Input ${input.disabled ? 'disabled' : ''} ${input.class ?? ''}`,
+                        class: `MCL_Input ${input.disabled ? 'disabled' : ''} ${input.class ?? ''}`,
                         onClick: input.onclick ?? null,
                         onChange: (e) => {
                             var value = e.currentTarget.value
@@ -415,7 +418,7 @@ module.exports = class MopsComponentsLib {
             }
         }
 
-        global.MopsComponentsLib.Textarea = class CL_Textarea extends React.Component {
+        global.MopsComponentsLib.Textarea = class MCL_Textarea extends React.Component {
 
             constructor(state) {
                 super(state)
@@ -433,7 +436,7 @@ module.exports = class MopsComponentsLib {
                         spellcheck: 'false',
                         type: textarea?.type ?? 'text',
                         placeholder: textarea?.placeholder ?? '',
-                        class: `CL_Textarea ${textarea?.disabled ? 'disabled' : ''} ${textarea?.invalid ? 'invalid' : ''} ${textarea?.class ?? ''} ${MopsComponentsLib.modules.ScrollbarDefault}`,
+                        class: `MCL_Textarea ${textarea?.disabled ? 'disabled' : ''} ${textarea?.invalid ? 'invalid' : ''} ${textarea?.class ?? ''} ${MopsComponentsLib.modules.ScrollbarDefault}`,
                         onChange: (e) => {
                             textarea.onchange?.(e)
                         },
@@ -446,28 +449,7 @@ module.exports = class MopsComponentsLib {
             }
         }
 
-        global.MopsComponentsLib.Field = class CL_Field extends React.Component {
-
-            constructor(state) {
-                super(state)
-                this.state = state
-            }
-
-            render() {
-                return React.createElement('div',
-                    {
-                        class: 'CL_Field'
-                    },
-                    [
-                        React.createElement('div', { class: 'CL_FieldTitle' }, this.state?.title),
-                        React.createElement('div', { class: 'CL_FieldNote' }, this.state?.note),
-                        React.createElement('div', { class: 'CL_FieldContent' }, this.state?.content)
-                    ]
-                )
-            }
-        }
-
-        global.MopsComponentsLib.Row = class CL_Row extends React.Component {
+        global.MopsComponentsLib.Row = class MCL_Row extends React.Component {
 
             constructor(state) {
                 super(state)
@@ -486,14 +468,14 @@ module.exports = class MopsComponentsLib {
                             'align-items': options?.['align-items'] ?? 'space-between',
                             'justify-content': options?.['justify-content'] ?? 'space-between'
                         },
-                        class: `CL_Row ${options?.nosidemargin ?? true ? 'nosidemargin' : ''}`
+                        class: `MCL_Row ${options?.nosidemargin ?? true ? 'nosidemargin' : ''}`
                     },
                     content
                 )
             }
         }
 
-        global.MopsComponentsLib.Column = class CL_Column extends React.Component {
+        global.MopsComponentsLib.Column = class MCL_Column extends React.Component {
 
             constructor(column) {
                 super(column)
@@ -512,14 +494,35 @@ module.exports = class MopsComponentsLib {
                             'flex-direction': 'column',
                             'justify-content': options?.align ?? 'inline-flex'
                         },
-                        class: `CL_Column ${options?.nosidemargin ?? false ? 'nosidemargin' : ''}`
+                        class: `MCL_Column ${options?.nosidemargin ?? false ? 'nosidemargin' : ''}`
                     },
                     content
                 )
             }
         }
 
-        global.MopsComponentsLib.Tabs = class CL_Tabs extends React.Component {
+        global.MopsComponentsLib.Field = class MCL_Field extends React.Component {
+
+            constructor(state) {
+                super(state)
+                this.state = state
+            }
+
+            render() {
+                return React.createElement('div',
+                    {
+                        class: 'MCL_Field'
+                    },
+                    [
+                        React.createElement('div', { class: 'MCL_FieldTitle' }, this.state?.title),
+                        React.createElement('div', { class: 'MCL_FieldNote' }, this.state?.note),
+                        React.createElement('div', { class: 'MCL_FieldContent' }, this.state?.content)
+                    ]
+                )
+            }
+        }
+
+        global.MopsComponentsLib.Tabs = class MCL_Tabs extends React.Component {
 
             constructor(state) {
                 super(state)
@@ -533,18 +536,18 @@ module.exports = class MopsComponentsLib {
 
                 var openedReserved = false
 
-                class CL_TabsDivider extends React.Component {
+                class MCL_TabsDivider extends React.Component {
 
                     constructor(state) {
                         super(state)
                     }
 
                     render() {
-                        return React.createElement('div', { class: `CL_TabDivider` })
+                        return React.createElement('div', { class: `MCL_TabDivider` })
                     }
                 }
 
-                class CL_TabsTab extends React.Component {
+                class MCL_TabsTab extends React.Component {
 
                     constructor(state) {
                         super(state)
@@ -556,25 +559,25 @@ module.exports = class MopsComponentsLib {
                         return React.createElement('div',
                             {
                                 'data-index': tab?.index,
-                                class: `CL_Tab ${tab?.disabled ? 'disabled' : ''} ${tab?.opened ? 'selected' : ''}`,
+                                class: `MCL_Tab ${tab?.disabled ? 'disabled' : ''} ${tab?.opened ? 'selected' : ''}`,
                                 onClick: (e) => {
                                     if (tab?.disabled) return;
                                     var tab = e.currentTarget;
                                     var index = Number(tab.getAttribute('data-index'));
-                                    var panel = tab.closest('.CL_TabsPanel');
+                                    var panel = tab.closest('.MCL_TabsPanel');
 
-                                    panel.querySelectorAll(`.CL_Tab:not([data-index="${index}"])`).forEach(
+                                    panel.querySelectorAll(`.MCL_Tab:not([data-index="${index}"])`).forEach(
                                         (content) => {
                                             content.classList.remove('selected')
                                         }
                                     );
-                                    panel.querySelectorAll(`.CL_Content:not([data-index="${index}"])`).forEach(
+                                    panel.querySelectorAll(`.MCL_Content:not([data-index="${index}"])`).forEach(
                                         (content) => {
                                             content.classList.remove('show')
                                         }
                                     );
-                                    panel.querySelector(`.CL_Tab[data-index="${index}"]`).classList.toggle('selected')
-                                    panel.querySelector(`.CL_Content[data-index="${index}"]`).classList.toggle('show')
+                                    panel.querySelector(`.MCL_Tab[data-index="${index}"]`).classList.toggle('selected')
+                                    panel.querySelector(`.MCL_Content[data-index="${index}"]`).classList.toggle('show')
                                 }
                             },
                             tab?.name
@@ -582,7 +585,7 @@ module.exports = class MopsComponentsLib {
                     }
                 }
 
-                class CL_TabsContent extends React.Component {
+                class MCL_TabsContent extends React.Component {
 
                     constructor(state) {
                         super(state)
@@ -596,7 +599,7 @@ module.exports = class MopsComponentsLib {
                         return React.createElement('div',
                             {
                                 'data-index': tabcontent?.index,
-                                class: `CL_Content ${tabcontent?.opened ? 'show' : ''}`
+                                class: `MCL_Content ${tabcontent?.opened ? 'show' : ''}`
                             },
                             tabcontent?.content ?? null
                         )
@@ -609,25 +612,25 @@ module.exports = class MopsComponentsLib {
                             margin: options?.margin ?? 'none',
                             padding: options?.padding ?? 'none'
                         },
-                        class: `CL_TabsPanel ${options?.class ?? ''}`
+                        class: `MCL_TabsPanel ${options?.class ?? ''}`
                     },
                     [
                         React.createElement('div',
                             {
-                                class: 'CL_TabsTabList'
+                                class: 'MCL_TabsTabList'
                             },
                             tabs.map(
                                 (tab, index) => {
             
                                     if (tab?.component == 'divider') {
-                                        return React.createElement(CL_TabsDivider)
+                                        return React.createElement(MCL_TabsDivider)
                                     }
 
                                     if(tab.opened && Number.isFinite(openedReserved))
                                     console.warn(`[MopsComponentsLib] "opened: true" in the Tab "${tab.name}", but there is already an open tab - "${tabs[openedReserved].name}".`)
                                     
                                     return React.createElement(
-                                        CL_TabsTab,
+                                        MCL_TabsTab,
                                         {
                                             index: index,
                                             name: tab.name,
@@ -640,11 +643,11 @@ module.exports = class MopsComponentsLib {
                         React.createElement(
                             'div',
                             {
-                                class: 'CL_TabsContentList'
+                                class: 'MCL_TabsContentList'
                             },
                             tabs.map(
                                 (tab, index) => React.createElement(
-                                    CL_TabsContent,
+                                    MCL_TabsContent,
                                     {
                                         index: index,
                                         content: tab.content,
@@ -659,29 +662,29 @@ module.exports = class MopsComponentsLib {
         }
 
         global.MopsComponentsLib.testModal = () => {
-            var cl = global.MopsComponentsLib;
+            var mcl = global.MopsComponentsLib;
 
             showConfirmationModal('MopsComponentsLib - Test',
                 React.createElement('div', null,
                     [
-                        React.createElement(cl.Column,
+                        React.createElement(mcl.Column,
                             {
                                 content: [
-                                    React.createElement(cl.Field,
+                                    React.createElement(mcl.Field,
                                         {
                                             title: 'Logos',
                                             content: [
-                                                React.createElement(cl.Row,
+                                                React.createElement(mcl.Row,
                                                     {
                                                         content: [
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.Logos.discord, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.Logos.discord, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.Logos.github, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.Logos.github, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.Logos.patreon, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.Logos.patreon, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
                                                         ],
                                                         options: {
@@ -692,39 +695,39 @@ module.exports = class MopsComponentsLib {
                                             ]
                                         }
                                     ),
-                                    React.createElement(cl.Field,
+                                    React.createElement(mcl.Field,
                                         {
                                             title: 'By Discord',
                                             content: [
-                                                React.createElement(cl.Row,
+                                                React.createElement(mcl.Row,
                                                     {
                                                         content: [
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByDiscord.switcherTick, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByDiscord.switcherTick, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByDiscord.switcherCross, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByDiscord.switcherCross, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByDiscord.gear, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByDiscord.gear, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByDiscord.pencil, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByDiscord.pencil, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByDiscord.cross, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByDiscord.cross, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByDiscord.info, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByDiscord.info, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByDiscord.help, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByDiscord.help, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByDiscord.downloadArrow, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByDiscord.downloadArrow, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByDiscord.linkArrow, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByDiscord.linkArrow, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
                                                         ],
                                                         options: {
@@ -735,42 +738,42 @@ module.exports = class MopsComponentsLib {
                                             ]
                                         }
                                     ),
-                                    React.createElement(cl.Field,
+                                    React.createElement(mcl.Field,
                                         {
                                             title: 'By BetterDiscord',
                                             content: [
-                                                React.createElement(cl.Row,
+                                                React.createElement(mcl.Row,
                                                     {
                                                         content: [
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByBetterDiscord.list, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByBetterDiscord.list, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByBetterDiscord.tile, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByBetterDiscord.tile, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByBetterDiscord.puzzle, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByBetterDiscord.puzzle, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByBetterDiscord.gear, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByBetterDiscord.gear, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByBetterDiscord.pencil, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByBetterDiscord.pencil, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByBetterDiscord.trash, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByBetterDiscord.trash, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByBetterDiscord.web, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByBetterDiscord.web, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByBetterDiscord.help, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByBetterDiscord.help, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByBetterDiscord.donate, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByBetterDiscord.donate, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByBetterDiscord.changelogArrow, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByBetterDiscord.changelogArrow, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
                                                         ],
                                                         options: {
@@ -781,24 +784,24 @@ module.exports = class MopsComponentsLib {
                                             ]
                                         }
                                     ),
-                                    React.createElement(cl.Field,
+                                    React.createElement(mcl.Field,
                                         {
                                             title: 'By developer',
                                             content: [
-                                                React.createElement(cl.Row,
+                                                React.createElement(mcl.Row,
                                                     {
                                                         content: [
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByDev.circleArrow, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByDev.circleArrow, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByDev.list, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByDev.list, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByDev.switcherRight, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByDev.switcherRight, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
-                                                            React.createElement(cl.Svg,
-                                                                { ...cl.SvgPresets.ByDev.switcherLeft, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
+                                                            React.createElement(mcl.Svg,
+                                                                { ...mcl.SvgPresets.ByDev.switcherLeft, margin: '0 1% 0 0', background: 'black', width: '9%', height: '9%' }
                                                             ),
                                                         ],
                                                         options: {
@@ -812,55 +815,55 @@ module.exports = class MopsComponentsLib {
                                 ]
                             }
                         ),
-                        React.createElement(cl.Divider),
-                        React.createElement(cl.Row, {
+                        React.createElement(mcl.Divider),
+                        React.createElement(mcl.Row, {
                             content: [
-                                React.createElement(cl.Switcher, { checked: true }),
-                                React.createElement(cl.Row,
+                                React.createElement(mcl.Switcher, { checked: true }),
+                                React.createElement(mcl.Row,
                                     {
                                         content: [
-                                            React.createElement(cl.Text, { content: 'Rickroll' }),
-                                            React.createElement(cl.Text, { content: 'link', link: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }),
+                                            React.createElement(mcl.Text, { content: 'Rickroll' }),
+                                            React.createElement(mcl.Text, { content: 'link', link: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' }),
                                         ],
                                         options: {'justify-content': 'center'}
                                     }
                                 ),
-                                React.createElement(cl.Switcher, {checked: true, color: 'blurple'}),
+                                React.createElement(mcl.Switcher, {checked: true, color: 'blurple'}),
                             ]
                         }),
-                        React.createElement(cl.Input, { value: 'hello?', placeholder: 'user?' }),
-                        React.createElement(cl.Row, {
-                            content: React.createElement(cl.Input, { value: 'Mmmm', placeholder: 'nice' })
+                        React.createElement(mcl.Input, { value: 'hello?', placeholder: 'user?' }),
+                        React.createElement(mcl.Row, {
+                            content: React.createElement(mcl.Input, { value: 'Mmmm', placeholder: 'nice' })
                         }),
-                        React.createElement(cl.Tabs,
+                        React.createElement(mcl.Tabs,
                             {
                                 tabs: [
                                     {
                                         name: 'Tab1',
-                                        content: React.createElement(cl.Tabs,
+                                        content: React.createElement(mcl.Tabs,
                                             {
                                                 tabs: [
                                                     {
                                                         name: 'Tab1 > Tab2',
-                                                        content: React.createElement(cl.Column,
+                                                        content: React.createElement(mcl.Column,
                                                             {
                                                                 content: [
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
-                                                                    React.createElement(cl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
+                                                                    React.createElement(mcl.Button),
                                                                 ]
                                                             }                                                            
                                                         )
@@ -876,25 +879,25 @@ module.exports = class MopsComponentsLib {
                                 ]
                             }
                         ),
-                        React.createElement(cl.Divider),
-                        React.createElement(cl.Field,
+                        React.createElement(mcl.Divider),
+                        React.createElement(mcl.Field,
                             {
                                 title: 'Buttons',
                                 note: 'UwU',
-                                content: React.createElement(cl.Tabs,
+                                content: React.createElement(mcl.Tabs,
                                     {
                                         tabs: [
                                             {
                                                 name: 'Filled',
                                                 opened: true,
                                                 content: [
-                                                    React.createElement(cl.Row,
+                                                    React.createElement(mcl.Row,
                                                         {
                                                             content: [
-                                                                React.createElement(cl.Button, { label: 'Button' }),
-                                                                React.createElement(cl.Button, { label: 'Button', color: 'grey' }),
-                                                                React.createElement(cl.Button, { label: 'Button', color: 'green' }),
-                                                                React.createElement(cl.Button, { label: 'Button', color: 'red' }),
+                                                                React.createElement(mcl.Button, { label: 'Button' }),
+                                                                React.createElement(mcl.Button, { label: 'Button', color: 'grey' }),
+                                                                React.createElement(mcl.Button, { label: 'Button', color: 'green' }),
+                                                                React.createElement(mcl.Button, { label: 'Button', color: 'red' }),
                                                             ]
                                                         }
                                                     )
@@ -903,13 +906,13 @@ module.exports = class MopsComponentsLib {
                                             {
                                                 name: 'Inverted',
                                                 content: [
-                                                    React.createElement(cl.Row,
+                                                    React.createElement(mcl.Row,
                                                         {
                                                             content: [
-                                                                React.createElement(cl.Button, { label: 'Button', fill: 'inverted' }),
-                                                                React.createElement(cl.Button, { label: 'Button', color: 'grey', fill: 'inverted' }),
-                                                                React.createElement(cl.Button, { label: 'Button', color: 'green', fill: 'inverted' }),
-                                                                React.createElement(cl.Button, { label: 'Button', color: 'red', fill: 'inverted' }),
+                                                                React.createElement(mcl.Button, { label: 'Button', fill: 'inverted' }),
+                                                                React.createElement(mcl.Button, { label: 'Button', color: 'grey', fill: 'inverted' }),
+                                                                React.createElement(mcl.Button, { label: 'Button', color: 'green', fill: 'inverted' }),
+                                                                React.createElement(mcl.Button, { label: 'Button', color: 'red', fill: 'inverted' }),
                                                             ]
                                                         }
                                                     )
@@ -918,13 +921,13 @@ module.exports = class MopsComponentsLib {
                                             {
                                                 name: 'Underline',
                                                 content: [
-                                                    React.createElement(cl.Row,
+                                                    React.createElement(mcl.Row,
                                                         {
                                                             content: [
-                                                                React.createElement(cl.Button, { label: 'Button', fill: 'underline' }),
-                                                                React.createElement(cl.Button, { label: 'Button', color: 'grey', fill: 'underline' }),
-                                                                React.createElement(cl.Button, { label: 'Button', color: 'green', fill: 'underline' }),
-                                                                React.createElement(cl.Button, { label: 'Button', color: 'red', fill: 'underline' }),
+                                                                React.createElement(mcl.Button, { label: 'Button', fill: 'underline' }),
+                                                                React.createElement(mcl.Button, { label: 'Button', color: 'grey', fill: 'underline' }),
+                                                                React.createElement(mcl.Button, { label: 'Button', color: 'green', fill: 'underline' }),
+                                                                React.createElement(mcl.Button, { label: 'Button', color: 'red', fill: 'underline' }),
                                                             ]
                                                         }
                                                     )
@@ -935,8 +938,8 @@ module.exports = class MopsComponentsLib {
                                 )
                             }
                         ),
-                        React.createElement(cl.Divider),
-                        React.createElement(cl.Textarea, {
+                        React.createElement(mcl.Divider),
+                        React.createElement(mcl.Textarea, {
                             placeholder: 'hello, man'
                         })
                     ]
@@ -949,14 +952,14 @@ module.exports = class MopsComponentsLib {
 
         /* ALL */
         
-        [class*=CL_].disabled {
+        [class*=MCL_].disabled {
             opacity: 66.66%;
             cursor: not-allowed;
         }
 
         /* DIVIDER */
 
-        .CL_Divider {
+        .MCL_Divider {
             width: 100%;
             height: 1px;
             border-top: thin solid var(--background-modifier-accent);
@@ -965,30 +968,30 @@ module.exports = class MopsComponentsLib {
 
         /* TEXT */
 
-        .CL_Text {
+        .MCL_Text {
             width: fit-content;
             color: #fff;
             margin: 8px;
         }
 
-        .CL_Text + .CL_Text {
+        .MCL_Text + .MCL_Text {
             margin-left: 0;
         }
 
-        .CL_Text.link {
+        .MCL_Text.link {
             text-decoration: underline;
         }
 
         /* SWITCHER */
 
-        .CL_Switcher.green {
+        .MCL_Switcher.green {
             --switcher-color: rgb(67, 181, 129);
         }
-        .CL_Switcher.blurple {
+        .MCL_Switcher.blurple {
             --switcher-color: var(--brand-experiment);
         }
 
-        .CL_Switcher {
+        .MCL_Switcher {
             min-width: 36px;
             max-width: 36px;
             height: 20px;
@@ -998,11 +1001,11 @@ module.exports = class MopsComponentsLib {
             transition: 250ms cubic-bezier(0,.3,.7,1) background-color;
         }
 
-        .CL_Switcher.unchecked {
+        .MCL_Switcher.unchecked {
             background-color: rgb(114, 118, 125);
         }
 
-        .CL_SwitcherCircle {
+        .MCL_SwitcherCircle {
             border-radius: 50px;
             background-color: #fff;
             width: 16px;
@@ -1011,40 +1014,40 @@ module.exports = class MopsComponentsLib {
             transform: translateX(0.1px)
         }
 
-        .checked .CL_SwitcherCircle {
+        .checked .MCL_SwitcherCircle {
             transform: translateX(16px)
         }
 
-        .CL_SwitcherCircle > svg {
+        .MCL_SwitcherCircle > svg {
             width: 28px;
             height: 28px;
             margin-right: 0 !important;
             transition: 250ms cubic-bezier(0,.3,.7,1);
         }
 
-        .CL_Switcher.checked svg {
+        .MCL_Switcher.checked svg {
             fill: var(--switcher-color);
         }
-        .CL_Switcher.checked svg > path:nth-child(1) {
+        .MCL_Switcher.checked svg > path:nth-child(1) {
             d: path('${global.MopsComponentsLib.SvgPresets.ByDiscord.switcherTick.paths[0]}');
         }
-        .CL_Switcher.checked svg > path:nth-child(2) {
+        .MCL_Switcher.checked svg > path:nth-child(2) {
             d: path('${global.MopsComponentsLib.SvgPresets.ByDiscord.switcherTick.paths[1]}');
         }
 
-        .CL_Switcher.unchecked svg {
+        .MCL_Switcher.unchecked svg {
             fill: rgb(114, 118, 125);
         }
-        .CL_Switcher.unchecked svg > path:nth-child(1) {
+        .MCL_Switcher.unchecked svg > path:nth-child(1) {
             d: path('${global.MopsComponentsLib.SvgPresets.ByDiscord.switcherCross.paths[0]}');
         }
-        .CL_Switcher.unchecked svg > path:nth-child(2) {
+        .MCL_Switcher.unchecked svg > path:nth-child(2) {
             d: path('${global.MopsComponentsLib.SvgPresets.ByDiscord.switcherCross.paths[1]}');
         }
 
         /* INPUT */
 
-        .CL_Input {
+        .MCL_Input {
             padding: 10px;
             height: 40px;
             font-size: 16px;
@@ -1057,12 +1060,12 @@ module.exports = class MopsComponentsLib {
             transition: border-color .2s ease-in-out;
         }
 
-        .CL_Input:hover {
+        .MCL_Input:hover {
             border-color: var(--deprecated-text-input-border-hover);
         }
 
         /* TEXTAREA */
-        .CL_Textarea {
+        .MCL_Textarea {
             background-color: var(--deprecated-text-input-bg);
             border: 1px solid var(--deprecated-text-input-border);
             border-radius: 3px;
@@ -1076,29 +1079,29 @@ module.exports = class MopsComponentsLib {
             resize: none;
         }
 
-        .CL_Textarea:hover {
+        .MCL_Textarea:hover {
             border-color: black;
         }
 
         /* ROW */
 
-        .CL_Row.nosidemargin > *:first-child {
+        .MCL_Row.nosidemargin > *:first-child {
             margin-left: 0 !important;
         }
 
-        .CL_Row.nosidemargin > *:last-child {
+        .MCL_Row.nosidemargin > *:last-child {
             margin-right: 0 !important;
         }
 
         /* COLUMN */
 
-        .CL_Column > * {
+        .MCL_Column > * {
             width: 100%;
         }
 
         /* FIELD */
 
-        .CL_FieldTitle {
+        .MCL_FieldTitle {
             color: var(--header-secondary);
             margin-top: 20px;
             margin-bottom: 8px;
@@ -1108,7 +1111,7 @@ module.exports = class MopsComponentsLib {
             text-transform: uppercase;
         }
 
-        .CL_FieldNote {
+        .MCL_FieldNote {
             color: var(--header-secondary);
             margin-bottom: 8px;
             font-size: 14px;
@@ -1118,7 +1121,7 @@ module.exports = class MopsComponentsLib {
 
         /* TABS */
 
-        .CL_Content {
+        .MCL_Content {
             height: 0;
             width: 100%;
             overflow: hidden;
@@ -1126,17 +1129,17 @@ module.exports = class MopsComponentsLib {
             transition: 0.5s opacity;
         }
 
-        .CL_Content.show {
+        .MCL_Content.show {
             display: block;
             height: fit-content;
             opacity: 1;
         }
 
-        .CL_TabsContentList {
+        .MCL_TabsContentList {
             margin-top: 20px;
         }
 
-        .CL_Tab {
+        .MCL_Tab {
             display: inline-block;
             box-sizing: border-box;
             border-radius: 3px;
@@ -1150,25 +1153,25 @@ module.exports = class MopsComponentsLib {
             font-size: 14px;
         }
 
-        .CL_Tab + .CL_Tab {
+        .MCL_Tab + .MCL_Tab {
             margin-left: 0;
         }
 
-        .CL_Tab:hover:not(.selected):not(.disabled) {
+        .MCL_Tab:hover:not(.selected):not(.disabled) {
             box-shadow: inset 0 0 0 1px var(--brand-experiment);
         }
-        .CL_Tab.selected {
+        .MCL_Tab.selected {
             background-color: var(--brand-experiment);
         }
 
-        .CL_TabDivider {
+        .MCL_TabDivider {
             width: 0;
             height: 25px;
             margin: auto 0;
             border-right: thin solid var(--background-accent);
         }
 
-        .CL_TabsTabList {
+        .MCL_TabsTabList {
             margin: 8px 0;
             border-radius: 3px;
             background-color: var(--background-secondary-alt);
@@ -1178,87 +1181,87 @@ module.exports = class MopsComponentsLib {
 
         /* BUTTONS */
 
-        .CL_Button {
+        .MCL_Button {
             border-radius: 3px;
         }
 
-        .CL_Button.blurple.filled {
+        .MCL_Button.blurple.filled {
             color: white;
             background-color: var(--brand-experiment);
         }
-        .CL_Button.blurple.filled:hover:not(.disabled) {
+        .MCL_Button.blurple.filled:hover:not(.disabled) {
             background-color: var(--brand-experiment-560);
         }
-        .CL_Button.blurple.inverted {
+        .MCL_Button.blurple.inverted {
             background-color: #0000;
             color: var(--brand-experiment);
             box-shadow: inset 0 0 0 1px var(--brand-experiment);
         }
-        .CL_Button.blurple.inverted:hover:not(.disabled) {
+        .MCL_Button.blurple.inverted:hover:not(.disabled) {
             background-color: #0000;
             color: var(--brand-experiment-560);
             box-shadow: inset 0 0 0 1px var(--brand-experiment-560);
         }
 
-        .CL_Button.grey.filled {
+        .MCL_Button.grey.filled {
             color: white;
             background-color: #4f545c;
         }
-        .CL_Button.grey.filled:hover:not(.disabled) {
+        .MCL_Button.grey.filled:hover:not(.disabled) {
             background-color: #5d6269;
         }
-        .CL_Button.grey.inverted {
+        .MCL_Button.grey.inverted {
             background-color: #0000;
             color: #4f545c;
             box-shadow: inset 0 0 0 1px #4f545c;
         }
-        .CL_Button.grey.inverted:hover:not(.disabled) {
+        .MCL_Button.grey.inverted:hover:not(.disabled) {
             background-color: #0000;
             color: #5d6269;
             box-shadow: inset 0 0 0 1px #5d6269;
         }
 
-        .CL_Button.red.filled {
+        .MCL_Button.red.filled {
             color: white;
             background-color: hsl(359,calc(var(--saturation-factor, 1)*82.6%),59.4%);
         }
-        .CL_Button.red.filled:hover:not(.disabled) {
+        .MCL_Button.red.filled:hover:not(.disabled) {
             background-color: hsl(359,calc(var(--saturation-factor, 1)*56.7%),48%);
         }
-        .CL_Button.red.inverted {
+        .MCL_Button.red.inverted {
             background-color: #0000;
             color: hsl(359,calc(var(--saturation-factor, 1)*82.6%),59.4%);
             box-shadow: inset 0 0 0 1px hsl(359,calc(var(--saturation-factor, 1)*82.6%),59.4%);
         }
-        .CL_Button.red.inverted:hover:not(.disabled) {
+        .MCL_Button.red.inverted:hover:not(.disabled) {
             background-color: #0000;
             color: hsl(359,calc(var(--saturation-factor, 1)*56.7%),48%);
             box-shadow: inset 0 0 0 1px hsl(359,calc(var(--saturation-factor, 1)*56.7%),48%);
         }
 
-        .CL_Button.green.filled {
+        .MCL_Button.green.filled {
             color: white;
             background-color: hsl(139,calc(var(--saturation-factor, 1)*47.3%),43.9%);
         }
-        .CL_Button.green.filled:hover:not(.disabled) {
+        .MCL_Button.green.filled:hover:not(.disabled) {
             background-color: hsl(139,calc(var(--saturation-factor, 1)*47.1%),33.3%);
         }
-        .CL_Button.green.inverted {
+        .MCL_Button.green.inverted {
             background-color: #0000;
             color: hsl(139,calc(var(--saturation-factor, 1)*47.3%),43.9%);
             box-shadow: inset 0 0 0 1px hsl(139,calc(var(--saturation-factor, 1)*47.3%),43.9%);
         }
-        .CL_Button.green.inverted:hover:not(.disabled) {
+        .MCL_Button.green.inverted:hover:not(.disabled) {
             background-color: #0000;
             color: hsl(139,calc(var(--saturation-factor, 1)*47.1%),33.3%);
             box-shadow: inset 0 0 0 1px hsl(139,calc(var(--saturation-factor, 1)*47.1%),33.3%);
         }
 
-        .CL_Button.underline {
+        .MCL_Button.underline {
             background: transparent;
             color: white;
         }
-        .CL_Button.underline:hover:not(.disabled) {
+        .MCL_Button.underline:hover:not(.disabled) {
             text-decoration: underline;
         }
 
