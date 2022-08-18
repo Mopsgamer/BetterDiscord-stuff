@@ -14,7 +14,7 @@ module.exports = (
     () => {
         const config = {
             info: {
-                name: 'AnimationsPlugin',
+                name: 'Animations',
                 authors: [
                     {
                         name: 'Mops',
@@ -22,7 +22,7 @@ module.exports = (
                         github_username: 'Mopsgamer',
                     }
                 ],
-                version: '1.3.4',
+                version: '1.3.5',
                 description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
                 github: 'https://github.com/Mopsgamer/AnimationsPlugin/blob/main/AnimationsPlugin.plugin.js',
                 github_raw: 'https://raw.githubusercontent.com/Mopsgamer/AnimationsPlugin/main/AnimationsPlugin.plugin.js',
