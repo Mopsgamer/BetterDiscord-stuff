@@ -2537,7 +2537,7 @@ module.exports = (
                                                             button.classList.add('blurple')
 
                                                             const request = new XMLHttpRequest();
-                                                            request.open("GET", 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.plugin.js' + '?ref=main');
+                                                            request.open("GET", 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/Animations.plugin.js' + '?ref=Animations');
                                                             request.send();
 
                                                             request.timeout = 5000;
@@ -2611,6 +2611,8 @@ module.exports = (
                                                                                         )
                                                                                     ],
                                                                                     {
+                                                                                        confirmText: trn.pop.yes,
+                                                                                        cancelText: trn.pop.no,
                                                                                         onConfirm() {
                                                                                             UpdatePlugin()
                                                                                         }
@@ -2633,6 +2635,8 @@ module.exports = (
                                                                                         )
                                                                                     ],
                                                                                     {
+                                                                                        confirmText: trn.pop.yes,
+                                                                                        cancelText: trn.pop.no,
                                                                                         onConfirm() {
                                                                                             UpdatePlugin()
                                                                                         }
@@ -2655,6 +2659,8 @@ module.exports = (
                                                                                         )
                                                                                     ],
                                                                                     {
+                                                                                        confirmText: trn.pop.yes,
+                                                                                        cancelText: trn.pop.no,
                                                                                         onConfirm() {
                                                                                             UpdatePlugin()
                                                                                         }
