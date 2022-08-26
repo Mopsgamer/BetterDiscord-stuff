@@ -580,10 +580,12 @@ module.exports = (
                      */
                     stringsGet(key = undefined) {
                         try {
+                            let fs = require('fs')
                             let path = require('path')
                             let p = path.join(BdApi.Plugins.folder, this.getName() + '.translation.json')
-                            let tr = require(p)
-                            return tr?.[key] || tr
+                            let tr = JSON.parse(fs.readFileSync(p).toString())
+                            let result = tr?.[key] || tr
+                            return result
                         } catch (err) {
                             Logger.err(this.getName(), err)
                             return null
@@ -592,14 +594,13 @@ module.exports = (
 
                     async stringsLoad() {
                         try {
+                            let fs = require('fs')
                             let path = require('path')
                             let p = path.join(BdApi.Plugins.folder, this.getName() + '.translation.json')
-                            let result = true
                             let url = 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.translation.json' + '?ref=main'
                             await this.requestGhFile(url,
                                 (text) => {
-                                    Logger.err(this.getName(), 'Translation request suc.: ' + text)
-                                    fs.writeFile(p, text)
+                                    fs.writeFileSync(p, text)
                                 },
                                 () => {
                                     Logger.err(this.getName(), 'File with translations not found on GitHub.\n' + url)
@@ -607,10 +608,9 @@ module.exports = (
                                 () => {
                                     Logger.err(this.getName(), 'The translation file request failed, possibly due to network problems.\n' + url)
                                 }
-                            ).catch(rsn => result = false)
-                            return result
+                            )
+                            return true
                         } catch (err) {
-                            //Logger.err(this.getName(), err)
                             return false
                         }
                     }
@@ -1193,22 +1193,25 @@ module.exports = (
                                 request.send();
 
                                 request.onreadystatechange = (e) => {
-                                    if (e.currentTarget.readyState != 4) return rj(e)
+                                    if (e.currentTarget.readyState != 4) return
 
                                     var responseCode = JSON.parse(request?.responseText ?? undefined);
                                     if (!request.responseText) {
                                         onBadResponse()
-                                        return rj(e)
+                                        rj('Bad response')
+                                        return
                                     }
                                     else if (responseCode?.message == 'Not Found') {
                                         onNotFound()
-                                        return rj(e)
+                                        rj('Not found')
+                                        return
                                     }
 
                                     var decoded = this.fromBinary(responseCode.content);
 
                                     onResponse(decoded)
                                     rs(decoded)
+                                    return
                                 }
                             }
                         )
@@ -1302,8 +1305,10 @@ module.exports = (
                          */
                         let locale = AnimationsPlugin.modules.Locale;
 
+                        let t = this.stringsGet(locale)
+                        let d = AnimationsPlugin.strings
                         /**@type {AnimationsPlugin.strings}*/
-                        const trn = Object.assign(this.stringsGet(locale), AnimationsPlugin.strings)
+                        const trn = Object.assign(d, t)
 
                         /**
                          * Returns object - `class`, `render`.
@@ -2750,7 +2755,7 @@ module.exports = (
                                                         onclick: async (e) => {
                                                             e.target.innerText = '...'
                                                             if (!await this.stringsLoad()) BdApi.showConfirmationModal('An error occured', 'See console.')
-                                                            e.target.innerText = trn.view.upd_translation
+                                                            e.target.innerText = trn.view.upd_translation + ' ✔'
                                                         }
                                                     },
                                                 ],
