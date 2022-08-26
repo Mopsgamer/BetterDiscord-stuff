@@ -1,13 +1,13 @@
 /**
- * @name AnimationsPlugin
- * @version 1.3.5
+ * @name Animations
+ * @version 1.3.6
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @authorLink https://github.com/Mopsgamer/
  * @authorId 538010208023347200
- * @website https://github.com/Mopsgamer/BetterDiscord-codes/tree/AnimationsPlugin
- * @source https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/AnimationsPlugin/AnimationsPlugin.plugin.js
- * @updateUrl https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/AnimationsPlugin/AnimationsPlugin.plugin.js
+ * @website https://github.com/Mopsgamer/BetterDiscord-codes/tree/Animations
+ * @source https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/Animations/Animations.plugin.js
+ * @updateUrl https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/Animations/Animations.plugin.js
  */
 
 module.exports = (
@@ -22,15 +22,15 @@ module.exports = (
                         github_username: 'Mopsgamer',
                     }
                 ],
-                version: '1.3.5',
+                version: '1.3.6',
                 description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
-                github: 'https://github.com/Mopsgamer/AnimationsPlugin/blob/main/AnimationsPlugin.plugin.js',
-                github_raw: 'https://raw.githubusercontent.com/Mopsgamer/AnimationsPlugin/main/AnimationsPlugin.plugin.js',
+                github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
+                github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
             },
             changelog: [
                 //{ "title": "New Stuff", "items": ["Limits for lists have been removed."] },
-                //{ "title": "Improvements", "type": "improved", "items": ["Now for the lists of members, channels, and servers animation is played once.", "The link to the server should now open without a browser."] },
-                { "title": "Fixes", "type": "fixed", "items": ["A few fixes."] }
+                { "title": "Improvements", "type": "improved", "items": ["The translation of the plugin has become more comfortable, you can help. And if you don't want to, you will now receive the translation regardless of updates."] },
+                { "title": "Fixes", "type": "fixed", "items": ["A little fix for light themes", "Removed hints, they will be added more likely only where they will be needed."] }
             ],
             main: 'index.js',
         };
@@ -62,6 +62,10 @@ module.exports = (
                 const { React, ReactDOM } = BdApi
 
                 createElem = (...args) => { return React.createElement(...args); }
+
+                /**
+                * @typedef { 'da' | 'de' | 'en-GB' | 'en-US' | 'es-ES' | 'fr' | 'hr' | 'it' | 'lt' | 'hu' | 'nl' | 'no' | 'pl' | 'pt-BR' | 'ro' | 'fi' | 'sv-SE' | 'vi' | 'tr' | 'cs' | 'el' | 'bg' | 'ru' | 'uk' | 'hi' | 'th' | 'zh-CN' | 'ja' | 'zh-TW' | 'ko' } locale
+                */
 
                 return class AnimationsPlugin extends Plugin {
 
@@ -199,6 +203,106 @@ module.exports = (
                     getDescription() { return config.info.description }
                     getVersion() { return config.info.version }
 
+                    static strings = {
+                        "view": {
+                            "changelog": "Changelog",
+                            "reset_all_settings": "Reset all",
+                            "rebuild_animations": "Rebuild animations",
+                            "resetting": "Resetting...",
+                            "update_err_timeout": "Timeout exceeded",
+                            "update_err_unknown": "An error occurred",
+                            "update_check": "Check for updates",
+                            "update_newer": "Your own version",
+                            "update_older": "Update",
+                            "update_latest": "Latest version",
+                            "link_gh_issues": "Issues",
+                            "link_gh_discussions": "Discussions",
+                            "links_dc_server": "Server",
+                            "lists": "Lists",
+                            "buttons": "Buttons",
+                            "popouts": "Popouts",
+                            "messages": "Messages",
+                            "reset_lists": "Reset lists settings",
+                            "reset_buttons": "Reset buttons settings",
+                            "reset_messages": "Reset messages settings",
+                            "reset_popouts": "Reset popouts settings",
+                            "advanced": "Advanced",
+                            "update_searching": "Searching for updates...",
+                            "selectors_lists": "Selectors of lists",
+                            "selectors_buttons": "Selectors of buttons",
+                            "selectors_popouts": "Selectors of popouts",
+                            "selectors_note_all": "If you leave this field empty, the default selectors will appear here on reload. Changes to the selectors are saved when typing (if the code is valid). The separator is a comma (,).",
+                            "upd_translation": "Update the translation file",
+                            "link_cd": "Help translate"
+                        },
+                        "pop": {
+                            "will_updated": "The plugin will be updated.",
+                            "will_downdated": "The plugin will be downdated.",
+                            "will_restored": "The plugin will be restored.",
+                            "you_can_say_no": "You can say no.",
+                            "yes": "Let's do this",
+                            "no": "No"
+                        },
+                        "stng": {
+                            "name": "Name",
+                            "sequence": "Sequence",
+                            "limit": "Limit",
+                            "delay": "Delay",
+                            "duration": "Duration",
+                            "name_note_lists": "The name of the animation of the list items when they appear.",
+                            "name_note_buttons": "The name of the animation of the buttons when they appear.",
+                            "name_note_messages": "The name of the animation of the messages when they appear.",
+                            "name_note_popouts": "The name of the animation of the popouts when they appear.",
+                            "sequence_note_lists": "The sequence in which the list items are built.",
+                            "sequence_note_buttons": "The sequence in which the buttons are built.",
+                            "delay_note_lists": "Delay before appearing for each list item in seconds.",
+                            "delay_note_buttons": "Delay before appearing for each button in seconds.",
+                            "delay_note_messages": "Delay before appearing for each message in seconds.",
+                            "limit_note_messages": "The maximum number of messages in the list for which the animation will be played.",
+                            "duration_note_lists": "Animation playback speed in seconds for each list item after the delay.",
+                            "duration_note_buttons": "Animation playback speed in seconds for each button after the delay.",
+                            "duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
+                            "duration_note_popouts": "Animation playback speed in seconds for a popout.",
+                            "name_mode_selecting": "Selecting",
+                            "name_mode_editing": "Editing"
+                        },
+                        "edit": {
+                            "template": "Template",
+                            "clear": "Clear",
+                            "load": "Load",
+                            "save": "Save",
+                            "default": "Default"
+                        },
+                        "name": {
+                            "in": "In",
+                            "out": "Out",
+                            "circle": "Circle",
+                            "polygon": "Polygon",
+                            "opacity": "Opacity",
+                            "slime": "Slime",
+                            "brick_left": "Brick left",
+                            "brick_right": "Brick right",
+                            "brick_up": "Brick up",
+                            "brick_down": "Brick down",
+                            "slide_left": "Slide left",
+                            "slide_right": "Slide right",
+                            "slide_up": "Slide up",
+                            "slide_down": "Slide down",
+                            "slide_up_right": "Slide up (right)",
+                            "slide_up_left": "Slide up (left)",
+                            "slide_down_right": "Slide down (right)",
+                            "slide_down_left": "Slide down (left)",
+                            "skew_left": "Skew left",
+                            "skew_right": "Skew right",
+                            "wide_skew_left": "Wide skew left",
+                            "wide_skew_right": "Wide skew right"
+                        },
+                        "seq": {
+                            "from_first": "From first",
+                            "from_last": "From last"
+                        }
+                    }
+
                     static selectorsLists = [
                         /*active threads button*/
                         `.${WebpackModules.getByProps('channelName', 'icon').wrapper}`,
@@ -275,6 +379,7 @@ module.exports = (
                     ]
 
                     static modules = {
+                        Locale: BdApi.findModuleByProps('locale', 'addChangeListener').locale,
                         Button: WebpackModules.getByProps('button', 'sizeIcon')?.button,
                         ButtonSizeSmall: WebpackModules.getByProps('button', 'sizeIcon')?.sizeSmall,
                         ButtonText: WebpackModules.getByProps('buttonText', 'giftIcon')?.buttonText,
@@ -468,6 +573,46 @@ module.exports = (
 
                         setTimeout(() => PluginUtilities.removeStyle(`${this.getName()}-serverslist`), (count * this.settings.lists.delay) + this.settings.lists.duration)
 
+                    }
+                    
+                    /**
+                     * @param {locale} [key]
+                     */
+                    stringsGet(key = undefined) {
+                        try {
+                            let path = require('path')
+                            let p = path.join(BdApi.Plugins.folder, this.getName() + '.translation.json')
+                            let tr = require(p)
+                            return tr?.[key] || tr
+                        } catch (err) {
+                            Logger.err(this.getName(), err)
+                            return null
+                        }
+                    }
+
+                    async stringsLoad() {
+                        try {
+                            let path = require('path')
+                            let p = path.join(BdApi.Plugins.folder, this.getName() + '.translation.json')
+                            let result = true
+                            let url = 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.translation.json' + '?ref=main'
+                            await this.requestGhFile(url,
+                                (text) => {
+                                    Logger.err(this.getName(), 'Translation request suc.: ' + text)
+                                    fs.writeFile(p, text)
+                                },
+                                () => {
+                                    Logger.err(this.getName(), 'File with translations not found on GitHub.\n' + url)
+                                },
+                                () => {
+                                    Logger.err(this.getName(), 'The translation file request failed, possibly due to network problems.\n' + url)
+                                }
+                            ).catch(rsn => result = false)
+                            return result
+                        } catch (err) {
+                            //Logger.err(this.getName(), err)
+                            return false
+                        }
                     }
 
                     async resetAnimations(pause = 0) {
@@ -1040,12 +1185,33 @@ module.exports = (
                         return new Promise((rs, rj) => setTimeout(rs, ms))
                     }
 
-                    requestGet(url) {
-                        const Http = new XMLHttpRequest();
-                        Http.open("GET", url);
-                        Http.send();
+                    requestGhFile(ghApiUrl, onResponse, onNotFound, onBadResponse) {
+                        return new Promise(
+                            (rs, rj) => {
+                                const request = new XMLHttpRequest();
+                                request.open("GET", ghApiUrl);
+                                request.send();
 
-                        return Http;
+                                request.onreadystatechange = (e) => {
+                                    if (e.currentTarget.readyState != 4) return rj(e)
+
+                                    var responseCode = JSON.parse(request?.responseText ?? undefined);
+                                    if (!request.responseText) {
+                                        onBadResponse()
+                                        return rj(e)
+                                    }
+                                    else if (responseCode?.message == 'Not Found') {
+                                        onNotFound()
+                                        return rj(e)
+                                    }
+
+                                    var decoded = this.fromBinary(responseCode.content);
+
+                                    onResponse(decoded)
+                                    rs(decoded)
+                                }
+                            }
+                        )
                     }
 
                     fromBinary = (encoded) => {
@@ -1132,1012 +1298,22 @@ module.exports = (
                     getSettingsPanel() {
 
                         /**
-                         * @typedef { 'da' | 'de' | 'en-GB' | 'en-US' | 'es-ES' | 'fr' | 'hr' | 'it' | 'lt' | 'hu' | 'nl' | 'no' | 'pl' | 'pt-BR' | 'ro' | 'fi' | 'sv-SE' | 'vi' | 'tr' | 'cs' | 'el' | 'bg' | 'ru' | 'uk' | 'hi' | 'th' | 'zh-CN' | 'ja' | 'zh-TW' | 'ko' } locale
                          * @type {locale}
                          */
-                        let locale = BdApi.findModuleByProps('locale', 'addChangeListener').locale;
+                        let locale = AnimationsPlugin.modules.Locale;
 
-                        let TEMPS = {
-                            TOOLTIPS: {
-                                BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Latest changes',
-                                BUTTON_ANIMATIONS_VERSION_CHECK: 'Checks for updates',
-                                BUTTON_ANIMATIONS_RESET: 'Resets all settings',
-                                BUTTON_ANIMATIONS_REBUILD: 'Recreates styles. When the plugin is restarted, the styles are recreates too',
-                                BUTTON_ANIMATIONS_ISSUES: 'Link to GitHub',
-                                BUTTON_ANIMATIONS_SERVER: 'Link to Discord',
-                                BUTTON_ANIMATIONS_DISCUSSIONS: 'Link to GitHub',
-                                BUTTON_LISTS_SWITCH: 'Lists switch',
-                                BUTTON_BUTTONS_SWITCH: 'Buttons switch',
-                                BUTTON_MESSAGES_SWITCH: 'Messages switch',
-                                BUTTON_POPOUTS_SWITCH: 'Popouts switch',
-                                BUTTON_RESET_LISTS: 'Resets lists settings',
-                                BUTTON_RESET_BUTTONS: 'Resets buttons settings',
-                                BUTTON_RESET_MESSAGES: 'Resets messages settings',
-                                BUTTON_RESET_POPOUTS: 'Resets popouts settings',
-                                BUTTON_SELECTORS_LISTS_DEFAULT: 'Restores default selectors',
-                                BUTTON_SELECTORS_LISTS_CLEAR: 'Clears the textarea',
-                                BUTTON_SELECTORS_BUTTONS_DEFAULT: 'Restores default selectors',
-                                BUTTON_SELECTORS_BUTTONS_CLEAR: 'Clears the textarea',
-                                BUTTON_SELECTORS_POPOUTS_DEFAULT: 'Restores default selectors',
-                                BUTTON_SELECTORS_POPOUTS_CLEAR: 'Clears the textarea'
-                            },
-                            LABELS: {
-                                BUTTON_ANIMATIONS_RESET: 'Reset all',
-                                BUTTON_ANIMATIONS_RESET_RESETING: 'Reseting...',
-                                BUTTON_ANIMATIONS_REBUILD: 'Rebuild animations',
-                                BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Changelog',
-                                BUTTON_ANIMATIONS_VERSION_CHECK: 'Update',
-                                BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING: 'Searching for updates...',
-                                BUTTON_ANIMATIONS_VERSION_CHECK_TIMEOUT: 'Timeout exceeded',
-                                BUTTON_ANIMATIONS_VERSION_CHECK_ERROR: 'An error occurred',
-                                BUTTON_ANIMATIONS_VERSION_CHECK_OLDER: (_version = '{version}') => `v${_version} - Update`,
-                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_TITLE: 'Your version is older',
-                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (your)  →  v${_ghVersion} (github)`,
-                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_NOTE: 'The plugin will be updated.',
-                                BUTTON_ANIMATIONS_VERSION_CHECK_NEWER: (_version = '{version}') => `v${_version} - Your own version`,
-                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_TITLE: 'Your version is newer',
-                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (your)  ←  v${_ghVersion} (github)`,
-                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_NOTE: 'The plugin will be downdated.',
-                                BUTTON_ANIMATIONS_VERSION_CHECK_LATEST: (_version = '{version}') => `v${_version} - Latest version`,
-                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_TITLE: 'Your version is latest',
-                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (your)  ↔  v${_ghVersion} (github)`,
-                                BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_NOTE: 'The plugin will be restored.',
-                                BUTTON_ANIMATIONS_ISSUES: 'Issues',
-                                BUTTON_ANIMATIONS_SERVER: 'Server',
-                                BUTTON_ANIMATIONS_DISCUSSIONS: 'Discussions',
-                                BUTTON_LISTS_SWITCH: 'Lists',
-                                BUTTON_BUTTONS_SWITCH: 'Buttons',
-                                BUTTON_MESSAGES_SWITCH: 'Messages',
-                                BUTTON_POPOUTS_SWITCH: 'Popouts',
-                                BUTTON_RESET_LISTS: 'Reset lists',
-                                BUTTON_RESET_BUTTONS: 'Reset buttons',
-                                BUTTON_RESET_MESSAGES: 'Reset messages',
-                                BUTTON_RESET_POPOUTS: 'Reset popouts',
-                                BUTTON_SELECTORS_LISTS_DEFAULT: 'Default',
-                                BUTTON_SELECTORS_LISTS_CLEAR: 'Clear',
-                                BUTTON_SELECTORS_BUTTONS_DEFAULT: 'Default',
-                                BUTTON_SELECTORS_BUTTONS_CLEAR: 'Clear',
-                                BUTTON_SELECTORS_POPOUTS_DEFAULT: 'Default',
-                                BUTTON_SELECTORS_POPOUTS_CLEAR: 'Clear',
-
-                                FIELD_NAME: 'Name',
-                                FIELD_SEQUENCE: 'Sequence',
-                                FIELD_DELAY: 'Delay',
-                                FIELD_LIMIT: 'Limit',
-                                FIELD_DURATION: 'Duration',
-
-                                FIELD_LISTS_NAME_NOTE: (_default = '{default}') => `[${_default}] The name of the animation of the list items when they appear.`,
-                                FIELD_LISTS_SEQUENCE_NOTE: (_default = '{default}') => `[${_default}] The sequence in which the list items are built.`,
-                                FIELD_LISTS_DELAY_NOTE: (_default = '{default}') => `[${_default}] Delay before appearing for each list item in seconds.`,
-                                FIELD_LISTS_LIMIT_NOTE: (_default = '{default}') => `[${_default}] The maximum number of items in the list for which the animation will be played.`,
-                                FIELD_LISTS_DURATION_NOTE: (_default = '{default}') => `[${_default}] Animation playback speed in seconds for each list item after the delay.`,
-
-                                FIELD_BUTTONS_NAME_NOTE: (_default = '{default}') => `[${_default}] The name of the animation of the buttons when they appear.`,
-                                FIELD_BUTTONS_SEQUENCE_NOTE: (_default = '{default}') => `[${_default}] The sequence in which the buttons are built.`,
-                                FIELD_BUTTONS_DELAY_NOTE: (_default = '{default}') => `[${_default}] Delay before appearing for each button in seconds.`,
-                                FIELD_BUTTONS_DURATION_NOTE: (_default = '{default}') => `[${_default}] Animation playback speed in seconds for each button after the delay.`,
-
-                                FIELD_MESSAGES_NAME_NOTE: (_default = '{default}') => `[${_default}] The name of the animation of the messages when they appear.`,
-                                FIELD_MESSAGES_DELAY_NOTE: (_default = '{default}') => `[${_default}] Delay before appearing for each message in seconds.`,
-                                FIELD_MESSAGES_LIMIT_NOTE: (_default = '{default}') => `[${_default}] The maximum number of messages in the list for which the animation will be played.`,
-                                FIELD_MESSAGES_DURATION_NOTE: (_default = '{default}') => `[${_default}] Animation playback speed in seconds for each message after the delay.`,
-
-                                FIELD_POPOUTS_NAME_NOTE: (_default = '{default}') => `[${_default}] The name of the animation of the popouts when they appear.`,
-                                FIELD_POPOUTS_DURATION_NOTE: (_default = '{default}') => `[${_default}] Animation playback speed in seconds for a popout.`,
-
-                                FIELD_LISTS_SELECTORS: 'Selectors of lists',
-                                FIELD_LISTS_SELECTORS_NOTE: 'If you leave this field empty, the default selectors will appear here on reload. Changes to the selectors are saved when typing (if the code is valid). The separator is a comma (,).',
-                                FIELD_BUTTONS_SELECTORS: 'Selectors of buttons',
-                                FIELD_BUTTONS_SELECTORS_NOTE: 'If you leave this field empty, the default selectors will appear here on reload. Changes to the selectors are saved when typing (if the code is valid). The separator is a comma (,).',
-                                FIELD_POPOUTS_SELECTORS: 'Selectors of popouts',
-                                FIELD_POPOUTS_SELECTORS_NOTE: 'If you leave this field empty, the default selectors will appear here on reload. Changes to the selectors are saved when typing (if the code is valid). The separator is a comma (,).',
-
-                                PREVIEW_SELECTING: 'Selecting',
-                                PREVIEW_EDITING: 'Editing',
-                                PREVIEW_BUTTON_TEMPLATE: 'Template',
-                                PREVIEW_BUTTON_CLEAR: 'Clear',
-                                PREVIEW_BUTTON_LOAD: 'Load',
-                                PREVIEW_BUTTON_SAVE: 'Save',
-                                PREVIEW_IN: 'In',
-                                PREVIEW_OUT: 'Out',
-                                PREVIEW_CIRCLE: 'Circle',
-                                PREVIEW_POLYGON: 'Polygon',
-                                PREVIEW_OPACITY: 'Opacity',
-                                PREVIEW_SLIME: 'Slime',
-                                PREVIEW_BRICK_RIGHT: 'Brick right',
-                                PREVIEW_BRICK_LEFT: 'Brick left',
-                                PREVIEW_BRICK_UP: 'Brick up',
-                                PREVIEW_BRICK_DOWN: 'Brick down',
-                                PREVIEW_SLIDE_RIGHT: 'Slide right',
-                                PREVIEW_SLIDE_LEFT: 'Slide left',
-                                PREVIEW_SLIDE_UP: 'Slide up',
-                                PREVIEW_SLIDE_DOWN: 'Slide down',
-                                PREVIEW_SLIDE_UP_RIGHT: 'Slide up (right)',
-                                PREVIEW_SLIDE_UP_LEFT: 'Slide up (left)',
-                                PREVIEW_SLIDE_DOWN_RIGHT: 'Slide down (right)',
-                                PREVIEW_SLIDE_DOWN_LEFT: 'Slide down (left)',
-                                PREVIEW_SKEW_RIGHT: 'Skew right',
-                                PREVIEW_SKEW_LEFT: 'Skew left',
-                                PREVIEW_WIDE_SKEW_RIGHT: 'Wide skew right',
-                                PREVIEW_WIDE_SKEW_LEFT: 'Wide skew left',
-
-                                PREVIEW_VERTICAL_FROM_FIRST: '↓',
-                                PREVIEW_VERTICAL_FROM_LAST: '↑',
-                                PREVIEW_HORIZONTAL_FROM_FIRST: '→',
-                                PREVIEW_HORIZONTAL_FROM_LAST: '←',
-
-                                GROUP_LISTS: 'Lists',
-                                GROUP_BUTTONS: 'Buttons',
-                                GROUP_MESSAGES: 'Messages',
-                                GROUP_POPOUTS: 'Popouts',
-
-                                GROUP_ADVANCED: 'Advanced',
-                            }
-                        }
-
-                        // translations
-                        switch (locale) {
-
-                            // This is for translating the plugin
-
-                            // case '*your locale (line 2651)*':
-                            //     TEMPS = *...copy from the bottom and translate*
-                            // break;
-
-                            case 'tr':
-                                TEMPS = {
-                                    TOOLTIPS: {
-                                        BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Son değişiklikler',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK: 'Güncellemeleri kontrol et',
-                                        BUTTON_ANIMATIONS_RESET: 'Tüm ayarları sıfırla',
-                                        BUTTON_ANIMATIONS_REBUILD: 'Stilleri yeniden oluşturur. Eklenti yeniden başlatıldığında, stiller de yeniden oluşturulur',
-                                        BUTTON_ANIMATIONS_ISSUES: 'GitHub bağlantısı',
-                                        BUTTON_ANIMATIONS_SERVER: 'Discord Bağlantısı',
-                                        BUTTON_ANIMATIONS_DISCUSSIONS: 'GitHub bağlantısı',
-                                        BUTTON_LISTS_SWITCH: 'Liste animasyonunu etkinleştir/devre dışı bırak',
-                                        BUTTON_BUTTONS_SWITCH: 'Düğme animasyonunu etkinleştir/devre dışı bırak',
-                                        BUTTON_MESSAGES_SWITCH: 'Mesaj animasyonunu etkinleştir/devre dışı bırak',
-                                        BUTTON_POPOUTS_SWITCH: 'Popout animasyonu etkinleştir/devre dışı bırak',
-                                        BUTTON_RESET_LISTS: 'Liste ayarlarını sıfırla',
-                                        BUTTON_RESET_BUTTONS: 'Düğme ayarlarını sıfırla',
-                                        BUTTON_RESET_MESSAGES: 'Mesaj ayarlarını sıfırla',
-                                        BUTTON_RESET_POPOUTS: 'Popout ayarlarını sıfırla',
-                                        BUTTON_SELECTORS_LISTS_DEFAULT: 'Varsayılan seçicileri geri yükle',
-                                        BUTTON_SELECTORS_LISTS_CLEAR: 'Metin alanını temizle',
-                                        BUTTON_SELECTORS_BUTTONS_DEFAULT: 'Varsayılan seçicileri geri yükle',
-                                        BUTTON_SELECTORS_BUTTONS_CLEAR: 'Metin alanını temizle',
-                                        BUTTON_SELECTORS_POPOUTS_DEFAULT: 'Varsayılan seçiciyi geri yükle',
-                                        BUTTON_SELECTORS_POPOUTS_CLEAR: 'Metin alanını temizle'
-                                    },
-                                    LABELS: {
-                                        BUTTON_ANIMATIONS_RESET: 'Hepsini sıfırla',
-                                        BUTTON_ANIMATIONS_RESET_RESETING: 'Sıfırlanıyor...',
-                                        BUTTON_ANIMATIONS_REBUILD: 'Animasyonları yeniden oluştur',
-                                        BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Değişiklik günlüğü',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK: 'Güncelle',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING: 'Güncellemeler aranıyor...',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_TIMEOUT: 'Zaman aşımı aşıldı',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_ERROR: 'Bir hata oluştu',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_OLDER: (_version = '{version}') => `v${_version} - Güncelleme`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_TITLE: 'Sürümünüz güncel değil',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_COMPARE: (yourV_, githubV_) => `v${yourV_} (senin)  →  v${githubV_} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_NOTE: 'Eklenti güncellenecektir.',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_NEWER: (_version = '{version}') => `v${_version} - Senin sürümün`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_TITLE: 'Sürümünüz daha yeni',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_COMPARE: (yourV_, githubV_) => `v${yourV_} (senin)  ←  v${githubV_} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_NOTE: 'Eklenti güncelliğini yitirecek.',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_LATEST: (_version = '{version}') => `v${_version} - En son sürüm`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_TITLE: 'Sürümünüz en son sürüm',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_COMPARE: (yourV_, githubV_) => `v${yourV_} (senin)  ↔  v${githubV_} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_NOTE: 'Eklenti tamir edilecek.',
-                                        BUTTON_ANIMATIONS_ISSUES: 'Konular',
-                                        BUTTON_ANIMATIONS_SERVER: 'Sunucu',
-                                        BUTTON_ANIMATIONS_DISCUSSIONS: 'Tartışmalar',
-                                        BUTTON_LISTS_SWITCH: 'Listeler',
-                                        BUTTON_BUTTONS_SWITCH: 'Düğmeler',
-                                        BUTTON_MESSAGES_SWITCH: 'Mesajlar',
-                                        BUTTON_POPOUTS_SWITCH: 'Popout\'lar',
-                                        BUTTON_RESET_LISTS: 'Listeleri sıfırla',
-                                        BUTTON_RESET_BUTTONS: 'Düğmeleri sıfırla',
-                                        BUTTON_RESET_MESSAGES: 'Mesajları sıfırla',
-                                        BUTTON_RESET_POPOUTS: 'Pop-out\'ları sıfırla',
-                                        BUTTON_SELECTORS_LISTS_DEFAULT: 'Varsayılan',
-                                        BUTTON_SELECTORS_LISTS_CLEAR: 'Temizle',
-                                        BUTTON_SELECTORS_BUTTONS_DEFAULT: 'Varsayılan',
-                                        BUTTON_SELECTORS_BUTTONS_CLEAR: 'Temizle',
-                                        BUTTON_SELECTORS_POPOUTS_DEFAULT: 'Varsayılan',
-                                        BUTTON_SELECTORS_POPOUTS_CLEAR: 'Temizle',
-
-                                        FIELD_NAME: 'İsim',
-                                        FIELD_SEQUENCE: 'Sekans',
-                                        FIELD_DELAY: 'Gecikme',
-                                        FIELD_LIMIT: 'Sınır',
-                                        FIELD_DURATION: 'Süre',
-
-                                        FIELD_LISTS_NAME_NOTE: (_default = '{default}') => `[${_default}] Liste öğelerinin göründükleri zaman animasyonunun adı.`,
-                                        FIELD_LISTS_SEQUENCE_NOTE: (_default = '{default}') => `[${_default}] Liste öğelerinin oluşturulduğu sıra.`,
-                                        FIELD_LISTS_DELAY_NOTE: (_default = '{default}') => `[${_default}] Her liste öğesi için saniye cinsinden görünmeden önce gecikme.`,
-                                        FIELD_LISTS_LIMIT_NOTE: (_default = '{default}') => `[${_default}] Animasyonun oynatılacağı listedeki maksimum öğe sayısı.`,
-                                        FIELD_LISTS_DURATION_NOTE: (_default = '{default}') => `[${_default}] Gecikmeden sonra her liste öğesi için saniye cinsinden animasyon oynatma hızı.`,
-
-                                        FIELD_BUTTONS_NAME_NOTE: (_default = '{default}') => `[${_default}] Düğmelerin göründükleri zamanki animasyonunun adı.`,
-                                        FIELD_BUTTONS_SEQUENCE_NOTE: (_default = '{default}') => `[${_default}] Düğmelerin oluşturulduğu sıra.`,
-                                        FIELD_BUTTONS_DELAY_NOTE: (_default = '{default}') => `[${_default}] Her düğme için saniyeler içinde görünmeden önce gecikme.`,
-                                        FIELD_BUTTONS_DURATION_NOTE: (_default = '{default}') => `[${_default}] Gecikmeden sonra her düğme için saniye cinsinden animasyon oynatma hızı.`,
-
-                                        FIELD_MESSAGES_NAME_NOTE: (_default = '{default}') => `[${_default}] Mesajların göründüğünde animasyonun adı.`,
-                                        FIELD_MESSAGES_DELAY_NOTE: (_default = '{default}') => `[${_default}] Her mesaj için saniyeler içinde görünmeden önce gecikme.`,
-                                        FIELD_MESSAGES_LIMIT_NOTE: (_default = '{default}') => `[${_default}] Animasyonun oynatılacağı listedeki maksimum mesaj sayısı.`,
-                                        FIELD_MESSAGES_DURATION_NOTE: (_default = '{default}') => `[${_default}] Gecikmeden sonra her mesaj için saniye cinsinden animasyon oynatma hızı.`,
-
-                                        FIELD_POPOUTS_NAME_NOTE: (_default = '{default}') => `[${_default}] Göründükleri zaman pop-out'ların animasyonunun adı.`,
-                                        FIELD_POPOUTS_DURATION_NOTE: (_default = '{default}') => `[${_default}] Bir açılır pencere için saniye cinsinden animasyon oynatma hızı.`,
-
-                                        FIELD_LISTS_SELECTORS: 'Liste seçiciler',
-                                        FIELD_LISTS_SELECTORS_NOTE: 'Bu alanı boş bırakırsanız, yeniden yükleme sırasında varsayılan seçiciler burada görünecektir. Seçicilerde yapılan değişiklikler yazarken kaydedilir (kod geçerliyse). Ayırıcı virgüldür (,).',
-                                        FIELD_BUTTONS_SELECTORS: 'Düğme seçiciler',
-                                        FIELD_BUTTONS_SELECTORS_NOTE: 'Bu alanı boş bırakırsanız, yeniden yükleme sırasında varsayılan seçiciler burada görünecektir. Seçicilerde yapılan değişiklikler yazarken kaydedilir (kod geçerliyse). Ayırıcı virgüldür (,).',
-                                        FIELD_POPOUTS_SELECTORS: 'Popout seçicileri',
-                                        FIELD_POPOUTS_SELECTORS_NOTE: 'Bu alanı boş bırakırsanız, yeniden yükleme sırasında varsayılan seçiciler burada görünecektir. Seçicilerde yapılan değişiklikler yazarken kaydedilir (kod geçerliyse). Ayırıcı virgüldür (,).',
-
-                                        PREVIEW_SELECTING: 'Seçme',
-                                        PREVIEW_EDITING: 'Düzenleme',
-                                        PREVIEW_BUTTON_TEMPLATE: 'Şablon',
-                                        PREVIEW_BUTTON_CLEAR: 'Temizle',
-                                        PREVIEW_BUTTON_LOAD: 'Yükle',
-                                        PREVIEW_BUTTON_SAVE: 'Kaydet',
-                                        PREVIEW_IN: 'İçine',
-                                        PREVIEW_OUT: 'Dışına',
-                                        PREVIEW_CIRCLE: 'Daire',
-                                        PREVIEW_POLYGON: 'Poligon',
-                                        PREVIEW_OPACITY: 'Opaklık',
-                                        PREVIEW_SLIME: 'Balçık',
-                                        PREVIEW_BRICK_RIGHT: 'Sağa tuğla',
-                                        PREVIEW_BRICK_LEFT: 'Sola tuğla',
-                                        PREVIEW_BRICK_UP: 'Yukarı tuğla',
-                                        PREVIEW_BRICK_DOWN: 'Aşağı tuğla',
-                                        PREVIEW_SLIDE_RIGHT: 'Sağa kaydır',
-                                        PREVIEW_SLIDE_LEFT: 'Sola kaydır',
-                                        PREVIEW_SLIDE_UP: 'Yukarı kaydır',
-                                        PREVIEW_SLIDE_DOWN: 'Aşağı kaydır',
-                                        PREVIEW_SLIDE_UP_RIGHT: 'Yukarı kaydır (sağ)',
-                                        PREVIEW_SLIDE_UP_LEFT: 'Yukarı kaydır (sol)',
-                                        PREVIEW_SLIDE_DOWN_RIGHT: 'Aşağı kaydır (sağ)',
-                                        PREVIEW_SLIDE_DOWN_LEFT: 'Aşağı kaydır (sağ)',
-                                        PREVIEW_SKEW_RIGHT: 'Sağa eğ',
-                                        PREVIEW_SKEW_LEFT: 'Sola eğ',
-                                        PREVIEW_WIDE_SKEW_RIGHT: 'Sağa geniş eğim',
-                                        PREVIEW_WIDE_SKEW_LEFT: 'Sola geniş eğim',
-
-                                        PREVIEW_VERTICAL_FROM_FIRST: '↓',
-                                        PREVIEW_VERTICAL_FROM_LAST: '↑',
-                                        PREVIEW_HORIZONTAL_FROM_FIRST: '→',
-                                        PREVIEW_HORIZONTAL_FROM_LAST: '←',
-
-                                        GROUP_LISTS: 'Listeler',
-                                        GROUP_BUTTONS: 'Düğmeler',
-                                        GROUP_MESSAGES: 'Mesajlar',
-                                        GROUP_POPOUTS: 'Popout\'lar',
-
-                                        GROUP_ADVANCED: 'Gelişmiş',
-                                    }
-                                }
-                                break;
-
-                            case 'fr':
-                                TEMPS = {
-                                    TOOLTIPS: {
-                                        BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Dernier changement',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK: 'Rechercher des mises à jour',
-                                        BUTTON_ANIMATIONS_RESET: 'Réinitialise tous les paramètres',
-                                        BUTTON_ANIMATIONS_REBUILD: 'Récrer les styles. Quand le plugin sera redémarré, les styles seront recrées',
-                                        BUTTON_ANIMATIONS_ISSUES: 'Lien vers GitHub',
-                                        BUTTON_ANIMATIONS_SERVER: 'Link to Discord',
-                                        BUTTON_ANIMATIONS_DISCUSSIONS: 'Lien vers GitHub',
-                                        BUTTON_LISTS_SWITCH: 'Activer/désactiver l\'animation des listes',
-                                        BUTTON_BUTTONS_SWITCH: 'Activer/désactiver l\'animation des boutons',
-                                        BUTTON_MESSAGES_SWITCH: 'Activer/désactiver l\'animation des messages',
-                                        BUTTON_POPOUTS_SWITCH: 'Activer/désactiver l\'animation des pop-out',
-                                        BUTTON_RESET_LISTS: 'Réinitialise les paramètres de listes',
-                                        BUTTON_RESET_BUTTONS: 'Réinitialise les paramètres de boutons',
-                                        BUTTON_RESET_MESSAGES: 'Réinitialise les paramètres de messages',
-                                        BUTTON_RESET_POPOUTS: 'Réinitialise les paramètres de pop-out',
-                                        BUTTON_SELECTORS_LISTS_DEFAULT: 'Restore les selecteurs par défauts',
-                                        BUTTON_SELECTORS_LISTS_CLEAR: 'Vider le champs de texte',
-                                        BUTTON_SELECTORS_BUTTONS_DEFAULT: 'Restore les selecteurs par défauts',
-                                        BUTTON_SELECTORS_BUTTONS_CLEAR: 'Vider le champs de texte',
-                                        BUTTON_SELECTORS_POPOUTS_DEFAULT: 'Restore les selecteurs par défauts',
-                                        BUTTON_SELECTORS_POPOUTS_CLEAR: 'Vider le champs de texte'
-                                    },
-                                    LABELS: {
-                                        BUTTON_ANIMATIONS_RESET: 'Tout réinitialiser',
-                                        BUTTON_ANIMATIONS_RESET_RESETING: 'Réinitialisation...',
-                                        BUTTON_ANIMATIONS_REBUILD: 'Récréation des animations',
-                                        BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Changelog',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK: 'Mise à jour',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING: 'Recherche de mise à jour...',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_TIMEOUT: 'Temps de recherche excéder',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_ERROR: 'Une erreur est apparue',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_OLDER: (_version = '{version}') => `v${_version} - Mise à jour`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_TITLE: 'Votre version est obsolète',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (toi)  →  v${_ghV} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_NOTE: 'Le plugin va être mis à jour.',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_NEWER: (_version = '{version}') => `v${_version} - Votre version`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_TITLE: 'Votre version est la plus récente',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (toi)  ←  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_NOTE: 'Votre version est la plus récente.',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_LATEST: (_version = '{version}') => `v${_version} - Dernière version`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_TITLE: 'Votre version est la plus récente',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (toi)  ↔  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_NOTE: 'Le plugin va être restoré.',
-                                        BUTTON_ANIMATIONS_ISSUES: 'Problème',
-                                        BUTTON_ANIMATIONS_SERVER: 'Server',
-                                        BUTTON_ANIMATIONS_DISCUSSIONS: 'Discussions',
-                                        BUTTON_LISTS_SWITCH: 'Listes',
-                                        BUTTON_BUTTONS_SWITCH: 'Boutons',
-                                        BUTTON_MESSAGES_SWITCH: 'Messages',
-                                        BUTTON_POPOUTS_SWITCH: 'Popouts',
-                                        BUTTON_RESET_LISTS: 'Réinitialiser listes',
-                                        BUTTON_RESET_BUTTONS: 'Réinitialiser boutons',
-                                        BUTTON_RESET_MESSAGES: 'Réinitialiser messages',
-                                        BUTTON_RESET_POPOUTS: 'Réinitialiser popouts',
-                                        BUTTON_SELECTORS_LISTS_DEFAULT: 'Par défaut',
-                                        BUTTON_SELECTORS_LISTS_CLEAR: 'Vider',
-                                        BUTTON_SELECTORS_BUTTONS_DEFAULT: 'Par défaut',
-                                        BUTTON_SELECTORS_BUTTONS_CLEAR: 'Vider',
-                                        BUTTON_SELECTORS_POPOUTS_DEFAULT: 'Par défaut',
-                                        BUTTON_SELECTORS_POPOUTS_CLEAR: 'Vider',
-
-                                        FIELD_NAME: 'Nom',
-                                        FIELD_SEQUENCE: 'Séquence',
-                                        FIELD_DELAY: 'Delai',
-                                        FIELD_LIMIT: 'Limite',
-                                        FIELD_DURATION: 'Durée',
-
-                                        FIELD_LISTS_NAME_NOTE: (_default = '{default}') => `[${_default}] L'animation à utiliser pour l'animation des éléments d'une liste.`,
-                                        FIELD_LISTS_SEQUENCE_NOTE: (_default = '{default}') => `[${_default}] La séquence de comment se créer les éléments d'une liste.`,
-                                        FIELD_LISTS_DELAY_NOTE: (_default = '{default}') => `[${_default}] Le délai avant l'apparition de chaque éléments d'une liste en seconde.`,
-                                        FIELD_LISTS_LIMIT_NOTE: (_default = '{default}') => `[${_default}] Le nombre maximum d'élément d'une liste qui seront animé.`,
-                                        FIELD_LISTS_DURATION_NOTE: (_default = '{default}') => `[${_default}] La durée de l'animation de chaque éléments d'une liste.`,
-
-                                        FIELD_BUTTONS_NAME_NOTE: (_default = '{default}') => `[${_default}] L'animation à utiliser pour l'animation des boutons.`,
-                                        FIELD_BUTTONS_SEQUENCE_NOTE: (_default = '{default}') => `[${_default}] La séquence de comment se créer les boutons.`,
-                                        FIELD_BUTTONS_DELAY_NOTE: (_default = '{default}') => `[${_default}] Le délai avant l'apparition de chaque boutons en seconde.`,
-                                        FIELD_BUTTONS_DURATION_NOTE: (_default = '{default}') => `[${_default}] La durée de l'animation de chaque boutons.`,
-
-                                        FIELD_MESSAGES_NAME_NOTE: (_default = '{default}') => `[${_default}] L'animation à utiliser pour l'animation des messages.`,
-                                        FIELD_MESSAGES_DELAY_NOTE: (_default = '{default}') => `[${_default}] La séquence de comment se créer les messages.`,
-                                        FIELD_MESSAGES_LIMIT_NOTE: (_default = '{default}') => `[${_default}] Le délai avant l'apparition de chaque messages en seconde.`,
-                                        FIELD_MESSAGES_DURATION_NOTE: (_default = '{default}') => `[${_default}] La durée de l'animation de chaque messages.`,
-
-                                        FIELD_POPOUTS_NAME_NOTE: (_default = '{default}') => `[${_default}] L'animation à utiliser pour l'animation des popout.`,
-                                        FIELD_POPOUTS_DURATION_NOTE: (_default = '{default}') => `[${_default}] La durée de l'animation de chaque popout.`,
-
-                                        FIELD_LISTS_SELECTORS: 'Selecteurs de listes',
-                                        FIELD_LISTS_SELECTORS_NOTE: 'Si vous laissez le champ vide, les selecteurs par défaut réapparaitrons au redémarrage. Les changement de selecteurs sont sauvegardé dès l\'écriture (si le code est valide). Le séparateur est une virgule (,).',
-                                        FIELD_BUTTONS_SELECTORS: 'Selecteurs de boutons',
-                                        FIELD_BUTTONS_SELECTORS_NOTE: 'Si vous laissez le champ vide, les selecteurs par défaut réapparaitrons au redémarrage. Les changement de selecteurs sont sauvegardé dès l\'écriture (si le code est valide). Le séparateur est une virgule (,).',
-                                        FIELD_POPOUTS_SELECTORS: 'Selecteurs de popout',
-                                        FIELD_POPOUTS_SELECTORS_NOTE: 'Si vous laissez le champ vide, les selecteurs par défaut réapparaitrons au redémarrage. Les changement de selecteurs sont sauvegardé dès l\'écriture (si le code est valide). Le séparateur est une virgule (,).',
-
-                                        PREVIEW_SELECTING: 'Selection',
-                                        PREVIEW_EDITING: 'Edition',
-                                        PREVIEW_BUTTON_TEMPLATE: 'Modèle',
-                                        PREVIEW_BUTTON_CLEAR: 'Vider',
-                                        PREVIEW_BUTTON_LOAD: 'Charger',
-                                        PREVIEW_BUTTON_SAVE: 'Sauvegarder',
-                                        PREVIEW_IN: 'Dessus',
-                                        PREVIEW_OUT: 'Dessous',
-                                        PREVIEW_CIRCLE: 'Cercle',
-                                        PREVIEW_POLYGON: 'Polygone',
-                                        PREVIEW_OPACITY: 'Opacité',
-                                        PREVIEW_SLIME: 'Slime',
-                                        PREVIEW_BRICK_RIGHT: 'Brique droite',
-                                        PREVIEW_BRICK_LEFT: 'Brique gauche',
-                                        PREVIEW_BRICK_UP: 'Brick du dessus',
-                                        PREVIEW_BRICK_DOWN: 'Brick du dessous',
-                                        PREVIEW_SLIDE_RIGHT: 'Glissade droite',
-                                        PREVIEW_SLIDE_LEFT: 'Glissade gauche',
-                                        PREVIEW_SLIDE_UP: 'Glissade du dessus',
-                                        PREVIEW_SLIDE_DOWN: 'Glissade du dessous',
-                                        PREVIEW_SLIDE_UP_RIGHT: 'Glissade dessus (droite)',
-                                        PREVIEW_SLIDE_UP_LEFT: 'Glissade dessus (gauche)',
-                                        PREVIEW_SLIDE_DOWN_RIGHT: 'Glissade dessous (droite)',
-                                        PREVIEW_SLIDE_DOWN_LEFT: 'Glissade dessous (gauche)',
-                                        PREVIEW_SKEW_RIGHT: 'Inclinaison droite',
-                                        PREVIEW_SKEW_LEFT: 'Inclinaison gauche',
-                                        PREVIEW_WIDE_SKEW_RIGHT: 'Grande Inclinaison droite',
-                                        PREVIEW_WIDE_SKEW_LEFT: 'Grande Inclinaison gauche',
-
-                                        PREVIEW_VERTICAL_FROM_FIRST: '↓',
-                                        PREVIEW_VERTICAL_FROM_LAST: '↑',
-                                        PREVIEW_HORIZONTAL_FROM_FIRST: '→',
-                                        PREVIEW_HORIZONTAL_FROM_LAST: '←',
-
-                                        GROUP_LISTS: 'Listes',
-                                        GROUP_BUTTONS: 'Boutons',
-                                        GROUP_MESSAGES: 'Messages',
-                                        GROUP_POPOUTS: 'Popout',
-
-                                        GROUP_ADVANCED: 'Avancés',
-                                    }
-                                }
-                                break;
-
-                            case 'uk':
-                                TEMPS = {
-                                    TOOLTIPS: {
-                                        BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Останні зміни',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK: 'Перевіряє оновлення',
-                                        BUTTON_ANIMATIONS_RESET: 'Скидає всі налаштування',
-                                        BUTTON_ANIMATIONS_REBUILD: 'Перестворює стилі. При перезавантаженні плагіну стилі також перестворюються',
-                                        BUTTON_ANIMATIONS_ISSUES: 'Посилання на GitHub',
-                                        BUTTON_ANIMATIONS_SERVER: 'Посилання на Discord',
-                                        BUTTON_ANIMATIONS_DISCUSSIONS: 'Посилання на GitHub',
-                                        BUTTON_LISTS_SWITCH: 'Перемикання списків',
-                                        BUTTON_BUTTONS_SWITCH: 'Перемикання кнопок',
-                                        BUTTON_MESSAGES_SWITCH: 'Перемикання повідомлень',
-                                        BUTTON_POPOUTS_SWITCH: 'Перемикання вспливаючих вікон',
-                                        BUTTON_RESET_LISTS: 'Скидає налаштування списків',
-                                        BUTTON_RESET_BUTTONS: 'Скидає налаштування кнопок',
-                                        BUTTON_RESET_MESSAGES: 'Скидає налаштування повідомлень',
-                                        BUTTON_RESET_POPOUTS: 'Скидає налаштування вспливаючих вікон',
-                                        BUTTON_SELECTORS_LISTS_DEFAULT: 'Відновлює заводські селектори',
-                                        BUTTON_SELECTORS_LISTS_CLEAR: 'Очищає тектове поле',
-                                        BUTTON_SELECTORS_BUTTONS_DEFAULT: 'Відновлює заводські селектори',
-                                        BUTTON_SELECTORS_BUTTONS_CLEAR: 'Очищає тектове поле',
-                                        BUTTON_SELECTORS_POPOUTS_DEFAULT: 'Відновлює заводські селектори',
-                                        BUTTON_SELECTORS_POPOUTS_CLEAR: 'Очищає тектове поле'
-                                    },
-                                    LABELS: {
-                                        BUTTON_ANIMATIONS_RESET: 'Скинути все',
-                                        BUTTON_ANIMATIONS_RESET_RESETING: 'Скидання...',
-                                        BUTTON_ANIMATIONS_REBUILD: 'Перестворити анімації',
-                                        BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Список змін',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK: 'Оновити',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING: 'Пошук оновлень...',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_TIMEOUT: 'Перевищено час очікування',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_ERROR: 'Сталася помилка',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_OLDER: (_version = '{version}') => `v${_version} - Оновити`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_TITLE: 'Ваша версія застаріла',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (ваша)  →  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_NOTE: 'Плагін буде оновлено',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_NEWER: (_version = '{version}') => `v${_version} - Ваша версія`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_TITLE: 'Ваша версія новіша',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (ваша)  ←  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_NOTE: 'Плагін буде деоновлений.',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_LATEST: (_version = '{version}') => `v${_version} - Остання версія`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_TITLE: 'Ваша версія остання',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (ваша)  ↔  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_NOTE: 'Плагін буде перевстановлено.',
-                                        BUTTON_ANIMATIONS_ISSUES: 'Проблеми',
-                                        BUTTON_ANIMATIONS_SERVER: 'Сервер',
-                                        BUTTON_ANIMATIONS_DISCUSSIONS: 'Обговорення',
-                                        BUTTON_LISTS_SWITCH: 'Списки',
-                                        BUTTON_BUTTONS_SWITCH: 'Кнопки',
-                                        BUTTON_MESSAGES_SWITCH: 'Повідомлення',
-                                        BUTTON_POPOUTS_SWITCH: 'Вспл. вікна',
-                                        BUTTON_RESET_LISTS: 'Скинути списки',
-                                        BUTTON_RESET_BUTTONS: 'Скинути кнопки',
-                                        BUTTON_RESET_MESSAGES: 'Скинути повідомлення',
-                                        BUTTON_RESET_POPOUTS: 'Скинути вспл. вікна',
-                                        BUTTON_SELECTORS_LISTS_DEFAULT: 'За замовчуванням',
-                                        BUTTON_SELECTORS_LISTS_CLEAR: 'Очистити',
-                                        BUTTON_SELECTORS_BUTTONS_DEFAULT: 'За замовчуванням',
-                                        BUTTON_SELECTORS_BUTTONS_CLEAR: 'Очистити',
-                                        BUTTON_SELECTORS_POPOUTS_DEFAULT: 'За замовчуванням',
-                                        BUTTON_SELECTORS_POPOUTS_CLEAR: 'Очистити',
-
-                                        FIELD_NAME: 'Назва',
-                                        FIELD_SEQUENCE: 'Напрямок',
-                                        FIELD_DELAY: 'Затримка',
-                                        FIELD_LIMIT: 'Ліміт',
-                                        FIELD_DURATION: 'Тривалість',
-
-                                        FIELD_LISTS_NAME_NOTE: (_default = '{default}') => `[${_default}] Назва анимації елементів списку при їх появі.`,
-                                        FIELD_LISTS_SEQUENCE_NOTE: (_default = '{default}') => `[${_default}] Напрямок в якому вибудовуватимуться елементи списку.`,
-                                        FIELD_LISTS_DELAY_NOTE: (_default = '{default}') => `[${_default}] Затримка перед появою кожного елемента списку в секундах.`,
-                                        FIELD_LISTS_LIMIT_NOTE: (_default = '{default}') => `[${_default}] Максимальна кількість елементів у списку, для яких відтворюватиметься анімація.`,
-                                        FIELD_LISTS_DURATION_NOTE: (_default = '{default}') => `[${_default}] Швидкість відтворення анімації в секундах для кожного списку після затримки.`,
-
-                                        FIELD_BUTTONS_NAME_NOTE: (_default = '{default}') => `[${_default}] Назва анімації кнопок при їх появі.`,
-                                        FIELD_BUTTONS_SEQUENCE_NOTE: (_default = '{default}') => `[${_default}] Послідовність, у якій вибудовуються кнопки.`,
-                                        FIELD_BUTTONS_DELAY_NOTE: (_default = '{default}') => `[${_default}] Затримка перед появою кожної кнопки в секундах.`,
-                                        FIELD_BUTTONS_DURATION_NOTE: (_default = '{default}') => `[${_default}] Швидкість відтворення анімації в секундах для кожної кнопки після затримки.`,
-
-                                        FIELD_MESSAGES_NAME_NOTE: (_default = '{default}') => `[${_default}] Назва анімації повідомлень при їх появі.`,
-                                        FIELD_MESSAGES_DELAY_NOTE: (_default = '{default}') => `[${_default}] Затримка перед появою кожного повідомлення в секундах.`,
-                                        FIELD_MESSAGES_LIMIT_NOTE: (_default = '{default}') => `[${_default}] Максимальна кількість повідомлень у списку, для яких відтворюватиметься анімація.`,
-                                        FIELD_MESSAGES_DURATION_NOTE: (_default = '{default}') => `[${_default}] Швидкість відтворення анімації в секундах для кожного повідомлення після затримки.`,
-
-                                        FIELD_POPOUTS_NAME_NOTE: (_default = '{default}') => `[${_default}] Назва анімації вспливаючих вікон при їх появі.`,
-                                        FIELD_POPOUTS_DURATION_NOTE: (_default = '{default}') => `[${_default}] Швидкість відтворення анімації в секундах для вспливаючих вікон.`,
-
-                                        FIELD_LISTS_SELECTORS: 'Селектори списків',
-                                        FIELD_LISTS_SELECTORS_NOTE: 'Якщо залишити це поле порожнім, при перезавантаженні тут відображатимуться селектори за замовчуванням. Зміни селекторів зберігаються під час введення (якщо код коректний). Розділювачем є кома (,).',
-                                        FIELD_BUTTONS_SELECTORS: 'Селектори кнопок',
-                                        FIELD_BUTTONS_SELECTORS_NOTE: 'Якщо залишити це поле порожнім, при перезавантаженні тут відображатимуться селектори за замовчуванням. Зміни селекторів зберігаються під час введення (якщо код коректний). Розділювачем є кома (,).',
-                                        FIELD_POPOUTS_SELECTORS: 'Селектори вспливаючих вікон',
-                                        FIELD_POPOUTS_SELECTORS_NOTE: 'Якщо залишити це поле порожнім, при перезавантаженні тут відображатимуться селектори за замовчуванням. Зміни селекторів зберігаються під час введення (якщо код коректний). Розділювачем є кома (,).',
-                                        PREVIEW_SELECTING: 'Обирати',
-                                        PREVIEW_EDITING: 'Редагувати',
-                                        PREVIEW_BUTTON_TEMPLATE: 'Шаблон',
-                                        PREVIEW_BUTTON_CLEAR: 'Очистити',
-                                        PREVIEW_BUTTON_LOAD: 'Завантажити',
-                                        PREVIEW_BUTTON_SAVE: 'Зберегти',
-                                        PREVIEW_IN: 'Вхід',
-                                        PREVIEW_OUT: 'Вихід',
-                                        PREVIEW_CIRCLE: 'Коло',
-                                        PREVIEW_POLYGON: 'Полігон',
-                                        PREVIEW_OPACITY: 'Прозорість',
-                                        PREVIEW_SLIME: 'Слиз',
-                                        PREVIEW_BRICK_RIGHT: 'Цеглина праворуч',
-                                        PREVIEW_BRICK_LEFT: 'Цеглина ліворуч',
-                                        PREVIEW_BRICK_UP: 'Цеглина вгору',
-                                        PREVIEW_BRICK_DOWN: 'Цеглина вниз',
-                                        PREVIEW_SLIDE_RIGHT: 'Ковзання праворуч',
-                                        PREVIEW_SLIDE_LEFT: 'Ковзання ліворуч',
-                                        PREVIEW_SLIDE_UP: 'Ковзання вгору',
-                                        PREVIEW_SLIDE_DOWN: 'Ковзання вниз',
-                                        PREVIEW_SLIDE_UP_RIGHT: 'Ковзання вгору (праворуч)',
-                                        PREVIEW_SLIDE_UP_LEFT: 'Ковзання вгору (ліворуч)',
-                                        PREVIEW_SLIDE_DOWN_RIGHT: 'Ковзання вниз (праворуч)',
-                                        PREVIEW_SLIDE_DOWN_LEFT: 'Ковзання вниз (ліворуч)',
-                                        PREVIEW_SKEW_RIGHT: 'Перекіс праворуч',
-                                        PREVIEW_SKEW_LEFT: 'Перекіс ліворуч',
-                                        PREVIEW_WIDE_SKEW_RIGHT: 'Широкий перекіс праворуч',
-                                        PREVIEW_WIDE_SKEW_LEFT: 'Широкий перекіс ліворуч',
-
-                                        PREVIEW_VERTICAL_FROM_FIRST: '↓',
-                                        PREVIEW_VERTICAL_FROM_LAST: '↑',
-                                        PREVIEW_HORIZONTAL_FROM_FIRST: '→',
-                                        PREVIEW_HORIZONTAL_FROM_LAST: '←',
-
-                                        GROUP_LISTS: 'Списки',
-                                        GROUP_BUTTONS: 'Кнопки',
-                                        GROUP_MESSAGES: 'Повідомлення',
-                                        GROUP_POPOUTS: 'Вспл. вікна',
-
-                                        GROUP_ADVANCED: 'Розширені',
-                                    }
-                                }
-                                break;
-
-                            case 'ru':
-                                TEMPS = {
-                                    TOOLTIPS: {
-                                        BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Последние изменения',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK: 'Проверяет обновления',
-                                        BUTTON_ANIMATIONS_RESET: 'Сбрасывает все настройки',
-                                        BUTTON_ANIMATIONS_REBUILD: 'Пересоздаёт стили. При перезагрузке плагина стили тоже пересоздаются',
-                                        BUTTON_ANIMATIONS_ISSUES: 'Ссылка на GitHub',
-                                        BUTTON_ANIMATIONS_SERVER: 'Ссылка на Discord',
-                                        BUTTON_ANIMATIONS_DISCUSSIONS: 'Ссылка на GitHub',
-                                        BUTTON_LISTS_SWITCH: 'Переключение списков',
-                                        BUTTON_BUTTONS_SWITCH: 'Переключение кнопок',
-                                        BUTTON_MESSAGES_SWITCH: 'Переключение сообщений',
-                                        BUTTON_POPOUTS_SWITCH: 'Переключение всплывающих окон',
-                                        BUTTON_RESET_LISTS: 'Сбрасывает настройки списков',
-                                        BUTTON_RESET_BUTTONS: 'Сбрасывает настройки кнопок',
-                                        BUTTON_RESET_MESSAGES: 'Сбрасывает настройки сообщений',
-                                        BUTTON_RESET_POPOUTS: 'Сбрасывает настройки всплывающих окон',
-                                        BUTTON_SELECTORS_LISTS_DEFAULT: 'Восстанавливает заводские селекторы',
-                                        BUTTON_SELECTORS_LISTS_CLEAR: 'Очищает тектовое поле',
-                                        BUTTON_SELECTORS_BUTTONS_DEFAULT: 'Восстанавливает заводские селекторы',
-                                        BUTTON_SELECTORS_BUTTONS_CLEAR: 'Очищает тектовое поле',
-                                        BUTTON_SELECTORS_POPOUTS_DEFAULT: 'Восстанавливает заводские селекторы',
-                                        BUTTON_SELECTORS_POPOUTS_CLEAR: 'Очищает тектовое поле'
-                                    },
-                                    LABELS: {
-                                        BUTTON_ANIMATIONS_RESET: 'Сбросить всё',
-                                        BUTTON_ANIMATIONS_RESET_RESETING: 'Сбрасывание...',
-                                        BUTTON_ANIMATIONS_REBUILD: 'Пересоздать анимации',
-                                        BUTTON_ANIMATIONS_VERSION_CHANGELOG: 'Список изменений',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK: 'Обновить',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING: 'Поиск обновлений...',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_TIMEOUT: 'Превышено вр. ожидания',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_ERROR: 'Случилась ошибка',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_OLDER: (_version = '{version}') => `v${_version} - Обновить`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_TITLE: 'Ваша версия устарела',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (ваша)  →  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_NOTE: 'Плагин будет обновлён.',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_NEWER: (_version = '{version}') => `v${_version} - Ваша версия`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_TITLE: 'Ваша версия новее',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (ваша)  ←  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_NOTE: 'Плагин будет деобновлен.',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_LATEST: (_version = '{version}') => `v${_version} - Последняя версия`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_TITLE: 'Ваша версия последняя',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (ваша)  ↔  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_NOTE: 'Плагин будет переустановлен.',
-                                        BUTTON_ANIMATIONS_ISSUES: 'Проблемы',
-                                        BUTTON_ANIMATIONS_SERVER: 'Сервер',
-                                        BUTTON_ANIMATIONS_DISCUSSIONS: 'Обсуждения',
-                                        BUTTON_LISTS_SWITCH: 'Списки',
-                                        BUTTON_BUTTONS_SWITCH: 'Кнопки',
-                                        BUTTON_MESSAGES_SWITCH: 'Сообщения',
-                                        BUTTON_POPOUTS_SWITCH: 'Вспл. окна',
-                                        BUTTON_RESET_LISTS: 'Сбросить списки',
-                                        BUTTON_RESET_BUTTONS: 'Сбросить кнопки',
-                                        BUTTON_RESET_MESSAGES: 'Сбросить сообщения',
-                                        BUTTON_RESET_POPOUTS: 'Сбросить вспл. окна',
-                                        BUTTON_SELECTORS_LISTS_DEFAULT: 'По умолчанию',
-                                        BUTTON_SELECTORS_LISTS_CLEAR: 'Очистить',
-                                        BUTTON_SELECTORS_BUTTONS_DEFAULT: 'По умолчанию',
-                                        BUTTON_SELECTORS_BUTTONS_CLEAR: 'Очистить',
-                                        BUTTON_SELECTORS_POPOUTS_DEFAULT: 'По умолчанию',
-                                        BUTTON_SELECTORS_POPOUTS_CLEAR: 'Очистить',
-
-                                        FIELD_NAME: 'Название',
-                                        FIELD_SEQUENCE: 'Напраление',
-                                        FIELD_DELAY: 'Задержка',
-                                        FIELD_LIMIT: 'Лимит',
-                                        FIELD_DURATION: 'Длительность',
-
-                                        FIELD_LISTS_NAME_NOTE: (_default = '{default}') => `[${_default}] Название анимации элементов списка при их появлении.`,
-                                        FIELD_LISTS_SEQUENCE_NOTE: (_default = '{default}') => `[${_default}] Направление в котором будут выстраиваться элементы списка.`,
-                                        FIELD_LISTS_DELAY_NOTE: (_default = '{default}') => `[${_default}] Задержка перед появлением для каждого элемента списка в секундах.`,
-                                        FIELD_LISTS_LIMIT_NOTE: (_default = '{default}') => `[${_default}] Максимальное количество элементов в списке, для которых будет воспроизводиться анимация.`,
-                                        FIELD_LISTS_DURATION_NOTE: (_default = '{default}') => `[${_default}] Скорость воспроизведения анимации в секундах для каждого элемента списка после задержки.`,
-
-                                        FIELD_BUTTONS_NAME_NOTE: (_default = '{default}') => `[${_default}] Название анимации кнопок при их появлении.`,
-                                        FIELD_BUTTONS_SEQUENCE_NOTE: (_default = '{default}') => `[${_default}] Последовательность, в которой выстраиваются кнопки.`,
-                                        FIELD_BUTTONS_DELAY_NOTE: (_default = '{default}') => `[${_default}] Задержка перед появлением каждой кнопки в секундах.`,
-                                        FIELD_BUTTONS_DURATION_NOTE: (_default = '{default}') => `[${_default}] Скорость воспроизведения анимации в секундах для каждой кнопки после задержки.`,
-
-                                        FIELD_MESSAGES_NAME_NOTE: (_default = '{default}') => `[${_default}] Название анимации сообщений при их появлении.`,
-                                        FIELD_MESSAGES_DELAY_NOTE: (_default = '{default}') => `[${_default}] Задержка перед появлением каждого сообщения в секундах.`,
-                                        FIELD_MESSAGES_LIMIT_NOTE: (_default = '{default}') => `[${_default}] Максимальное количество сообщений в списке, для которых будет воспроизводиться анимация.`,
-                                        FIELD_MESSAGES_DURATION_NOTE: (_default = '{default}') => `[${_default}] Скорость воспроизведения анимации в секундах для каждого сообщения после задержки.`,
-
-                                        FIELD_POPOUTS_NAME_NOTE: (_default = '{default}') => `[${_default}] Название анимации всплывающих окон при их появлении.`,
-                                        FIELD_POPOUTS_DURATION_NOTE: (_default = '{default}') => `[${_default}] Скорость воспроизведения анимации в секундах для всплывающих окон.`,
-
-                                        FIELD_LISTS_SELECTORS: 'Селекторы списков',
-                                        FIELD_LISTS_SELECTORS_NOTE: 'Если оставить это поле пустым, при перезагрузке здесь будут отображаться селекторы по умолчанию. Изменения селекторов сохраняются при вводе (если код корректен). Разделителем является запятая (,).',
-                                        FIELD_BUTTONS_SELECTORS: 'Селекторы кнопок',
-                                        FIELD_BUTTONS_SELECTORS_NOTE: 'Если оставить это поле пустым, при перезагрузке здесь будут отображаться селекторы по умолчанию. Изменения селекторов сохраняются при вводе (если код корректен). Разделителем является запятая (,).',
-                                        FIELD_POPOUTS_SELECTORS: 'Селекторы всплывающих окон',
-                                        FIELD_POPOUTS_SELECTORS_NOTE: 'Если оставить это поле пустым, при перезагрузке здесь будут отображаться селекторы по умолчанию. Изменения селекторов сохраняются при вводе (если код корректен). Разделителем является запятая (,).',
-                                        PREVIEW_SELECTING: 'Выбирать',
-                                        PREVIEW_EDITING: 'Редактировать',
-                                        PREVIEW_BUTTON_TEMPLATE: 'Шаблон',
-                                        PREVIEW_BUTTON_CLEAR: 'Очистить',
-                                        PREVIEW_BUTTON_LOAD: 'Загрузить',
-                                        PREVIEW_BUTTON_SAVE: 'Сохранить',
-                                        PREVIEW_IN: 'Вход',
-                                        PREVIEW_OUT: 'Выход',
-                                        PREVIEW_CIRCLE: 'Круг',
-                                        PREVIEW_POLYGON: 'Полигон',
-                                        PREVIEW_OPACITY: 'Прозрачность',
-                                        PREVIEW_SLIME: 'Слизь',
-                                        PREVIEW_BRICK_RIGHT: 'Кирпич враво',
-                                        PREVIEW_BRICK_LEFT: 'Кирпич влево',
-                                        PREVIEW_BRICK_UP: 'Кирпич вверх',
-                                        PREVIEW_BRICK_DOWN: 'Кирпич вниз',
-                                        PREVIEW_SLIDE_RIGHT: 'Скольжение вправо',
-                                        PREVIEW_SLIDE_LEFT: 'Скольжение влево',
-                                        PREVIEW_SLIDE_UP: 'Скольжение вверх',
-                                        PREVIEW_SLIDE_DOWN: 'Скольжение вниз',
-                                        PREVIEW_SLIDE_UP_RIGHT: 'Скольжение вверх (вправо)',
-                                        PREVIEW_SLIDE_UP_LEFT: 'Скольжение вверх (влево)',
-                                        PREVIEW_SLIDE_DOWN_RIGHT: 'Скольжение вниз (вправо)',
-                                        PREVIEW_SLIDE_DOWN_LEFT: 'Скольжение вниз (влево)',
-                                        PREVIEW_SKEW_RIGHT: 'Перекос вправо',
-                                        PREVIEW_SKEW_LEFT: 'Перекос влево',
-                                        PREVIEW_WIDE_SKEW_RIGHT: 'Широкий перекос вправо',
-                                        PREVIEW_WIDE_SKEW_LEFT: 'Широкий перекос влево',
-
-                                        PREVIEW_VERTICAL_FROM_FIRST: '↓',
-                                        PREVIEW_VERTICAL_FROM_LAST: '↑',
-                                        PREVIEW_HORIZONTAL_FROM_FIRST: '→',
-                                        PREVIEW_HORIZONTAL_FROM_LAST: '←',
-
-                                        GROUP_LISTS: 'Списки',
-                                        GROUP_BUTTONS: 'Кнопки',
-                                        GROUP_MESSAGES: 'Сообщения',
-                                        GROUP_POPOUTS: 'Вспл. окна',
-
-                                        GROUP_ADVANCED: 'Расширенные',
-                                    }
-                                }
-                                break;
-
-                            case 'ja':
-                                TEMPS = {
-                                    TOOLTIPS: {
-                                        BUTTON_ANIMATIONS_VERSION_CHANGELOG: '最新の変更',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK: 'アップデートを確認',
-                                        BUTTON_ANIMATIONS_RESET: '全設定をリセット',
-                                        BUTTON_ANIMATIONS_REBUILD: 'スタイルを再作成します。プラグインを再起動すると、スタイルも再作成されます。',
-                                        BUTTON_ANIMATIONS_ISSUES: 'GitHubへのリンク',
-                                        BUTTON_ANIMATIONS_SERVER: 'Link to Discord',
-                                        BUTTON_ANIMATIONS_DISCUSSIONS: 'GitHubへのリンク',
-                                        BUTTON_LISTS_SWITCH: 'リスト切り替え',
-                                        BUTTON_BUTTONS_SWITCH: 'ボタン切り替え',
-                                        BUTTON_MESSAGES_SWITCH: 'メッセージ切り替え',
-                                        BUTTON_POPOUTS_SWITCH: 'ポップアウト切り替え',
-                                        BUTTON_RESET_LISTS: 'リストの設定をリセットする',
-                                        BUTTON_RESET_BUTTONS: 'ボタンの設定をリセットする',
-                                        BUTTON_RESET_MESSAGES: 'メッセージの設定をリセットする',
-                                        BUTTON_RESET_POPOUTS: 'ポップアウトの設定をリセットする',
-                                        BUTTON_SELECTORS_LISTS_DEFAULT: 'デフォルトのセレクタに戻す',
-                                        BUTTON_SELECTORS_LISTS_CLEAR: 'テキストエリアをクリアする',
-                                        BUTTON_SELECTORS_BUTTONS_DEFAULT: 'デフォルトのセレクタに戻す',
-                                        BUTTON_SELECTORS_BUTTONS_CLEAR: 'テキストエリアをクリアする',
-                                        BUTTON_SELECTORS_POPOUTS_DEFAULT: 'デフォルトのセレクタに戻す',
-                                        BUTTON_SELECTORS_POPOUTS_CLEAR: 'テキストエリアをクリアする'
-                                    },
-                                    LABELS: {
-                                        BUTTON_ANIMATIONS_RESET: 'すべてリセット',
-                                        BUTTON_ANIMATIONS_RESET_RESETING: 'リセット...',
-                                        BUTTON_ANIMATIONS_REBUILD: 'アニメーションの再構築',
-                                        BUTTON_ANIMATIONS_VERSION_CHANGELOG: '変更履歴',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK: 'アップデート',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING: 'アップデートを調べる...',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_TIMEOUT: 'タイムアウトを超過しました',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_ERROR: 'エラーが発生しました',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_OLDER: (_version = '{version}') => `v${_version} - Update`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_TITLE: 'あなたのバージョンは古いです',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (your)  →  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_NOTE: 'プラグインはアップデートされます',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_NEWER: (_version = '{version}') => `v${_version} - Your own version`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_TITLE: 'あなたのバージョンは最新です',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (your)  ←  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_NOTE: 'プラグインはダウンデートされます',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_LATEST: (_version = '{version}') => `v${_version} - Latest version`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_TITLE: 'あなたのバージョンは最新です',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (your)  ↔  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_NOTE: 'プラグインが復元されます',
-                                        BUTTON_ANIMATIONS_ISSUES: '問題',
-                                        BUTTON_ANIMATIONS_SERVER: 'Server',
-                                        BUTTON_ANIMATIONS_DISCUSSIONS: '議論',
-                                        BUTTON_LISTS_SWITCH: 'リスト',
-                                        BUTTON_BUTTONS_SWITCH: 'ボタン',
-                                        BUTTON_MESSAGES_SWITCH: 'メッセージ',
-                                        BUTTON_POPOUTS_SWITCH: 'ポップアウト',
-                                        BUTTON_RESET_LISTS: 'リストをリセット',
-                                        BUTTON_RESET_BUTTONS: 'ボタンをリセット',
-                                        BUTTON_RESET_MESSAGES: 'メッセージをリセット',
-                                        BUTTON_RESET_POPOUTS: 'ポップアウトをリセット',
-                                        BUTTON_SELECTORS_LISTS_DEFAULT: 'デフォルト',
-                                        BUTTON_SELECTORS_LISTS_CLEAR: 'クリア',
-                                        BUTTON_SELECTORS_BUTTONS_DEFAULT: 'デフォルト',
-                                        BUTTON_SELECTORS_BUTTONS_CLEAR: 'クリア',
-                                        BUTTON_SELECTORS_POPOUTS_DEFAULT: 'デフォルト',
-                                        BUTTON_SELECTORS_POPOUTS_CLEAR: 'クリア',
-
-                                        FIELD_NAME: '名前',
-                                        FIELD_SEQUENCE: '構築',
-                                        FIELD_DELAY: '遅延',
-                                        FIELD_LIMIT: '表示数',
-                                        FIELD_DURATION: '時間',
-
-                                        FIELD_LISTS_NAME_NOTE: (_default = '{default}') => `[デフォルト:${_default}] リストが表示されるときのアニメーションの名前。`,
-                                        FIELD_LISTS_SEQUENCE_NOTE: (_default = '{default}') => `[デフォルト:${_default}] リストを構築する順序。`,
-                                        FIELD_LISTS_DELAY_NOTE: (_default = '{default}') => `[デフォルト:${_default}] 各リストが表示されるまでの遅延時間(秒)。`,
-                                        FIELD_LISTS_LIMIT_NOTE: (_default = '{default}') => `[デフォルト:${_default}] アニメーションを再生するリスト内の最大項目数。`,
-                                        FIELD_LISTS_DURATION_NOTE: (_default = '{default}') => `[デフォルト:${_default}] 遅延後の各リストのアニメーションの再生速度(秒)。`,
-
-                                        FIELD_BUTTONS_NAME_NOTE: (_default = '{default}') => `[デフォルト:${_default}] ボタンが表示されるときのアニメーションの名前。`,
-                                        FIELD_BUTTONS_SEQUENCE_NOTE: (_default = '{default}') => `[デフォルト:${_default}] ボタンを構築する順序。`,
-                                        FIELD_BUTTONS_DELAY_NOTE: (_default = '{default}') => `[デフォルト:${_default}] 各ボタンが表示されるまでの遅延時間(秒)。`,
-                                        FIELD_BUTTONS_DURATION_NOTE: (_default = '{default}') => `[デフォルト:${_default}] 遅延後の各ボタンのアニメーションの再生速度(秒)。`,
-
-                                        FIELD_MESSAGES_NAME_NOTE: (_default = '{default}') => `[デフォルト:${_default}] メッセージが表示されるときのアニメーションの名前。`,
-                                        FIELD_MESSAGES_DELAY_NOTE: (_default = '{default}') => `[デフォルト:${_default}] 各メッセージが表示されるまでの遅延時間(秒)。`,
-                                        FIELD_MESSAGES_LIMIT_NOTE: (_default = '{default}') => `[デフォルト:${_default}] アニメーションが再生されるリスト内のメッセージの最大数。`,
-                                        FIELD_MESSAGES_DURATION_NOTE: (_default = '{default}') => `[デフォルト:${_default}] 遅延後の各メッセージのアニメーションの再生速度(秒)。`,
-
-                                        FIELD_POPOUTS_NAME_NOTE: (_default = '{default}') => `[デフォルト:${_default}] ポップアップが表示されるときのアニメーションの名前。`,
-                                        FIELD_POPOUTS_DURATION_NOTE: (_default = '{default}') => `[デフォルト:${_default}] ポップアウトのアニメーションの再生速度(秒)。`,
-
-                                        FIELD_LISTS_SELECTORS: 'リストのセレクタ',
-                                        FIELD_LISTS_SELECTORS_NOTE: 'このフィールドを空にすると、再読み込み時にデフォルトのセレクタがここに表示されます。セレクタの変更は、入力時に保存されます(コードが有効である場合)。セパレータはカンマ(,)です。',
-                                        FIELD_BUTTONS_SELECTORS: 'ボタンのセレクタ',
-                                        FIELD_BUTTONS_SELECTORS_NOTE: 'このフィールドを空にすると、再読み込み時にデフォルトのセレクタがここに表示されます。セレクタの変更は、入力時に保存されます(コードが有効である場合)。セパレータはカンマ(,)です。',
-                                        FIELD_POPOUTS_SELECTORS: 'ポップアウトのセレクタ',
-                                        FIELD_POPOUTS_SELECTORS_NOTE: 'このフィールドを空にすると、再読み込み時にデフォルトのセレクタがここに表示されます。セレクタの変更は、入力時に保存されます(コードが有効である場合)。セパレータはカンマ(,)です。',
-
-                                        PREVIEW_SELECTING: '選択',
-                                        PREVIEW_EDITING: '編集',
-                                        PREVIEW_BUTTON_TEMPLATE: 'テンプレート',
-                                        PREVIEW_BUTTON_CLEAR: '削除',
-                                        PREVIEW_BUTTON_LOAD: '読込',
-                                        PREVIEW_BUTTON_SAVE: '保存',
-                                        PREVIEW_IN: 'In',
-                                        PREVIEW_OUT: 'Out',
-                                        PREVIEW_CIRCLE: 'Circle',
-                                        PREVIEW_POLYGON: 'Polygon',
-                                        PREVIEW_OPACITY: 'Opacity',
-                                        PREVIEW_SLIME: 'Slime',
-                                        PREVIEW_BRICK_RIGHT: 'Brick right',
-                                        PREVIEW_BRICK_LEFT: 'Brick left',
-                                        PREVIEW_BRICK_UP: 'Brick up',
-                                        PREVIEW_BRICK_DOWN: 'Brick down',
-                                        PREVIEW_SLIDE_RIGHT: 'Slide right',
-                                        PREVIEW_SLIDE_LEFT: 'Slide left',
-                                        PREVIEW_SLIDE_UP: 'Slide up',
-                                        PREVIEW_SLIDE_DOWN: 'Slide down',
-                                        PREVIEW_SLIDE_UP_RIGHT: 'Slide up (right)',
-                                        PREVIEW_SLIDE_UP_LEFT: 'Slide up (left)',
-                                        PREVIEW_SLIDE_DOWN_RIGHT: 'Slide down (right)',
-                                        PREVIEW_SLIDE_DOWN_LEFT: 'Slide down (left)',
-                                        PREVIEW_SKEW_RIGHT: 'Skew right',
-                                        PREVIEW_SKEW_LEFT: 'Skew left',
-                                        PREVIEW_WIDE_SKEW_RIGHT: 'Wide skew right',
-                                        PREVIEW_WIDE_SKEW_LEFT: 'Wide skew left',
-
-                                        PREVIEW_VERTICAL_FROM_FIRST: '↓',
-                                        PREVIEW_VERTICAL_FROM_LAST: '↑',
-                                        PREVIEW_HORIZONTAL_FROM_FIRST: '→',
-                                        PREVIEW_HORIZONTAL_FROM_LAST: '←',
-
-                                        GROUP_LISTS: 'リスト',
-                                        GROUP_BUTTONS: 'ボタン',
-                                        GROUP_MESSAGES: 'メッセージ',
-                                        GROUP_POPOUTS: 'ポップアウト',
-
-                                        GROUP_ADVANCED: '高度',
-                                    }
-                                }
-                                break;
-
-                            case 'zh-TW':
-                                TEMPS = {
-                                    TOOLTIPS: {
-                                        BUTTON_ANIMATIONS_VERSION_CHANGELOG: '最近更新',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK: '檢查更新',
-                                        BUTTON_ANIMATIONS_RESET: '重設所有設定',
-                                        BUTTON_ANIMATIONS_REBUILD: '重新生成樣式。當插件重新啟動時，樣式也會重新生成',
-                                        BUTTON_ANIMATIONS_ISSUES: '前往GitHub',
-                                        BUTTON_ANIMATIONS_SERVER: 'Link to Discord',
-                                        BUTTON_ANIMATIONS_DISCUSSIONS: '前往GitHub',
-                                        BUTTON_LISTS_SWITCH: '列表開關',
-                                        BUTTON_BUTTONS_SWITCH: '按鈕開關',
-                                        BUTTON_MESSAGES_SWITCH: '訊息開關',
-                                        BUTTON_POPOUTS_SWITCH: '彈出視窗開關',
-                                        BUTTON_RESET_LISTS: '重設列表設定',
-                                        BUTTON_RESET_BUTTONS: '重設按鈕設定',
-                                        BUTTON_RESET_MESSAGES: '重設訊息設定',
-                                        BUTTON_RESET_POPOUTS: '重設彈出視窗設定',
-                                        BUTTON_SELECTORS_LISTS_DEFAULT: '恢復至預設值',
-                                        BUTTON_SELECTORS_LISTS_CLEAR: '清除所有選擇',
-                                        BUTTON_SELECTORS_BUTTONS_DEFAULT: '恢復至預設值',
-                                        BUTTON_SELECTORS_BUTTONS_CLEAR: '清除所有選擇',
-                                        BUTTON_SELECTORS_POPOUTS_DEFAULT: '恢復至預設值',
-                                        BUTTON_SELECTORS_POPOUTS_CLEAR: '清除所有選擇'
-                                    },
-                                    LABELS: {
-                                        BUTTON_ANIMATIONS_RESET: '重設所有設定',
-                                        BUTTON_ANIMATIONS_RESET_RESETING: '重設中...',
-                                        BUTTON_ANIMATIONS_REBUILD: '重新生成動畫',
-                                        BUTTON_ANIMATIONS_VERSION_CHANGELOG: '更新日誌',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK: '檢查更新',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING: '檢查更新中...',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_TIMEOUT: '超時',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_ERROR: '發生錯誤',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_OLDER: (_version = '{version}') => `v${_version} - 更新`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_TITLE: '您當前的版本較舊',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (您的)  →  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_NOTE: '插件將會更新',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_NEWER: (_version = '{version}') => `v${_version} - 您的版本`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_TITLE: '您當前的版本較新',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (您的)  ←  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_NOTE: '插件將會降級',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_LATEST: (_version = '{version}') => `v${_version} - 最新版本`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_TITLE: '您當前的版本為最新',
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_COMPARE: (_yourVersion, _ghVersion) => `v${_yourVersion} (您的)  ↔  v${_ghVersion} (github)`,
-                                        BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_NOTE: '插件將會恢復',
-                                        BUTTON_ANIMATIONS_ISSUES: '發生錯誤了?',
-                                        BUTTON_ANIMATIONS_SERVER: 'Server',
-                                        BUTTON_ANIMATIONS_DISCUSSIONS: '討論',
-                                        BUTTON_LISTS_SWITCH: '列表',
-                                        BUTTON_BUTTONS_SWITCH: '按鈕',
-                                        BUTTON_MESSAGES_SWITCH: '訊息',
-                                        BUTTON_POPOUTS_SWITCH: '彈出視窗',
-                                        BUTTON_RESET_LISTS: '重設列表',
-                                        BUTTON_RESET_BUTTONS: '重設按鈕',
-                                        BUTTON_RESET_MESSAGES: '重設訊息',
-                                        BUTTON_RESET_POPOUTS: '重設彈出視窗',
-                                        BUTTON_SELECTORS_LISTS_DEFAULT: '預設值',
-                                        BUTTON_SELECTORS_LISTS_CLEAR: '清除',
-                                        BUTTON_SELECTORS_BUTTONS_DEFAULT: '預設值',
-                                        BUTTON_SELECTORS_BUTTONS_CLEAR: '清除',
-                                        BUTTON_SELECTORS_POPOUTS_DEFAULT: '預設值',
-                                        BUTTON_SELECTORS_POPOUTS_CLEAR: '清除',
-
-                                        FIELD_NAME: '行式',
-                                        FIELD_SEQUENCE: '順序',
-                                        FIELD_DELAY: '延遲',
-                                        FIELD_LIMIT: '限制',
-                                        FIELD_DURATION: '持續時間',
-
-                                        FIELD_LISTS_NAME_NOTE: (_default = '{default}') => `[${_default}] 列表項的動畫行式`,
-                                        FIELD_LISTS_SEQUENCE_NOTE: (_default = '{default}') => `[${_default}] 生成列表項的順序`,
-                                        FIELD_LISTS_DELAY_NOTE: (_default = '{default}') => `[${_default}] 每個列表項出現前的延遲（以秒為單位）`,
-                                        FIELD_LISTS_LIMIT_NOTE: (_default = '{default}') => `[${_default}] 列表中將播放動畫的最大項目數`,
-                                        FIELD_LISTS_DURATION_NOTE: (_default = '{default}') => `[${_default}] 延遲後每個列表項的動畫播放速度（以秒為單位）`,
-
-                                        FIELD_BUTTONS_NAME_NOTE: (_default = '{default}') => `[${_default}] 按鈕項的動畫行式`,
-                                        FIELD_BUTTONS_SEQUENCE_NOTE: (_default = '{default}') => `[${_default}] 生成按鈕項的順序`,
-                                        FIELD_BUTTONS_DELAY_NOTE: (_default = '{default}') => `[${_default}] 每個按鈕項出現前的延遲（以秒為單位）`,
-                                        FIELD_BUTTONS_DURATION_NOTE: (_default = '{default}') => `[${_default}] 延遲後每個按鈕項的動畫播放速度（以秒為單位）`,
-
-                                        FIELD_MESSAGES_NAME_NOTE: (_default = '{default}') => `[${_default}] 訊息項的動畫行式`,
-                                        FIELD_MESSAGES_DELAY_NOTE: (_default = '{default}') => `[${_default}] 每個訊息項出現前的延遲（以秒為單位）`,
-                                        FIELD_MESSAGES_LIMIT_NOTE: (_default = '{default}') => `[${_default}] 訊息中將播放動畫的最大項目數.`,
-                                        FIELD_MESSAGES_DURATION_NOTE: (_default = '{default}') => `[${_default}] 延遲後每個訊息項的動畫播放速度（以秒為單位）`,
-
-                                        FIELD_POPOUTS_NAME_NOTE: (_default = '{default}') => `[${_default}] 彈出視窗的動畫行式`,
-                                        FIELD_POPOUTS_DURATION_NOTE: (_default = '{default}') => `[${_default}] 彈出視窗的動畫播放速度（以秒為單位）。`,
-
-                                        FIELD_LISTS_SELECTORS: '列表項名單',
-                                        FIELD_LISTS_SELECTORS_NOTE: '如果您將此字段留空，則預設值將在重新加載時出現在此處。輸入時會保存對名單的更改（如果代碼有效）。分隔符是半形逗號 (,)',
-                                        FIELD_BUTTONS_SELECTORS: '按鈕項名單',
-                                        FIELD_BUTTONS_SELECTORS_NOTE: '如果您將此字段留空，則預設值將在重新加載時出現在此處。輸入時會保存對名單的更改（如果代碼有效）。分隔符是半形逗號 (,)',
-                                        FIELD_POPOUTS_SELECTORS: '彈出視窗名單',
-                                        FIELD_POPOUTS_SELECTORS_NOTE: '如果您將此字段留空，則預設值將在重新加載時出現在此處。輸入時會保存對名單的更改（如果代碼有效）。分隔符是半形逗號 (,)',
-
-                                        PREVIEW_SELECTING: '選擇',
-                                        PREVIEW_EDITING: '編輯',
-                                        PREVIEW_BUTTON_TEMPLATE: '樣板',
-                                        PREVIEW_BUTTON_CLEAR: '清除',
-                                        PREVIEW_BUTTON_LOAD: '載入',
-                                        PREVIEW_BUTTON_SAVE: '儲存',
-                                        PREVIEW_IN: '由內往外',
-                                        PREVIEW_OUT: '由外往內',
-                                        PREVIEW_CIRCLE: '圓形展開',
-                                        PREVIEW_POLYGON: '多邊形展開',
-                                        PREVIEW_OPACITY: '淡入',
-                                        PREVIEW_SLIME: '史萊姆',
-                                        PREVIEW_BRICK_RIGHT: '由左滑入',
-                                        PREVIEW_BRICK_LEFT: '由右滑入',
-                                        PREVIEW_BRICK_UP: '由下滑入',
-                                        PREVIEW_BRICK_DOWN: '由上滑入',
-                                        PREVIEW_SLIDE_RIGHT: '由左填滿',
-                                        PREVIEW_SLIDE_LEFT: '由右填滿',
-                                        PREVIEW_SLIDE_UP: '由下填滿',
-                                        PREVIEW_SLIDE_DOWN: '由上填滿',
-                                        PREVIEW_SLIDE_UP_RIGHT: '由左下往右上填滿',
-                                        PREVIEW_SLIDE_UP_LEFT: '由右下往左上填滿',
-                                        PREVIEW_SLIDE_DOWN_RIGHT: '由左上往右下填滿',
-                                        PREVIEW_SLIDE_DOWN_LEFT: '由右上往左下填滿',
-                                        PREVIEW_SKEW_RIGHT: '向右旋轉',
-                                        PREVIEW_SKEW_LEFT: '向左旋轉',
-                                        PREVIEW_WIDE_SKEW_RIGHT: '向右旋轉(寬)',
-                                        PREVIEW_WIDE_SKEW_LEFT: '向左旋轉(寬)',
-
-                                        PREVIEW_VERTICAL_FROM_FIRST: '↓',
-                                        PREVIEW_VERTICAL_FROM_LAST: '↑',
-                                        PREVIEW_HORIZONTAL_FROM_FIRST: '→',
-                                        PREVIEW_HORIZONTAL_FROM_LAST: '←',
-
-                                        GROUP_LISTS: '列表',
-                                        GROUP_BUTTONS: '按鈕',
-                                        GROUP_MESSAGES: '訊息',
-                                        GROUP_POPOUTS: '彈出視窗',
-
-                                        GROUP_ADVANCED: '進階選項',
-                                    }
-                                }
-                                break;
-
-                            case 'en-US':
-                            case 'en-GB':
-                            default:
-                                // look up
-                                break;
-                        }
+                        /**@type {AnimationsPlugin.strings}*/
+                        const trn = Object.assign(this.stringsGet(locale), AnimationsPlugin.strings)
 
                         /**
-                     * Returns object - `class`, `render`.
-                     * @param {Array<{elements: Array<ElementButtonTemp>, options: object}>} containersTemp Array with button container templates.
-                     * @param {object} options Panel optinons.
-                     * @param {string} [options.widthAll] The width of each button, if the template does not specify a different width.
-                     * @param {string} [options.heightAll] The height of each button, if the template does not specify a different height.
-                     * @param {string} [options.align="flex-start"] `justify-content` css value for each button container.
-                     * @param {boolean} [options.nosidemargin=true] Zeroing the left and right margins for the first and last button respectively.
-                     */
+                         * Returns object - `class`, `render`.
+                         * @param {Array<{elements: Array<ElementButtonTemp>, options: object}>} containersTemp Array with button container templates.
+                         * @param {object} options Panel optinons.
+                         * @param {string} [options.widthAll] The width of each button, if the template does not specify a different width.
+                         * @param {string} [options.heightAll] The height of each button, if the template does not specify a different height.
+                         * @param {string} [options.align="flex-start"] `justify-content` css value for each button container.
+                         * @param {boolean} [options.nosidemargin=true] Zeroing the left and right margins for the first and last button respectively.
+                         */
 
                         var ElementsPanel = (containersTemp = [], options = {}) => {
 
@@ -2673,7 +1849,7 @@ module.exports = (
                                                                 {
                                                                     component: 'button',
                                                                     color: 'grey',
-                                                                    label: TEMPS.LABELS.PREVIEW_BUTTON_TEMPLATE,
+                                                                    label: trn.edit.template,
                                                                     disabled: this.eqObjects({ start: options.custom.data.frames[i].start, anim: options.custom.data.frames[i].anim }, this.defaultFrames.template),
                                                                     onclick: (e) => {
                                                                         var textareaStart = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea.start')
@@ -2686,7 +1862,7 @@ module.exports = (
                                                                 {
                                                                     component: 'button',
                                                                     color: 'grey',
-                                                                    label: TEMPS.LABELS.PREVIEW_BUTTON_CLEAR,
+                                                                    label: trn.edit.clear,
                                                                     disabled: this.eqObjects({ start: options.custom.data.frames[i].start, anim: options.custom.data.frames[i].anim }, this.defaultFrames.clear),
                                                                     onclick: (e) => {
                                                                         var textareaStart = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea.start')
@@ -2699,7 +1875,7 @@ module.exports = (
                                                                 {
                                                                     component: 'button',
                                                                     color: 'blurple',
-                                                                    label: TEMPS.LABELS.PREVIEW_BUTTON_LOAD,
+                                                                    label: trn.edit.load,
                                                                     disabled: this.eqObjects(this.settings[options.class].custom.frames[this.settings[options.class].custom.page],
                                                                         { start: options.custom.data.frames[i].start, anim: options.custom.data.frames[i].anim }),
                                                                     onclick: (e) => {
@@ -2713,7 +1889,7 @@ module.exports = (
                                                                 {
                                                                     component: 'button',
                                                                     color: 'blurple',
-                                                                    label: TEMPS.LABELS.PREVIEW_BUTTON_SAVE,
+                                                                    label: trn.edit.save,
                                                                     disabled: this.eqObjects(this.settings[options.class].custom.frames[this.settings[options.class].custom.page],
                                                                         { start: options.custom.data.frames[i].start, anim: options.custom.data.frames[i].anim }),
                                                                     onclick: (e) => {
@@ -2864,7 +2040,7 @@ module.exports = (
                                                 React.createElement('div', {
                                                     class: 'switchActionButtonLabel'
                                                 },
-                                                    TEMPS.LABELS.PREVIEW_SELECTING
+                                                    trn.stng.name_mode_selecting
                                                 ),
                                                 React.createElement("svg", {
                                                     width: "24",
@@ -2889,7 +2065,7 @@ module.exports = (
                                                 React.createElement('div', {
                                                     class: 'switchActionButtonLabel'
                                                 },
-                                                    TEMPS.LABELS.PREVIEW_EDITING
+                                                    trn.stng.name_mode_editing
                                                 ),
                                                 React.createElement("svg", {
                                                     width: "24",
@@ -3317,33 +2493,8 @@ module.exports = (
                             },
                         }
 
-                        setTimeout(() => {
-                            Tooltip.create(document.getElementById('animations-version-changelog'), TEMPS.TOOLTIPS.BUTTON_ANIMATIONS_VERSION_CHANGELOG)
-                            Tooltip.create(document.getElementById('animations-version-check'), TEMPS.TOOLTIPS.BUTTON_ANIMATIONS_VERSION_CHECK)
-
-                            Tooltip.create(document.getElementById('animations-reset'), TEMPS.TOOLTIPS.BUTTON_ANIMATIONS_RESET)
-                            Tooltip.create(document.getElementById('animations-rebuild'), TEMPS.TOOLTIPS.BUTTON_ANIMATIONS_REBUILD)
-
-                            Tooltip.create(document.getElementById('animations-issues'), TEMPS.TOOLTIPS.BUTTON_ANIMATIONS_ISSUES)
-                            Tooltip.create(document.getElementById('animations-server'), TEMPS.TOOLTIPS.BUTTON_ANIMATIONS_SERVER)
-                            Tooltip.create(document.getElementById('animations-discussions'), TEMPS.TOOLTIPS.BUTTON_ANIMATIONS_DISCUSSIONS)
-
-                            Tooltip.create(document.getElementById('lists-switch-button'), TEMPS.TOOLTIPS.BUTTON_LISTS_SWITCH)
-                            Tooltip.create(document.getElementById('buttons-switch-button'), TEMPS.TOOLTIPS.BUTTON_BUTTONS_SWITCH)
-                            Tooltip.create(document.getElementById('messages-switch-button'), TEMPS.TOOLTIPS.BUTTON_MESSAGES_SWITCH)
-                            Tooltip.create(document.getElementById('popouts-switch-button'), TEMPS.TOOLTIPS.BUTTON_POPOUTS_SWITCH)
-
-                            Tooltip.create(document.getElementById('animations-reset-lists'), TEMPS.TOOLTIPS.BUTTON_RESET_LISTS)
-                            Tooltip.create(document.getElementById('animations-reset-buttons'), TEMPS.TOOLTIPS.BUTTON_RESET_BUTTONS)
-                            Tooltip.create(document.getElementById('animations-reset-messages'), TEMPS.TOOLTIPS.BUTTON_RESET_MESSAGES)
-                            Tooltip.create(document.getElementById('animations-reset-popouts'), TEMPS.TOOLTIPS.BUTTON_RESET_POPOUTS)
-
-                            Tooltip.create(document.getElementById('lists-selectors-default'), TEMPS.TOOLTIPS.BUTTON_SELECTORS_LISTS_DEFAULT)
-                            Tooltip.create(document.getElementById('lists-selectors-clear'), TEMPS.TOOLTIPS.BUTTON_SELECTORS_LISTS_CLEAR)
-                            Tooltip.create(document.getElementById('buttons-selectors-default'), TEMPS.TOOLTIPS.BUTTON_SELECTORS_BUTTONS_DEFAULT)
-                            Tooltip.create(document.getElementById('buttons-selectors-clear'), TEMPS.TOOLTIPS.BUTTON_SELECTORS_BUTTONS_CLEAR)
-                            Tooltip.create(document.getElementById('popouts-selectors-default'), TEMPS.TOOLTIPS.BUTTON_SELECTORS_POPOUTS_DEFAULT)
-                            Tooltip.create(document.getElementById('popouts-selectors-clear'), TEMPS.TOOLTIPS.BUTTON_SELECTORS_POPOUTS_CLEAR)
+                        if(0) setTimeout(() => { // tooltips will be later
+                            Tooltip.create(document.getElementById('animations-version-changelog'), trn?.ttp)
                         }, 500)
 
                         var settings_panel =
@@ -3358,7 +2509,7 @@ module.exports = (
                                                     {
                                                         component: 'button',
                                                         color: 'blurple',
-                                                        label: TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHANGELOG,
+                                                        label: trn.view.changelog,
                                                         svgs: [SvgTemps.Other.changelogArrow],
                                                         id: 'animations-version-changelog',
                                                         inverted: false,
@@ -3369,22 +2520,25 @@ module.exports = (
                                                     {
                                                         component: 'button',
                                                         color: 'blurple',
-                                                        label: TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK,
+                                                        label: trn.view.update_check,
                                                         svgs: [SvgTemps.downloadArrow],
                                                         id: 'animations-version-check',
                                                         inverted: false,
                                                         onclick: async (e) => {
                                                             let button = e.currentTarget;
 
-                                                            button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_SEARCHING;
+                                                            button.getElementsByTagName('span')[0].innerText = trn.view.update_searching;
                                                             button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
                                                             button.classList.add('blurple')
 
-                                                            const request = this.requestGet('https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.plugin.js' + '?ref=main')
+                                                            const request = new XMLHttpRequest();
+                                                            request.open("GET", 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.plugin.js' + '?ref=main');
+                                                            request.send();
+
                                                             request.timeout = 5000;
                                                             request.timeout
                                                             request.ontimeout = function (e) {
-                                                                button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_TIMEOUT;
+                                                                button.getElementsByTagName('span')[0].innerText = trn.view.update_err_timeout;
                                                                 button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
                                                                 button.classList.add('red')
                                                             };
@@ -3394,13 +2548,13 @@ module.exports = (
 
                                                                 var responseCode = JSON.parse(request?.responseText ?? undefined);
                                                                 if (!request.responseText) {
-                                                                    button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_ERROR + " (try again later)";
+                                                                    button.getElementsByTagName('span')[0].innerText =trn.view.update_err_unknown + " (try again later)";
                                                                     button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
                                                                     button.classList.add('red')
                                                                     return
                                                                 }
                                                                 else if (responseCode?.message == 'Not Found') {
-                                                                    button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_ERROR + " (upd it yourself)";
+                                                                    button.getElementsByTagName('span')[0].innerText = trn.view.update_err_unknown + " (upd it yourself)";
                                                                     button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
                                                                     button.classList.add('red')
                                                                     return
@@ -3439,17 +2593,16 @@ module.exports = (
 
                                                                 switch (newerVersion(GitHubVersion, this.getVersion())) {
                                                                     case GitHubVersion:
-                                                                        button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_OLDER(GitHubVersion)
+                                                                        button.getElementsByTagName('span')[0].innerText = trn.view.update_older
                                                                         button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
                                                                         button.classList.add('green')
                                                                         button.addEventListener('click',
                                                                             () => {
-                                                                                BdApi.showConfirmationModal(TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_TITLE,
+                                                                                BdApi.showConfirmationModal(trn.pop.will_updated,
                                                                                     [
-                                                                                        TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_COMPARE(this.getVersion(), GitHubVersion),
                                                                                         React.createElement(
                                                                                             'span', { style: { color: Textcolors.green, 'text-transform': 'uppercase' } },
-                                                                                            TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_OLDER_NOTE
+                                                                                            trn.pop.you_can_say_no
                                                                                         )
                                                                                     ],
                                                                                     {
@@ -3462,17 +2615,16 @@ module.exports = (
                                                                         )
                                                                         break;
                                                                     case this.getVersion():
-                                                                        button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_NEWER(this.getVersion())
+                                                                        button.getElementsByTagName('span')[0].innerText = trn.view.update_newer
                                                                         button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
                                                                         button.classList.add('grey')
                                                                         button.addEventListener('click',
                                                                             () => {
-                                                                                BdApi.showConfirmationModal(TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_TITLE,
+                                                                                BdApi.showConfirmationModal(trn.pop.will_downdated,
                                                                                     [
-                                                                                        TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_COMPARE(this.getVersion(), GitHubVersion),
                                                                                         React.createElement(
                                                                                             'span', { style: { color: Textcolors.red, 'text-transform': 'uppercase' } },
-                                                                                            TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_NEWER_NOTE
+                                                                                            trn.pop.you_can_say_no
                                                                                         )
                                                                                     ],
                                                                                     {
@@ -3485,17 +2637,16 @@ module.exports = (
                                                                         )
                                                                         break;
                                                                     case false:
-                                                                        button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_LATEST(this.getVersion())
+                                                                        button.getElementsByTagName('span')[0].innerText = trn.view.update_latest
                                                                         button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
                                                                         button.classList.add('grey')
                                                                         button.addEventListener('click',
                                                                             () => {
-                                                                                BdApi.showConfirmationModal(TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_TITLE,
+                                                                                BdApi.showConfirmationModal(trn.pop.will_restored,
                                                                                     [
-                                                                                        TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_COMPARE(this.getVersion(), GitHubVersion),
                                                                                         React.createElement(
                                                                                             'span', { style: { color: Textcolors.yellow, 'text-transform': 'uppercase' } },
-                                                                                            TEMPS.LABELS.BUTTON_ANIMATIONS_VERSION_CHECK_CONFIRM_LATEST_NOTE
+                                                                                            trn.pop.you_can_say_no
                                                                                         )
                                                                                     ],
                                                                                     {
@@ -3521,13 +2672,13 @@ module.exports = (
                                                     {
                                                         component: 'button',
                                                         color: 'blurple',
-                                                        label: TEMPS.LABELS.BUTTON_ANIMATIONS_RESET,
+                                                        label: trn.view.reset_all_settings,
                                                         id: 'animations-reset',
                                                         svgs: [SvgTemps.gear],
                                                         onclick: async (e) => {
 
                                                             let button = e.currentTarget;
-                                                            button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_RESET_RESETING;
+                                                            button.getElementsByTagName('span')[0].innerText = trn.view.resetting;
                                                             await this.wait(500);
 
                                                             PluginUtilities.saveSettings(this.getName(), this.defaultSettings);
@@ -3539,7 +2690,7 @@ module.exports = (
                                                     {
                                                         component: 'button',
                                                         color: 'blurple',
-                                                        label: TEMPS.LABELS.BUTTON_ANIMATIONS_REBUILD,
+                                                        label: trn.view.rebuild_animations,
                                                         id: 'animations-rebuild',
                                                         svgs: [SvgTemps.Other.circleArrow],
                                                         onclick: () => this.resetAnimations(100)
@@ -3555,7 +2706,7 @@ module.exports = (
                                                 elements: [
                                                     {
                                                         component: 'button',
-                                                        label: TEMPS.LABELS.BUTTON_ANIMATIONS_ISSUES,
+                                                        label: trn.view.link_gh_issues,
                                                         color: 'grey',
                                                         id: 'animations-issues',
                                                         svgs: [SvgTemps.Logos.github],
@@ -3563,7 +2714,7 @@ module.exports = (
                                                     },
                                                     {
                                                         component: 'button',
-                                                        label: TEMPS.LABELS.BUTTON_ANIMATIONS_DISCUSSIONS,
+                                                        label: trn.view.link_gh_discussions,
                                                         color: 'grey',
                                                         id: 'animations-discussions',
                                                         svgs: [SvgTemps.Logos.github],
@@ -3571,12 +2722,36 @@ module.exports = (
                                                     },
                                                     {
                                                         component: 'button',
-                                                        label: TEMPS.LABELS.BUTTON_ANIMATIONS_SERVER,
+                                                        label: trn.view.links_dc_server,
                                                         color: 'grey',
                                                         id: 'animations-server',
                                                         svgs: [SvgTemps.Logos.discord],
                                                         link: 'discord://discord.com/invite/PWtAHjBXtG',
                                                         onclick: () => { this.closeSettings() }
+                                                    },
+                                                ],
+                                            },
+                                            {
+                                                elements: [
+                                                    {
+                                                        component: 'button',
+                                                        label: trn.view.link_cd,
+                                                        color: 'grey',
+                                                        id: 'animations-crowdin',
+                                                        //svgs: [SvgTemps.Logos.github],
+                                                        link: 'https://crwd.in/bdp-animations'
+                                                    },
+                                                    {
+                                                        component: 'button',
+                                                        label: trn.view.upd_translation,
+                                                        color: 'grey',
+                                                        id: 'animations-upd-translation',
+                                                        //svgs: [SvgTemps.Logos.github],
+                                                        onclick: async (e) => {
+                                                            e.target.innerText = '...'
+                                                            if (!await this.stringsLoad()) BdApi.showConfirmationModal('An error occured', 'See console.')
+                                                            e.target.innerText = trn.view.upd_translation
+                                                        }
                                                     },
                                                 ],
                                             },
@@ -3592,7 +2767,7 @@ module.exports = (
                                     TabsPanel(
                                         [
                                             {
-                                                name: TEMPS.LABELS.GROUP_LISTS,
+                                                name: trn.view.lists,
                                                 content: [
                                                     Field(null, null,
                                                         ElementsPanel(
@@ -3603,7 +2778,7 @@ module.exports = (
                                                                             component: 'button',
                                                                             svgs: [this.settings.lists.enabled ? SvgTemps.checked : SvgTemps.unchecked],
                                                                             color: this.settings.lists.enabled ? 'green' : 'red',
-                                                                            label: TEMPS.LABELS.BUTTON_LISTS_SWITCH,
+                                                                            label: trn.view.lists,
                                                                             id: 'lists-switch-button',
                                                                             onclick: async (e) => {
 
@@ -3623,19 +2798,19 @@ module.exports = (
                                                                                 }
                                                                                 await this.resetAnimations();
                                                                                 PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_LISTS_SWITCH;
+                                                                                button.getElementsByTagName('span')[0].innerText = trn.view.lists;
                                                                             }
                                                                         },
                                                                         {
                                                                             component: 'button',
                                                                             color: 'blurple',
-                                                                            label: TEMPS.LABELS.BUTTON_RESET_LISTS,
+                                                                            label: trn.view.reset_lists,
                                                                             id: 'animations-reset-lists',
                                                                             svgs: [SvgTemps.Other.circleArrow],
                                                                             onclick: async (e) => {
 
                                                                                 let button = e.currentTarget;
-                                                                                button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_RESET_RESETING;
+                                                                                button.getElementsByTagName('span')[0].innerText = trn.view.resetting;
                                                                                 await this.wait(500);
 
                                                                                 this.settings.lists = this.defaultSettings.lists
@@ -3655,31 +2830,31 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_NAME, TEMPS.LABELS.FIELD_LISTS_NAME_NOTE(this.defaultSettings.lists.name),
+                                                    Field(trn.stng.name, '[' + this.defaultSettings.lists.name + '] '+trn.stng.name_note_lists,
                                                         PreviewsPanel(
                                                             [
-                                                                { label: TEMPS.LABELS.PREVIEW_IN, value: 'in' },
-                                                                { label: TEMPS.LABELS.PREVIEW_OUT, value: 'out' },
-                                                                { label: TEMPS.LABELS.PREVIEW_CIRCLE, value: 'circle' },
-                                                                { label: TEMPS.LABELS.PREVIEW_POLYGON, value: 'polygon' },
-                                                                { label: TEMPS.LABELS.PREVIEW_OPACITY, value: 'opacity' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIME, value: 'slime' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_RIGHT, value: 'brick-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_LEFT, value: 'brick-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_UP, value: 'brick-up' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_DOWN, value: 'brick-down' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_RIGHT, value: 'slide-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_LEFT, value: 'slide-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_UP, value: 'slide-up' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN, value: 'slide-down' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_RIGHT, value: 'slide-up-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_LEFT, value: 'slide-up-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_RIGHT, value: 'slide-down-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_LEFT, value: 'slide-down-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SKEW_RIGHT, value: 'skew-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SKEW_LEFT, value: 'skew-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_RIGHT, value: 'wide-skew-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_LEFT, value: 'wide-skew-left' },
+                                                                { label: trn.name.in, value: 'in' },
+                                                                { label: trn.name.out, value: 'out' },
+                                                                { label: trn.name.circle, value: 'circle' },
+                                                                { label: trn.name.polygon, value: 'polygon' },
+                                                                { label: trn.name.opacity, value: 'opacity' },
+                                                                { label: trn.name.slime, value: 'slime' },
+                                                                { label: trn.name.brick_right, value: 'brick-right' },
+                                                                { label: trn.name.brick_left, value: 'brick-left' },
+                                                                { label: trn.name.brick_up, value: 'brick-up' },
+                                                                { label: trn.name.brick_down, value: 'brick-down' },
+                                                                { label: trn.name.slide_right, value: 'slide-right' },
+                                                                { label: trn.name.slide_left, value: 'slide-left' },
+                                                                { label: trn.name.slide_up, value: 'slide-up' },
+                                                                { label: trn.name.slide_down, value: 'slide-down' },
+                                                                { label: trn.name.slide_up_right, value: 'slide-up-right' },
+                                                                { label: trn.name.slide_up_left, value: 'slide-up-left' },
+                                                                { label: trn.name.slide_down_right, value: 'slide-down-right' },
+                                                                { label: trn.name.slide_down_left, value: 'slide-down-left' },
+                                                                { label: trn.name.skew_right, value: 'skew-right' },
+                                                                { label: trn.name.skew_left, value: 'skew-left' },
+                                                                { label: trn.name.wide_skew_right, value: 'wide-skew-right' },
+                                                                { label: trn.name.wide_skew_left, value: 'wide-skew-left' },
                                                             ],
                                                             {
                                                                 type: 'lists-name',
@@ -3697,11 +2872,11 @@ module.exports = (
                                                             }).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_SEQUENCE, TEMPS.LABELS.FIELD_LISTS_SEQUENCE_NOTE(this.defaultSettings.lists.sequence),
+                                                    Field(trn.stng.sequence, '[' + this.defaultSettings.lists.sequence + '] ' + trn.stng.sequence_note_lists,
                                                         PreviewsPanel(
                                                             [
-                                                                { label: TEMPS.LABELS.PREVIEW_VERTICAL_FROM_FIRST, value: 'fromFirst' },
-                                                                { label: TEMPS.LABELS.PREVIEW_VERTICAL_FROM_LAST, value: 'fromLast' },
+                                                                { label: trn.seq.from_first, value: 'fromFirst' },
+                                                                { label: trn.seq.from_last, value: 'fromLast' },
                                                             ],
                                                             {
                                                                 type: 'lists-sequence',
@@ -3716,7 +2891,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_DELAY, TEMPS.LABELS.FIELD_LISTS_DELAY_NOTE(this.defaultSettings.lists.delay.toString().replace('.', ',')),
+                                                    Field(trn.stng.delay, '['+this.defaultSettings.lists.delay.toString().replace('.', ',')+'] '+trn.stng.delay_note_lists,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -3753,7 +2928,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_DURATION, TEMPS.LABELS.FIELD_LISTS_DURATION_NOTE(this.defaultSettings.lists.duration.toString().replace('.', ',')),
+                                                    Field(trn.stng.duration, '[' + this.defaultSettings.lists.duration.toString().replace('.', ',') + '] ' + trn.stng.duration_note_lists,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -3792,7 +2967,7 @@ module.exports = (
                                                 ]
                                             },
                                             {
-                                                name: TEMPS.LABELS.GROUP_BUTTONS,
+                                                name: trn.view.buttons,
                                                 content: [
                                                     Field(null, null,
                                                         ElementsPanel(
@@ -3803,7 +2978,7 @@ module.exports = (
                                                                             component: 'button',
                                                                             svgs: [this.settings.buttons.enabled ? SvgTemps.checked : SvgTemps.unchecked],
                                                                             color: this.settings.buttons.enabled ? 'green' : 'red',
-                                                                            label: TEMPS.LABELS.BUTTON_BUTTONS_SWITCH,
+                                                                            label: trn.view.buttons,
                                                                             id: 'buttons-switch-button',
                                                                             onclick: async (e) => {
 
@@ -3823,19 +2998,19 @@ module.exports = (
                                                                                 }
                                                                                 await this.resetAnimations();
                                                                                 PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_BUTTONS_SWITCH;
+                                                                                button.getElementsByTagName('span')[0].innerText = trn.view.buttons;
                                                                             }
                                                                         },
                                                                         {
                                                                             component: 'button',
                                                                             color: 'blurple',
-                                                                            label: TEMPS.LABELS.BUTTON_RESET_BUTTONS,
+                                                                            label: trn.view.reset_buttons,
                                                                             id: 'animations-reset-buttons',
                                                                             svgs: [SvgTemps.Other.circleArrow],
                                                                             onclick: async (e) => {
 
                                                                                 let button = e.currentTarget;
-                                                                                button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_RESET_RESETING;
+                                                                                button.getElementsByTagName('span')[0].innerText = trn.view.resetting;
                                                                                 await this.wait(500);
 
                                                                                 this.settings.buttons = this.defaultSettings.buttons
@@ -3855,31 +3030,31 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_NAME, TEMPS.LABELS.FIELD_BUTTONS_NAME_NOTE(this.defaultSettings.buttons.name),
+                                                    Field(trn.stng.name, '[' + this.defaultSettings.buttons.name + '] ' + trn.stng.name_note_buttons,
                                                         PreviewsPanel(
                                                             [
-                                                                { label: TEMPS.LABELS.PREVIEW_IN, value: 'in' },
-                                                                { label: TEMPS.LABELS.PREVIEW_OUT, value: 'out' },
-                                                                { label: TEMPS.LABELS.PREVIEW_CIRCLE, value: 'circle' },
-                                                                { label: TEMPS.LABELS.PREVIEW_POLYGON, value: 'polygon' },
-                                                                { label: TEMPS.LABELS.PREVIEW_OPACITY, value: 'opacity' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIME, value: 'slime' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_RIGHT, value: 'brick-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_LEFT, value: 'brick-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_UP, value: 'brick-up' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_DOWN, value: 'brick-down' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_RIGHT, value: 'slide-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_LEFT, value: 'slide-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_UP, value: 'slide-up' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN, value: 'slide-down' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_RIGHT, value: 'slide-up-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_LEFT, value: 'slide-up-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_RIGHT, value: 'slide-down-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_LEFT, value: 'slide-down-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SKEW_RIGHT, value: 'skew-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SKEW_LEFT, value: 'skew-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_RIGHT, value: 'wide-skew-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_LEFT, value: 'wide-skew-left' },
+                                                                { label: trn.name.in, value: 'in' },
+                                                                { label: trn.name.out, value: 'out' },
+                                                                { label: trn.name.circle, value: 'circle' },
+                                                                { label: trn.name.polygon, value: 'polygon' },
+                                                                { label: trn.name.opacity, value: 'opacity' },
+                                                                { label: trn.name.slime, value: 'slime' },
+                                                                { label: trn.name.brick_right, value: 'brick-right' },
+                                                                { label: trn.name.brick_left, value: 'brick-left' },
+                                                                { label: trn.name.brick_up, value: 'brick-up' },
+                                                                { label: trn.name.brick_down, value: 'brick-down' },
+                                                                { label: trn.name.slide_right, value: 'slide-right' },
+                                                                { label: trn.name.slide_left, value: 'slide-left' },
+                                                                { label: trn.name.slide_up, value: 'slide-up' },
+                                                                { label: trn.name.slide_down, value: 'slide-down' },
+                                                                { label: trn.name.slide_up_right, value: 'slide-up-right' },
+                                                                { label: trn.name.slide_up_left, value: 'slide-up-left' },
+                                                                { label: trn.name.slide_down_right, value: 'slide-down-right' },
+                                                                { label: trn.name.slide_down_left, value: 'slide-down-left' },
+                                                                { label: trn.name.skew_right, value: 'skew-right' },
+                                                                { label: trn.name.skew_left, value: 'skew-left' },
+                                                                { label: trn.name.wide_skew_right, value: 'wide-skew-right' },
+                                                                { label: trn.name.wide_skew_left, value: 'wide-skew-left' },
                                                             ],
                                                             {
                                                                 type: 'buttons-name',
@@ -3899,11 +3074,11 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_SEQUENCE, TEMPS.LABELS.FIELD_BUTTONS_SEQUENCE_NOTE(this.defaultSettings.buttons.sequence),
+                                                    Field(trn.stng.sequence, '[' + this.defaultSettings.buttons.sequence + '] ' + trn.stng.sequence_note_buttons,
                                                         PreviewsPanel(
                                                             [
-                                                                { label: TEMPS.LABELS.PREVIEW_HORIZONTAL_FROM_FIRST, value: 'fromFirst' },
-                                                                { label: TEMPS.LABELS.PREVIEW_HORIZONTAL_FROM_LAST, value: 'fromLast' },
+                                                                { label: trn.seq.from_first, value: 'fromFirst' },
+                                                                { label: trn.seq.from_last, value: 'fromLast' },
                                                             ],
                                                             {
                                                                 horizontal: true,
@@ -3919,7 +3094,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_DELAY, TEMPS.LABELS.FIELD_BUTTONS_DELAY_NOTE(this.defaultSettings.buttons.delay.toString().replace('.', ',')),
+                                                    Field(trn.stng.delay, '[' + this.defaultSettings.buttons.delay.toString().replace('.', ',') + '] ' + trn.stng.delay_note_buttons,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -3956,7 +3131,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_DURATION, TEMPS.LABELS.FIELD_BUTTONS_DURATION_NOTE(this.defaultSettings.buttons.duration.toString().replace('.', ',')),
+                                                    Field(trn.stng.duration, '[' + this.defaultSettings.buttons.duration.toString().replace('.', ',') + '] ' + trn.stng.duration_note_buttons,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -3995,7 +3170,7 @@ module.exports = (
                                                 ]
                                             },
                                             {
-                                                name: TEMPS.LABELS.GROUP_MESSAGES,
+                                                name: trn.view.messages,
                                                 content: [
                                                     Field(null, null,
                                                         ElementsPanel(
@@ -4006,7 +3181,7 @@ module.exports = (
                                                                             component: 'button',
                                                                             svgs: [this.settings.messages.enabled ? SvgTemps.checked : SvgTemps.unchecked],
                                                                             color: this.settings.messages.enabled ? 'green' : 'red',
-                                                                            label: TEMPS.LABELS.BUTTON_MESSAGES_SWITCH,
+                                                                            label: trn.view.messages,
                                                                             id: 'messages-switch-button',
                                                                             onclick: async (e) => {
 
@@ -4026,19 +3201,19 @@ module.exports = (
                                                                                 }
                                                                                 await this.resetAnimations();
                                                                                 PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_MESSAGES_SWITCH;
+                                                                                button.getElementsByTagName('span')[0].innerText = trn.view.messages;
                                                                             }
                                                                         },
                                                                         {
                                                                             component: 'button',
                                                                             color: 'blurple',
-                                                                            label: TEMPS.LABELS.BUTTON_RESET_MESSAGES,
+                                                                            label: trn.view.messages,
                                                                             id: 'animations-reset-messages',
                                                                             svgs: [SvgTemps.Other.circleArrow],
                                                                             onclick: async (e) => {
 
                                                                                 let button = e.currentTarget;
-                                                                                button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_RESET_RESETING;
+                                                                                button.getElementsByTagName('span')[0].innerText = trn.view.resetting;
                                                                                 await this.wait(500);
 
                                                                                 this.settings.messages = this.defaultSettings.messages
@@ -4058,31 +3233,31 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_NAME, TEMPS.LABELS.FIELD_MESSAGES_NAME_NOTE(this.defaultSettings.messages.name),
+                                                    Field(trn.stng.name, '[' + this.defaultSettings.messages.name + '] ' + trn.stng.name_note_messages,
                                                         PreviewsPanel(
                                                             [
-                                                                { label: TEMPS.LABELS.PREVIEW_IN, value: 'in' },
-                                                                { label: TEMPS.LABELS.PREVIEW_OUT, value: 'out' },
-                                                                { label: TEMPS.LABELS.PREVIEW_CIRCLE, value: 'circle' },
-                                                                { label: TEMPS.LABELS.PREVIEW_POLYGON, value: 'polygon' },
-                                                                { label: TEMPS.LABELS.PREVIEW_OPACITY, value: 'opacity' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIME, value: 'slime' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_RIGHT, value: 'brick-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_LEFT, value: 'brick-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_UP, value: 'brick-up' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_DOWN, value: 'brick-down' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_RIGHT, value: 'slide-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_LEFT, value: 'slide-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_UP, value: 'slide-up' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN, value: 'slide-down' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_RIGHT, value: 'slide-up-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_LEFT, value: 'slide-up-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_RIGHT, value: 'slide-down-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_LEFT, value: 'slide-down-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SKEW_RIGHT, value: 'skew-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SKEW_LEFT, value: 'skew-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_RIGHT, value: 'wide-skew-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_LEFT, value: 'wide-skew-left' },
+                                                                { label: trn.name.in, value: 'in' },
+                                                                { label: trn.name.out, value: 'out' },
+                                                                { label: trn.name.circle, value: 'circle' },
+                                                                { label: trn.name.polygon, value: 'polygon' },
+                                                                { label: trn.name.opacity, value: 'opacity' },
+                                                                { label: trn.name.slime, value: 'slime' },
+                                                                { label: trn.name.brick_right, value: 'brick-right' },
+                                                                { label: trn.name.brick_left, value: 'brick-left' },
+                                                                { label: trn.name.brick_up, value: 'brick-up' },
+                                                                { label: trn.name.brick_down, value: 'brick-down' },
+                                                                { label: trn.name.slide_right, value: 'slide-right' },
+                                                                { label: trn.name.slide_left, value: 'slide-left' },
+                                                                { label: trn.name.slide_up, value: 'slide-up' },
+                                                                { label: trn.name.slide_down, value: 'slide-down' },
+                                                                { label: trn.name.slide_up_right, value: 'slide-up-right' },
+                                                                { label: trn.name.slide_up_left, value: 'slide-up-left' },
+                                                                { label: trn.name.slide_down_right, value: 'slide-down-right' },
+                                                                { label: trn.name.slide_down_left, value: 'slide-down-left' },
+                                                                { label: trn.name.skew_right, value: 'skew-right' },
+                                                                { label: trn.name.skew_left, value: 'skew-left' },
+                                                                { label: trn.name.wide_skew_right, value: 'wide-skew-right' },
+                                                                { label: trn.name.wide_skew_left, value: 'wide-skew-left' },
                                                             ],
                                                             {
                                                                 type: 'messages-name',
@@ -4101,7 +3276,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_DELAY, TEMPS.LABELS.FIELD_MESSAGES_DELAY_NOTE(this.defaultSettings.messages.delay.toString().replace('.', ',')),
+                                                    Field(trn.stng.delay, '[' + this.defaultSettings.messages.delay.toString().replace('.', ',') + '] ' + trn.stng.delay_note_messages,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -4138,7 +3313,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_LIMIT, TEMPS.LABELS.FIELD_MESSAGES_LIMIT_NOTE(this.defaultSettings.messages.limit),
+                                                    Field(trn.stng.limit, '[' + this.defaultSettings.messages.limit + '] ' + trn.stng.limit_note_messages,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -4175,7 +3350,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_DURATION, TEMPS.LABELS.FIELD_MESSAGES_DURATION_NOTE(this.defaultSettings.messages.duration.toString().replace('.', ',')),
+                                                    Field(trn.stng.duration, '[' + this.defaultSettings.messages.duration.toString().replace('.', ',') + '] ' + trn.stng.duration_note_messages,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -4214,7 +3389,7 @@ module.exports = (
                                                 ]
                                             },
                                             {
-                                                name: TEMPS.LABELS.GROUP_POPOUTS,
+                                                name: trn.view.popouts,
                                                 content: [
                                                     Field(null, null,
                                                         ElementsPanel(
@@ -4225,7 +3400,7 @@ module.exports = (
                                                                             component: 'button',
                                                                             svgs: [this.settings.popouts.enabled ? SvgTemps.checked : SvgTemps.unchecked],
                                                                             color: this.settings.popouts.enabled ? 'green' : 'red',
-                                                                            label: TEMPS.LABELS.BUTTON_POPOUTS_SWITCH,
+                                                                            label: trn.view.popouts,
                                                                             id: 'popouts-switch-button',
                                                                             onclick: async (e) => {
 
@@ -4245,19 +3420,19 @@ module.exports = (
                                                                                 }
                                                                                 await this.resetAnimations();
                                                                                 PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_POPOUTS_SWITCH;
+                                                                                button.getElementsByTagName('span')[0].innerText = trn.view.popouts;
                                                                             }
                                                                         },
                                                                         {
                                                                             component: 'button',
                                                                             color: 'blurple',
-                                                                            label: TEMPS.LABELS.BUTTON_RESET_POPOUTS,
+                                                                            label: trn.view.reset_popouts,
                                                                             id: 'animations-reset-popouts',
                                                                             svgs: [SvgTemps.Other.circleArrow],
                                                                             onclick: async (e) => {
 
                                                                                 let button = e.currentTarget;
-                                                                                button.getElementsByTagName('span')[0].innerText = TEMPS.LABELS.BUTTON_ANIMATIONS_RESET_RESETING;
+                                                                                button.getElementsByTagName('span')[0].innerText = trn.view.resetting;
                                                                                 await this.wait(500);
 
                                                                                 this.settings.popouts = this.defaultSettings.popouts
@@ -4277,31 +3452,31 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_NAME, TEMPS.LABELS.FIELD_POPOUTS_NAME_NOTE(this.defaultSettings.popouts.name),
+                                                    Field(trn.stng.name, '[' + this.defaultSettings.popouts.name + '] ' + trn.stng.name_note_popouts,
                                                         PreviewsPanel(
                                                             [
-                                                                { label: TEMPS.LABELS.PREVIEW_IN, value: 'in' },
-                                                                { label: TEMPS.LABELS.PREVIEW_OUT, value: 'out' },
-                                                                { label: TEMPS.LABELS.PREVIEW_CIRCLE, value: 'circle' },
-                                                                { label: TEMPS.LABELS.PREVIEW_POLYGON, value: 'polygon' },
-                                                                { label: TEMPS.LABELS.PREVIEW_OPACITY, value: 'opacity' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIME, value: 'slime' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_RIGHT, value: 'brick-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_LEFT, value: 'brick-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_UP, value: 'brick-up' },
-                                                                { label: TEMPS.LABELS.PREVIEW_BRICK_DOWN, value: 'brick-down' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_RIGHT, value: 'slide-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_LEFT, value: 'slide-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_UP, value: 'slide-up' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN, value: 'slide-down' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_RIGHT, value: 'slide-up-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_UP_LEFT, value: 'slide-up-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_RIGHT, value: 'slide-down-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SLIDE_DOWN_LEFT, value: 'slide-down-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SKEW_RIGHT, value: 'skew-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_SKEW_LEFT, value: 'skew-left' },
-                                                                { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_RIGHT, value: 'wide-skew-right' },
-                                                                { label: TEMPS.LABELS.PREVIEW_WIDE_SKEW_LEFT, value: 'wide-skew-left' },
+                                                                { label: trn.name.in, value: 'in' },
+                                                                { label: trn.name.out, value: 'out' },
+                                                                { label: trn.name.circle, value: 'circle' },
+                                                                { label: trn.name.polygon, value: 'polygon' },
+                                                                { label: trn.name.opacity, value: 'opacity' },
+                                                                { label: trn.name.slime, value: 'slime' },
+                                                                { label: trn.name.brick_right, value: 'brick-right' },
+                                                                { label: trn.name.brick_left, value: 'brick-left' },
+                                                                { label: trn.name.brick_up, value: 'brick-up' },
+                                                                { label: trn.name.brick_down, value: 'brick-down' },
+                                                                { label: trn.name.slide_right, value: 'slide-right' },
+                                                                { label: trn.name.slide_left, value: 'slide-left' },
+                                                                { label: trn.name.slide_up, value: 'slide-up' },
+                                                                { label: trn.name.slide_down, value: 'slide-down' },
+                                                                { label: trn.name.slide_up_right, value: 'slide-up-right' },
+                                                                { label: trn.name.slide_up_left, value: 'slide-up-left' },
+                                                                { label: trn.name.slide_down_right, value: 'slide-down-right' },
+                                                                { label: trn.name.slide_down_left, value: 'slide-down-left' },
+                                                                { label: trn.name.skew_right, value: 'skew-right' },
+                                                                { label: trn.name.skew_left, value: 'skew-left' },
+                                                                { label: trn.name.wide_skew_right, value: 'wide-skew-right' },
+                                                                { label: trn.name.wide_skew_left, value: 'wide-skew-left' },
                                                             ],
                                                             {
                                                                 type: 'popouts-name',
@@ -4325,7 +3500,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_DURATION, TEMPS.LABELS.FIELD_POPOUTS_DURATION_NOTE(this.defaultSettings.popouts.duration.toString().replace('.', ',')),
+                                                    Field(trn.stng.duration, '[' + this.defaultSettings.popouts.duration.toString().replace('.', ',') + '] ' + trn.stng.duration_note_popouts,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -4365,9 +3540,9 @@ module.exports = (
                                             },
                                             { component: 'divider' },
                                             {
-                                                name: TEMPS.LABELS.GROUP_ADVANCED,
+                                                name: trn.view.advanced,
                                                 content: [
-                                                    Field(TEMPS.LABELS.FIELD_LISTS_SELECTORS, TEMPS.LABELS.FIELD_LISTS_SELECTORS_NOTE,
+                                                    Field(trn.view.selectors_lists, trn.view.selectors_note_all,
                                                         TextareasPanel(
                                                             {
                                                                 elementsPanel: {
@@ -4376,7 +3551,7 @@ module.exports = (
                                                                             elements: [
                                                                                 {
                                                                                     component: 'button',
-                                                                                    label: TEMPS.LABELS.BUTTON_SELECTORS_LISTS_DEFAULT,
+                                                                                    label: trn.edit.default,
                                                                                     id: 'lists-selectors-default',
                                                                                     svgs: [SvgTemps.Other.circleArrow],
                                                                                     onclick: (e) => {
@@ -4390,7 +3565,7 @@ module.exports = (
                                                                                 },
                                                                                 {
                                                                                     component: 'button',
-                                                                                    label: TEMPS.LABELS.BUTTON_SELECTORS_LISTS_CLEAR,
+                                                                                    label: trn.edit.clear,
                                                                                     id: 'lists-selectors-clear',
                                                                                     onclick: (e) => {
                                                                                         var textarea = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea')
@@ -4427,7 +3602,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_BUTTONS_SELECTORS, TEMPS.LABELS.FIELD_BUTTONS_SELECTORS_NOTE,
+                                                    Field(trn.view.selectors_buttons, trn.view.selectors_note_all,
                                                         TextareasPanel(
                                                             {
                                                                 elementsPanel: {
@@ -4436,7 +3611,7 @@ module.exports = (
                                                                             elements: [
                                                                                 {
                                                                                     component: 'button',
-                                                                                    label: TEMPS.LABELS.BUTTON_SELECTORS_BUTTONS_DEFAULT,
+                                                                                    label: trn.edit.default,
                                                                                     id: 'buttons-selectors-default',
                                                                                     svgs: [SvgTemps.Other.circleArrow],
                                                                                     onclick: (e) => {
@@ -4450,7 +3625,7 @@ module.exports = (
                                                                                 },
                                                                                 {
                                                                                     component: 'button',
-                                                                                    label: TEMPS.LABELS.BUTTON_SELECTORS_BUTTONS_CLEAR,
+                                                                                    label: trn.edit.clear,
                                                                                     id: 'buttons-selectors-clear',
                                                                                     onclick: (e) => {
                                                                                         var textarea = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea')
@@ -4487,7 +3662,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(TEMPS.LABELS.FIELD_POPOUTS_SELECTORS, TEMPS.LABELS.FIELD_POPOUTS_SELECTORS_NOTE,
+                                                    Field(trn.view.selectors_popouts, trn.view.selectors_note_all,
                                                         TextareasPanel(
                                                             {
                                                                 elementsPanel: {
@@ -4496,7 +3671,7 @@ module.exports = (
                                                                             elements: [
                                                                                 {
                                                                                     component: 'button',
-                                                                                    label: TEMPS.LABELS.BUTTON_SELECTORS_POPOUTS_DEFAULT,
+                                                                                    label: trn.edit.default,
                                                                                     id: 'popouts-selectors-default',
                                                                                     svgs: [SvgTemps.Other.circleArrow],
                                                                                     onclick: (e) => {
@@ -4510,7 +3685,7 @@ module.exports = (
                                                                                 },
                                                                                 {
                                                                                     component: 'button',
-                                                                                    label: TEMPS.LABELS.BUTTON_SELECTORS_POPOUTS_CLEAR,
+                                                                                    label: trn.edit.clear,
                                                                                     id: 'popouts-selectors-clear',
                                                                                     onclick: (e) => {
                                                                                         var textarea = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea')
@@ -4639,6 +3814,7 @@ module.exports = (
                         box-shadow: inset 0 0 0 1px var(--brand-experiment);
                     }
                     .animTab.selected {
+                        color: white;
                         background-color: var(--brand-experiment);
                     }
 
@@ -4807,6 +3983,7 @@ module.exports = (
                     }
 
                     .animPageCircleButton.enabled {
+                        color: white;
                         background-color: var(--brand-experiment);
                     }
 
