@@ -2180,7 +2180,7 @@
 	"ru": {
 		"view": {
 			"changelog": "Список изменений",
-			"reset_all_settings": "Сбросить все",
+			"reset_all_settings": "Сбросить всё",
 			"rebuild_animations": "Перестроить анимации",
 			"resetting": "Сброс...",
 			"update_err_timeout": "Превышено время ожидания",
