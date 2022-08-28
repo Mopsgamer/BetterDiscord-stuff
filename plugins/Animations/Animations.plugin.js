@@ -1,8 +1,9 @@
 /**
  * @name Animations
- * @version 1.3.6
+ * @version 1.3.6.1
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
+ * @invite PWtAHjBXtG
  * @authorLink https://github.com/Mopsgamer/
  * @authorId 538010208023347200
  * @website https://github.com/Mopsgamer/BetterDiscord-codes/tree/Animations
@@ -22,15 +23,15 @@ module.exports = (
                         github_username: 'Mopsgamer',
                     }
                 ],
-                version: '1.3.6',
+                version: '1.3.6.1',
                 description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
                 github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
                 github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
             },
             changelog: [
-                //{ "title": "New Stuff", "items": ["Limits for lists have been removed."] },
-                { "title": "Improvements", "type": "improved", "items": ["The translation of the plugin has become more comfortable, you can help. And if you don't want to, you will now receive the translation regardless of updates."] },
-                { "title": "Fixes", "type": "fixed", "items": ["A little fix for light themes", "Removed hints, they will be added more likely only where they will be needed."] }
+                { "title": "New Stuff", "items": ["The translation of the plugin has become more comfortable, you can help. And if you don't want to, you will now receive the translation regardless of updates."] },
+                //{ "title": "Improvements", "type": "improved", "items": [] },
+                { "title": "Fixes", "type": "fixed", "items": ["A little fix for light themes", "There are fewer hints now.", "Animation rebuild button removed."] }
             ],
             main: 'index.js',
         };
@@ -244,15 +245,15 @@ module.exports = (
                             "no": "No"
                         },
                         "stng": {
-                            "name": "Name",
+                            "name": "Animation",
                             "sequence": "Sequence",
                             "limit": "Limit",
                             "delay": "Delay",
                             "duration": "Duration",
-                            "name_note_lists": "The name of the animation of the list items when they appear.",
-                            "name_note_buttons": "The name of the animation of the buttons when they appear.",
-                            "name_note_messages": "The name of the animation of the messages when they appear.",
-                            "name_note_popouts": "The name of the animation of the popouts when they appear.",
+                            "name_note_lists": "The name of the animation of the list items.",
+                            "name_note_buttons": "The name of the animation of the buttons.",
+                            "name_note_messages": "The name of the animation of the messages.",
+                            "name_note_popouts": "The name of the animation of the popouts.",
                             "sequence_note_lists": "The sequence in which the list items are built.",
                             "sequence_note_buttons": "The sequence in which the buttons are built.",
                             "delay_note_lists": "Delay before appearing for each list item in seconds.",
@@ -378,38 +379,43 @@ module.exports = (
                         'fromLast',
                     ]
 
-                    static modules = {
-                        Locale: BdApi.findModuleByProps('locale', 'addChangeListener').locale,
-                        Button: WebpackModules.getByProps('button', 'sizeIcon')?.button,
-                        ButtonSizeSmall: WebpackModules.getByProps('button', 'sizeIcon')?.sizeSmall,
-                        ButtonText: WebpackModules.getByProps('buttonText', 'giftIcon')?.buttonText,
-                        ButtonContents: WebpackModules.getByProps('button', 'contents').contents,
-                        ContentThin: WebpackModules.getByProps('content', 'thin')?.content,
-                        ContainerDefault: WebpackModules.getByProps('containerDefault')?.containerDefault,
-                        ContainerDefaultSpaceBeforeCategory: WebpackModules.getByProps('containerDefault', 'spaceBeforeCategory')?.containerDefault,
-                        ContainerSpine: WebpackModules.getByProps('container', 'spine')?.container,
-                        Card: WebpackModules.getByProps('cardBrand')?.card,
-                        RoundButton: WebpackModules.getByProps('roundButton').roundButton,
-                        CodeRedemptionRedirect: WebpackModules.getByProps('codeRedemptionRedirect')?.codeRedemptionRedirect ?? 'codeRedemptionRedirect-2hYMSQ',
-                        ChatContent: WebpackModules.getByProps('chatContent')?.chatContent,
-                        DividerReplying: WebpackModules.getByProps('divider', 'replying')?.divider,
-                        InputDefault: WebpackModules.getByProps('inputDefault', 'focused')?.inputDefault,
-                        IsSending: WebpackModules.getByProps('isSending')?.isSending,
-                        IsFailed: WebpackModules.getByProps('isFailed')?.isFailed,
-                        Message: WebpackModules.getByProps('message')?.message,
-                        MessageListItem: WebpackModules.getByProps('messageListItem')?.messageListItem,
-                        Member: WebpackModules.getByProps('botTag', 'member').member,
-                        MembersGroup: WebpackModules.getByProps('membersGroup').membersGroup,
-                        Side: WebpackModules.getByProps('side')?.side,
-                        ScrollbarDefault: WebpackModules.getByProps('scrollbarDefault')?.scrollbarDefault,
-                        TextArea: WebpackModules.getByProps('textArea')?.textArea,
-                        Offline: WebpackModules.getByProps('offline')?.offline,
-                        GuildsSidebar: WebpackModules.getByProps('guilds', 'sidebar')?.guilds,
-                        WrapperTypeThread: WebpackModules.getByProps('wrapper', 'typeThread')?.wrapper,
-                        VideoLead: WebpackModules.getByProps('video', 'lead')?.video
-                    }
+                    static modules = (() => {
+                        let ButtonIcon = WebpackModules.getByProps('button', 'sizeIcon')
+                        let ButtonContents = WebpackModules.getByProps('button', 'contents')
+                        return {
+                            Locale: BdApi.findModuleByProps('locale', 'addChangeListener').locale,
+                            Button: ButtonIcon?.button,
+                            ButtonSizeSmall: ButtonIcon?.sizeSmall,
+                            ButtonText: WebpackModules.getByProps('buttonText', 'giftIcon')?.buttonText,
+                            ButtonContents: ButtonContents.contents,
+                            ButtonLookInverted: ButtonContents.lookInverted,
+                            ContentThin: WebpackModules.getByProps('content', 'thin')?.content,
+                            ContainerDefault: WebpackModules.getByProps('containerDefault')?.containerDefault,
+                            ContainerDefaultSpaceBeforeCategory: WebpackModules.getByProps('containerDefault', 'spaceBeforeCategory')?.containerDefault,
+                            ContainerSpine: WebpackModules.getByProps('container', 'spine')?.container,
+                            Card: WebpackModules.getByProps('cardBrand')?.card,
+                            RoundButton: WebpackModules.getByProps('roundButton').roundButton,
+                            CodeRedemptionRedirect: WebpackModules.getByProps('codeRedemptionRedirect')?.codeRedemptionRedirect ?? 'codeRedemptionRedirect-2hYMSQ',
+                            ChatContent: WebpackModules.getByProps('chatContent')?.chatContent,
+                            DividerReplying: WebpackModules.getByProps('divider', 'replying')?.divider,
+                            InputDefault: WebpackModules.getByProps('inputDefault', 'focused')?.inputDefault,
+                            IsSending: WebpackModules.getByProps('isSending')?.isSending,
+                            IsFailed: WebpackModules.getByProps('isFailed')?.isFailed,
+                            Message: WebpackModules.getByProps('message')?.message,
+                            MessageListItem: WebpackModules.getByProps('messageListItem')?.messageListItem,
+                            Member: WebpackModules.getByProps('botTag', 'member').member,
+                            MembersGroup: WebpackModules.getByProps('membersGroup').membersGroup,
+                            Side: WebpackModules.getByProps('side')?.side,
+                            ScrollbarDefault: WebpackModules.getByProps('scrollbarDefault')?.scrollbarDefault,
+                            TextArea: WebpackModules.getByProps('textArea')?.textArea,
+                            Offline: WebpackModules.getByProps('offline')?.offline,
+                            GuildsSidebar: WebpackModules.getByProps('guilds', 'sidebar')?.guilds,
+                            WrapperTypeThread: WebpackModules.getByProps('wrapper', 'typeThread')?.wrapper,
+                            VideoLead: WebpackModules.getByProps('video', 'lead')?.video
+                        }
+                    })()
 
-                    animateChannels = (removeAnimations = false) => {
+                    animateChannels = () => {
 
                         if (!this.settings.lists.enabled) return;
                         var channelsListElements = document.querySelectorAll(`#channels .${AnimationsPlugin.modules.ContentThin} > [class]`);
@@ -436,19 +442,14 @@ module.exports = (
                                 || children.classList.contains(AnimationsPlugin.modules.ContainerDefaultSpaceBeforeCategory)
                                 || children.classList.contains(AnimationsPlugin.modules.WrapperTypeThread)
                             ) {
-                                if (removeAnimations) {
-                                    children.style.transform = 'none'
-                                }
-                                else {
-                                    children.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
-                                    children.style.animationFillMode = 'forwards';
-                                    children.style.animationName = this.settings.lists.custom.enabled &&
-                                        (this.settings.lists.custom.page >= 0 ?
-                                            this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() != '' &&
-                                            this.isValidKeyframe(this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim)
-                                            : 0)
-                                        ? 'custom-lists' : this.settings.lists.name;
-                                }
+                                children.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                                children.style.animationFillMode = 'forwards';
+                                children.style.animationName = this.settings.lists.custom.enabled &&
+                                    (this.settings.lists.custom.page >= 0 ?
+                                        this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() != '' &&
+                                        this.isValidKeyframe(this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim)
+                                        : 0)
+                                    ? 'custom-lists' : this.settings.lists.name;
                             }
 
                             else if (children.classList.contains(AnimationsPlugin.modules.ContainerSpine)) {
@@ -461,16 +462,12 @@ module.exports = (
                                 for (var j = 0; j < threadsListElements.length; j++) {
                                     threadsCount += (j ? 1 : 0);
                                     let thread = threadsListElements[(this.settings.lists.sequence == "fromFirst" ? j : threadsListElements.length - j - 1)];
-                                    if (removeAnimations) {
-                                        thread.style.transform = 'none'
-                                    }
-                                    else {
-                                        thread.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
-                                        children.style.animationFillMode = 'forwards';
-                                        thread.style.animationName = this.settings.lists.custom.enabled &&
-                                            (this.settings.lists.custom.page >= 0 ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() : 0) != ''
-                                            ? 'custom-lists' : this.settings.lists.name;
-                                    }
+
+                                    thread.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                                    children.style.animationFillMode = 'forwards';
+                                    thread.style.animationName = this.settings.lists.custom.enabled &&
+                                        (this.settings.lists.custom.page >= 0 ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() : 0) != ''
+                                        ? 'custom-lists' : this.settings.lists.name;
                                 }
                             }
 
@@ -480,7 +477,7 @@ module.exports = (
 
                     }
 
-                    animateMembers = (removeAnimations = false) => {
+                    animateMembers = () => {
 
                         if (!this.settings.lists.enabled) return;
 
@@ -511,27 +508,21 @@ module.exports = (
                             let children = membersListElements[(this.settings.lists.sequence == "fromFirst" ? i : count - i - 1)];
                             if (!children) return;
 
-                            if (removeAnimations) {
-                                children.style.transform = 'none'
-                            }
-                            else {
-
-                                children.style.animationDelay = `${(i * this.settings.lists.delay).toFixed(2)}s`;
-                                children.style.animationFillMode = 'forwards';
-                                children.style.animationName = this.settings.lists.custom.enabled &&
-                                    (this.settings.lists.custom.page >= 0 ?
-                                        this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() != '' &&
-                                        this.isValidKeyframe(this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim)
-                                        : 0)
-                                    ? 'custom-lists' : this.settings.lists.name;
-                            }
+                            children.style.animationDelay = `${(i * this.settings.lists.delay).toFixed(2)}s`;
+                            children.style.animationFillMode = 'forwards';
+                            children.style.animationName = this.settings.lists.custom.enabled &&
+                                (this.settings.lists.custom.page >= 0 ?
+                                    this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() != '' &&
+                                    this.isValidKeyframe(this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim)
+                                    : 0)
+                                ? 'custom-lists' : this.settings.lists.name;
                         }
 
                         setTimeout(() => PluginUtilities.removeStyle(`${this.getName()}-memberslist`), (count * this.settings.lists.delay) + this.settings.lists.duration)
 
                     }
 
-                    animateServers = (removeAnimations = false) => {
+                    animateServers = () => {
 
                         if (!this.settings.lists.enabled) return;
 
@@ -556,63 +547,18 @@ module.exports = (
                             let children = serversListElements[(this.settings.lists.sequence == "fromFirst" ? i : count - i - 1)];
                             if (!children) return;
 
-                            if (removeAnimations) {
-                                children.style.transform = 'none'
-                            }
-                            else {
-                                children.style.animationDelay = `${(i * this.settings.lists.delay).toFixed(2)}s`;
-                                children.style.animationFillMode = 'forwards';
-                                children.style.animationName = this.settings.lists.custom.enabled &&
-                                    (this.settings.lists.custom.page >= 0 ?
-                                        this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() != '' &&
-                                        this.isValidKeyframe(this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim)
-                                        : 0)
-                                    ? 'custom-lists' : (this.settings.lists.name + (!BdApi.Themes.isEnabled('Horizontal Server List') ? '' : '_90'));
-                            }
+                            children.style.animationDelay = `${(i * this.settings.lists.delay).toFixed(2)}s`;
+                            children.style.animationFillMode = 'forwards';
+                            children.style.animationName = this.settings.lists.custom.enabled &&
+                                (this.settings.lists.custom.page >= 0 ?
+                                    this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() != '' &&
+                                    this.isValidKeyframe(this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim)
+                                    : 0)
+                                ? 'custom-lists' : (this.settings.lists.name + (!BdApi.Themes.isEnabled('Horizontal Server List') ? '' : '_90'));
                         }
 
                         setTimeout(() => PluginUtilities.removeStyle(`${this.getName()}-serverslist`), (count * this.settings.lists.delay) + this.settings.lists.duration)
 
-                    }
-                    
-                    /**
-                     * @param {locale} [key]
-                     */
-                    stringsGet(key = undefined) {
-                        try {
-                            let fs = require('fs')
-                            let path = require('path')
-                            let p = path.join(BdApi.Plugins.folder, this.getName() + '.translation.json')
-                            let tr = JSON.parse(fs.readFileSync(p).toString())
-                            let result = tr?.[key] || tr
-                            return result
-                        } catch (err) {
-                            Logger.err(this.getName(), err)
-                            return null
-                        }
-                    }
-
-                    async stringsLoad() {
-                        try {
-                            let fs = require('fs')
-                            let path = require('path')
-                            let p = path.join(BdApi.Plugins.folder, this.getName() + '.translation.json')
-                            let url = 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.translation.json' + '?ref=main'
-                            await this.requestGhFile(url,
-                                (text) => {
-                                    fs.writeFileSync(p, text)
-                                },
-                                () => {
-                                    Logger.err(this.getName(), 'File with translations not found on GitHub.\n' + url)
-                                },
-                                () => {
-                                    Logger.err(this.getName(), 'The translation file request failed, possibly due to network problems.\n' + url)
-                                }
-                            )
-                            return true
-                        } catch (err) {
-                            return false
-                        }
                     }
 
                     async resetAnimations(pause = 0) {
@@ -1185,7 +1131,7 @@ module.exports = (
                         return new Promise((rs, rj) => setTimeout(rs, ms))
                     }
 
-                    requestGhFile(ghApiUrl, onResponse, onNotFound, onBadResponse) {
+                    requestGhFile(ghApiUrl, onResponse, onError) {
                         return new Promise(
                             (rs, rj) => {
                                 const request = new XMLHttpRequest();
@@ -1195,23 +1141,59 @@ module.exports = (
                                 request.onreadystatechange = (e) => {
                                     if (e.currentTarget.readyState != 4) return
 
-                                    var responseCode = JSON.parse(request?.responseText ?? undefined);
-                                    if (!request.responseText) {
-                                        onBadResponse()
-                                        rj('Bad response')
-                                        return
-                                    }
-                                    else if (responseCode?.message == 'Not Found') {
-                                        onNotFound()
-                                        rj('Not found')
+                                    let resp = request?.responseText
+                                    var responseCode = (resp ? JSON.parse(resp) : undefined);
+                                    if (!responseCode) {
+                                        if (typeof onError == 'function') onError(request.status, request.statusText)
+                                        rj(request.status)
                                         return
                                     }
 
                                     var decoded = this.fromBinary(responseCode.content);
 
-                                    onResponse(decoded)
+                                    if (typeof onResponse == 'function') onResponse(decoded)
                                     rs(decoded)
                                     return
+                                }
+                            }
+                        )
+                    }
+                    
+                    /**
+                     * @param {locale} [key]
+                     */
+                     stringsGet(key = undefined) {
+                        try {
+                            let fs = require('fs')
+                            let path = require('path')
+                            let p = path.join(BdApi.Plugins.folder, this.getName() + '.translation.json')
+                            let tr = JSON.parse(fs.readFileSync(p).toString())
+                            let result = tr?.[key] || tr
+                            return result
+                        } catch (err) {
+                            Logger.err(this.getName(), err)
+                            return null
+                        }
+                    }
+
+                    stringsLoad(onError) {
+                        return new Promise(
+                            async (rs, rj) => {
+                                try {
+                                    let fs = require('fs')
+                                    let path = require('path')
+                                    let p = path.join(BdApi.Plugins.folder, this.getName() + '.translation.json')
+                                    let url = 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.translation.json' + '?ref=main'
+                                    await this.requestGhFile(url,
+                                        (text) => {
+                                            fs.writeFileSync(p, text)
+                                        },
+                                        onError
+                                    )
+                                    this.closeSettings()
+                                    rs()
+                                } catch (err) {
+                                    rj(err)
                                 }
                             }
                         )
@@ -1337,8 +1319,8 @@ module.exports = (
                                  * @param {string} [button.class='']
                                  * @param {boolean} [button.disabled=false]
                                  * @param {string} [button.link=null]
-                                 * @param {string | 'filled' | 'inverted' | 'underline'} [button.fill='filled'] ` filled ` | ` inverted ` | ` underline `
-                                 * @param {string | 'blurple' | 'grey' | 'green' | 'yellow' | 'red' | 'white'} [button.color='blurple'] ` filled ` | ` inverted ` | ` underline `
+                                 * @param { 'filled' | 'inverted' | 'underline'} [button.fill='filled'] ` filled ` | ` inverted ` | ` underline `
+                                 * @param { 'blurple' | 'grey' | 'green' | 'red' } [button.color='blurple'] ` blurple ` | ` grey ` | ` green ` | ` red `
                                  * @param {(e:MouseEvent)=>void} [button.onclick=null]
                                  */
 
@@ -1383,7 +1365,9 @@ module.exports = (
                                     var button = this.state;
                                     return React.createElement('button', {
                                         style: {
-                                            display: 'inline-block',
+                                            display: 'inline-flex',
+                                            'align-items': 'center',
+                                            'justify-content': 'center',
                                             width: button.width ?? 'fit-content',
                                             height: button.height ?? 'fit-content',
                                             padding: button.padding ?? '8px',
@@ -1391,37 +1375,29 @@ module.exports = (
                                             'transition': 'background-color .17s ease, color .17s ease, opacity 250ms ease',
                                         },
                                         id: button.id ?? '',
+                                        'data-link': button.link,
                                         class: `animButton ${AnimationsPlugin.modules.Button} ${AnimationsPlugin.modules.ButtonSizeSmall} ${button.disabled ? 'disabled' : ''} ${(['filled', 'inverted', 'underline']).includes(button.fill) ? button.fill : 'filled'} ${button.color ?? 'blurple'} ${button.class ?? ''}`,
                                         onClick: (e) => {
                                             if (e.currentTarget.classList.contains('disabled')) return
-                                            if (typeof button.onclick == 'function') button.onclick(e)
+                                            if (typeof button.onclick == 'function') button.onclick(e, this)
                                             if (typeof button.link == 'string') window.open(button.link)
                                         }
                                     },
-                                        React.createElement('div', {
-                                            style: {
-                                                'pointer-events': 'none',
-                                                'display': 'flex',
-                                                'align-items': 'center',
-                                                'justify-content': 'center'
-                                            }
-                                        },
-                                            [
-                                                Array.isArray(button.svgs) ? button.svgs.map((svgTemp) => React.createElement(SvgElement, svgTemp)) : null,
-                                                React.createElement('span', {
-                                                    style: {
-                                                        'max-width': 'none'
-                                                    },
-                                                    class: `${AnimationsPlugin.modules.ButtonText} ${AnimationsPlugin.modules.ButtonContents}`,
+                                        [
+                                            Array.isArray(button.svgs) ? button.svgs.map((svgTemp) => React.createElement(SvgElement, svgTemp)) : null,
+                                            React.createElement('span', {
+                                                style: {
+                                                    'max-width': 'none'
                                                 },
-                                                    button.label
-                                                ),
-                                                typeof button.link == 'string' ? React.createElement(SvgElement, {
-                                                    ...SvgTemps.linkArrow,
-                                                    align: 'right'
-                                                }) : null
-                                            ]
-                                        )
+                                                class: `${AnimationsPlugin.modules.ButtonText} ${AnimationsPlugin.modules.ButtonContents}`,
+                                            },
+                                                button.label
+                                            ),
+                                            typeof button.link == 'string' ? React.createElement(SvgElement, {
+                                                ...SvgTemps.linkArrow,
+                                                align: 'right'
+                                            }) : null
+                                        ]
                                     )
                                 }
                             }
@@ -2498,8 +2474,27 @@ module.exports = (
                             },
                         }
 
-                        if(0) setTimeout(() => { // tooltips will be later
-                            Tooltip.create(document.getElementById('animations-version-changelog'), trn?.ttp)
+                        if(1) setTimeout(() => {
+                            let mymodal = [...document.getElementsByClassName('bd-addon-modal')].find(modal => modal.querySelector('h4').innerText == 'ANIMATIONS SETTINGS')
+                            mymodal.querySelectorAll('.animButton').forEach(
+                                btn => {
+                                    let span = btn.querySelector('span')
+                                    if (span.offsetWidth < span.scrollWidth) {
+                                        Tooltip.create(btn, span.innerText, {preventFlip: true, side: 'bottom'})
+                                    }
+                                    else if(btn.getAttribute('data-link')) {
+                                        Tooltip.create(btn.querySelector('svg'), btn.getAttribute('data-link'), {preventFlip: true, side: 'bottom'})
+                                    }
+                                }
+                            )
+                            mymodal.querySelectorAll('.animPreview').forEach(
+                                btn => {
+                                    let label = btn.querySelector('.animPreviewLabel')
+                                    if (label.offsetHeight < label.scrollHeight) {
+                                        Tooltip.create(btn, label.innerText, {preventFlip: true, side: 'bottom'})
+                                    }
+                                }
+                            )
                         }, 500)
 
                         var settings_panel =
@@ -2525,16 +2520,53 @@ module.exports = (
                                                     {
                                                         component: 'button',
                                                         color: 'blurple',
+                                                        label: trn.view.reset_all_settings,
+                                                        id: 'animations-reset',
+                                                        svgs: [SvgTemps.gear],
+                                                        onclick: async (e) => {
+
+                                                            let button = e.currentTarget;
+                                                            button.getElementsByTagName('span')[0].innerText = trn.view.resetting;
+                                                            await this.wait(500);
+
+                                                            PluginUtilities.saveSettings(this.getName(), this.defaultSettings);
+                                                            this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
+                                                            this.resetAnimations();
+                                                            this.closeSettings();
+                                                        }
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                elements: [
+                                                    {
+                                                        component: 'button',
+                                                        label: trn.view.upd_translation,
+                                                        color: 'blurple',
+                                                        id: 'animations-update-translation',
+                                                        svgs: [SvgTemps.downloadArrow, SvgTemps.Other.web],
+                                                        onclick: async (e, c) => {
+                                                            c.setState({label: '...'})
+                                                            this.stringsLoad(
+                                                                (status, reason) => {
+                                                                    c.setState({ svgs: [SvgTemps.warn], color: 'red', label: trn.view.update_err_unknown })
+                                                                }
+                                                            ).then(
+                                                                () => c.setState({ svgs: [SvgTemps.downloadArrow, SvgTemps.Other.web], color: 'blurple', label: trn.view.upd_translation })
+                                                            )
+                                                        }
+                                                    },
+                                                    {
+                                                        component: 'button',
+                                                        color: 'blurple',
                                                         label: trn.view.update_check,
                                                         svgs: [SvgTemps.downloadArrow],
                                                         id: 'animations-version-check',
                                                         inverted: false,
-                                                        onclick: async (e) => {
+                                                        onclick: async (e, c) => {
                                                             let button = e.currentTarget;
 
-                                                            button.getElementsByTagName('span')[0].innerText = trn.view.update_searching;
-                                                            button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
-                                                            button.classList.add('blurple')
+                                                            c.setState({color: 'blurple', label: trn.view.update_searching})
 
                                                             const request = new XMLHttpRequest();
                                                             request.open("GET", 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/Animations.plugin.js' + '?ref=Animations');
@@ -2543,9 +2575,10 @@ module.exports = (
                                                             request.timeout = 5000;
                                                             request.timeout
                                                             request.ontimeout = function (e) {
-                                                                button.getElementsByTagName('span')[0].innerText = trn.view.update_err_timeout;
-                                                                button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
-                                                                button.classList.add('red')
+                                                                c.setState({color: 'red', label: trn.view.update_err_timeout})
+                                                            };
+                                                            request.onerror = function (e) {
+                                                                c.setState({ svgs: [SvgTemps.warn], color: 'red', label: trn.view.update_err_unknown })
                                                             };
 
                                                             request.onreadystatechange = (e) => {
@@ -2553,15 +2586,11 @@ module.exports = (
 
                                                                 var responseCode = JSON.parse(request?.responseText ?? undefined);
                                                                 if (!request.responseText) {
-                                                                    button.getElementsByTagName('span')[0].innerText =trn.view.update_err_unknown + " (try again later)";
-                                                                    button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
-                                                                    button.classList.add('red')
+                                                                    c.setState({ svgs: [SvgTemps.warn], color: 'red', label: trn.view.update_err_unknown + '(try again later)' })
                                                                     return
                                                                 }
                                                                 else if (responseCode?.message == 'Not Found') {
-                                                                    button.getElementsByTagName('span')[0].innerText = trn.view.update_err_unknown + " (upd it yourself)";
-                                                                    button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
-                                                                    button.classList.add('red')
+                                                                    c.setState({ svgs: [SvgTemps.warn], color: 'red', label: trn.view.update_err_unknown + '(update it yourself)' })
                                                                     return
                                                                 }
 
@@ -2598,9 +2627,7 @@ module.exports = (
 
                                                                 switch (newerVersion(GitHubVersion, this.getVersion())) {
                                                                     case GitHubVersion:
-                                                                        button.getElementsByTagName('span')[0].innerText = trn.view.update_older
-                                                                        button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
-                                                                        button.classList.add('green')
+                                                                        c.setState({color: 'green', label: trn.view.update_older})
                                                                         button.addEventListener('click',
                                                                             () => {
                                                                                 BdApi.showConfirmationModal(trn.pop.will_updated,
@@ -2622,9 +2649,7 @@ module.exports = (
                                                                         )
                                                                         break;
                                                                     case this.getVersion():
-                                                                        button.getElementsByTagName('span')[0].innerText = trn.view.update_newer
-                                                                        button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
-                                                                        button.classList.add('grey')
+                                                                        c.setState({color: 'grey', label: trn.view.update_newer})
                                                                         button.addEventListener('click',
                                                                             () => {
                                                                                 BdApi.showConfirmationModal(trn.pop.will_downdated,
@@ -2646,9 +2671,7 @@ module.exports = (
                                                                         )
                                                                         break;
                                                                     case false:
-                                                                        button.getElementsByTagName('span')[0].innerText = trn.view.update_latest
-                                                                        button.classList.remove('blurple', 'grey', 'red', 'yellow', 'green', 'white')
-                                                                        button.classList.add('grey')
+                                                                        c.setState({color: 'grey', label: trn.view.update_latest})
                                                                         button.addEventListener('click',
                                                                             () => {
                                                                                 BdApi.showConfirmationModal(trn.pop.will_restored,
@@ -2680,36 +2703,6 @@ module.exports = (
                                             },
                                             {
                                                 elements: [
-                                                    {
-                                                        component: 'button',
-                                                        color: 'blurple',
-                                                        label: trn.view.reset_all_settings,
-                                                        id: 'animations-reset',
-                                                        svgs: [SvgTemps.gear],
-                                                        onclick: async (e) => {
-
-                                                            let button = e.currentTarget;
-                                                            button.getElementsByTagName('span')[0].innerText = trn.view.resetting;
-                                                            await this.wait(500);
-
-                                                            PluginUtilities.saveSettings(this.getName(), this.defaultSettings);
-                                                            this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
-                                                            this.resetAnimations();
-                                                            this.closeSettings();
-                                                        }
-                                                    },
-                                                    {
-                                                        component: 'button',
-                                                        color: 'blurple',
-                                                        label: trn.view.rebuild_animations,
-                                                        id: 'animations-rebuild',
-                                                        svgs: [SvgTemps.Other.circleArrow],
-                                                        onclick: () => this.resetAnimations(100)
-                                                    }
-                                                ],
-                                            },
-                                            {
-                                                elements: [
                                                     { component: 'divider' },
                                                 ]
                                             },
@@ -2731,6 +2724,10 @@ module.exports = (
                                                         svgs: [SvgTemps.Logos.github],
                                                         link: 'https://github.com/Mopsgamer/BetterDiscord-codes/discussions'
                                                     },
+                                                ],
+                                            },
+                                            {
+                                                elements: [
                                                     {
                                                         component: 'button',
                                                         label: trn.view.links_dc_server,
@@ -2740,30 +2737,15 @@ module.exports = (
                                                         link: 'discord://discord.com/invite/PWtAHjBXtG',
                                                         onclick: () => { this.closeSettings() }
                                                     },
-                                                ],
-                                            },
-                                            {
-                                                elements: [
                                                     {
                                                         component: 'button',
                                                         label: trn.view.link_cd,
                                                         color: 'grey',
                                                         id: 'animations-crowdin',
-                                                        //svgs: [SvgTemps.Logos.github],
+                                                        svgs: [SvgTemps.Other.web],
                                                         link: 'https://crwd.in/bdp-animations'
                                                     },
-                                                    {
-                                                        component: 'button',
-                                                        label: trn.view.upd_translation,
-                                                        color: 'grey',
-                                                        id: 'animations-upd-translation',
-                                                        //svgs: [SvgTemps.Logos.github],
-                                                        onclick: async (e) => {
-                                                            e.target.innerText = '...'
-                                                            if (!await this.stringsLoad()) BdApi.showConfirmationModal('An error occured', 'See console.')
-                                                            e.target.innerText = trn.view.upd_translation + ' ✔'
-                                                        }
-                                                    },
+
                                                 ],
                                             },
                                         ],
@@ -2841,7 +2823,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(trn.stng.name, '[' + this.defaultSettings.lists.name + '] '+trn.stng.name_note_lists,
+                                                    Field(trn.stng.name, trn.stng.name_note_lists,
                                                         PreviewsPanel(
                                                             [
                                                                 { label: trn.name.in, value: 'in' },
@@ -2883,7 +2865,7 @@ module.exports = (
                                                             }).render
                                                     ).render,
 
-                                                    Field(trn.stng.sequence, '[' + this.defaultSettings.lists.sequence + '] ' + trn.stng.sequence_note_lists,
+                                                    Field(trn.stng.sequence, trn.stng.sequence_note_lists,
                                                         PreviewsPanel(
                                                             [
                                                                 { label: trn.seq.from_first, value: 'fromFirst' },
@@ -2902,7 +2884,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(trn.stng.delay, '['+this.defaultSettings.lists.delay.toString().replace('.', ',')+'] '+trn.stng.delay_note_lists,
+                                                    Field(trn.stng.delay, trn.stng.delay_note_lists,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -2939,7 +2921,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(trn.stng.duration, '[' + this.defaultSettings.lists.duration.toString().replace('.', ',') + '] ' + trn.stng.duration_note_lists,
+                                                    Field(trn.stng.duration, trn.stng.duration_note_lists,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -3041,7 +3023,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(trn.stng.name, '[' + this.defaultSettings.buttons.name + '] ' + trn.stng.name_note_buttons,
+                                                    Field(trn.stng.name, trn.stng.name_note_buttons,
                                                         PreviewsPanel(
                                                             [
                                                                 { label: trn.name.in, value: 'in' },
@@ -3085,7 +3067,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(trn.stng.sequence, '[' + this.defaultSettings.buttons.sequence + '] ' + trn.stng.sequence_note_buttons,
+                                                    Field(trn.stng.sequence, trn.stng.sequence_note_buttons,
                                                         PreviewsPanel(
                                                             [
                                                                 { label: trn.seq.from_first, value: 'fromFirst' },
@@ -3105,7 +3087,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(trn.stng.delay, '[' + this.defaultSettings.buttons.delay.toString().replace('.', ',') + '] ' + trn.stng.delay_note_buttons,
+                                                    Field(trn.stng.delay, trn.stng.delay_note_buttons,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -3142,7 +3124,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(trn.stng.duration, '[' + this.defaultSettings.buttons.duration.toString().replace('.', ',') + '] ' + trn.stng.duration_note_buttons,
+                                                    Field(trn.stng.duration, trn.stng.duration_note_buttons,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -3218,7 +3200,7 @@ module.exports = (
                                                                         {
                                                                             component: 'button',
                                                                             color: 'blurple',
-                                                                            label: trn.view.messages,
+                                                                            label: trn.view.reset_messages,
                                                                             id: 'animations-reset-messages',
                                                                             svgs: [SvgTemps.Other.circleArrow],
                                                                             onclick: async (e) => {
@@ -3244,7 +3226,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(trn.stng.name, '[' + this.defaultSettings.messages.name + '] ' + trn.stng.name_note_messages,
+                                                    Field(trn.stng.name, trn.stng.name_note_messages,
                                                         PreviewsPanel(
                                                             [
                                                                 { label: trn.name.in, value: 'in' },
@@ -3287,7 +3269,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(trn.stng.delay, '[' + this.defaultSettings.messages.delay.toString().replace('.', ',') + '] ' + trn.stng.delay_note_messages,
+                                                    Field(trn.stng.delay, trn.stng.delay_note_messages,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -3324,7 +3306,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(trn.stng.limit, '[' + this.defaultSettings.messages.limit + '] ' + trn.stng.limit_note_messages,
+                                                    Field(trn.stng.limit, trn.stng.limit_note_messages,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -3361,7 +3343,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(trn.stng.duration, '[' + this.defaultSettings.messages.duration.toString().replace('.', ',') + '] ' + trn.stng.duration_note_messages,
+                                                    Field(trn.stng.duration, trn.stng.duration_note_messages,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -3463,7 +3445,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(trn.stng.name, '[' + this.defaultSettings.popouts.name + '] ' + trn.stng.name_note_popouts,
+                                                    Field(trn.stng.name, trn.stng.name_note_popouts,
                                                         PreviewsPanel(
                                                             [
                                                                 { label: trn.name.in, value: 'in' },
@@ -3511,7 +3493,7 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
-                                                    Field(trn.stng.duration, '[' + this.defaultSettings.popouts.duration.toString().replace('.', ',') + '] ' + trn.stng.duration_note_popouts,
+                                                    Field(trn.stng.duration, trn.stng.duration_note_popouts,
                                                         ElementsPanel(
                                                             [
                                                                 {
@@ -4078,6 +4060,7 @@ module.exports = (
                     }
 
                     .animPreview .animPreviewLabel {
+                        word-break: break-word;
                         box-sizing: border-box;
                         overflow: hidden;
                         color: var(--interactive-normal);
@@ -4239,9 +4222,9 @@ module.exports = (
 
                         document.addEventListener('keyup', this.BadSendingStyles)
 
-                        this.animateServers()
-                        this.animateMembers()
-                        this.animateChannels()
+                        //this.animateServers()
+                        //this.animateMembers()
+                        //this.animateChannels()
 
                         // on themes switch
                         this.observer = new MutationObserver(
