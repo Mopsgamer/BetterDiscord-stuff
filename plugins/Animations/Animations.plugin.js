@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.3.6.1
+ * @version 1.3.6.2
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @invite PWtAHjBXtG
@@ -23,15 +23,15 @@ module.exports = (
                         github_username: 'Mopsgamer',
                     }
                 ],
-                version: '1.3.6.1',
+                version: '1.3.6.2',
                 description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
                 github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
                 github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
             },
             changelog: [
-                { "title": "New Stuff", "items": ["The translation of the plugin has become more comfortable, you can help. And if you don't want to, you will now receive the translation regardless of updates."] },
-                //{ "title": "Improvements", "type": "improved", "items": [] },
-                { "title": "Fixes", "type": "fixed", "items": ["A little fix for light themes", "There are fewer hints now.", "Animation rebuild button removed."] }
+                //{ "title": "New Stuff", "items": ["The translation of the plugin has become more comfortable, you can help. And if you don't want to, you will now receive the translation regardless of updates."] },
+                { "title": "Improvements", "type": "improved", "items": ["The link buttons can now show you the link address when you hover over the arrow icon.", "When you restart the plugin, the settings will be closed."] },
+                { "title": "Fixes", "type": "fixed", "items": ["Fixed bug when after changing language you had to reload the plugin to see another language.", "A small fix for a dumb old code to {improve performance} and {smoother animation while sending a message}. (finally)"] }
             ],
             main: 'index.js',
         };
@@ -58,11 +58,11 @@ module.exports = (
             stop() { }
         } : (([Plugin, Api]) => {
                 const plugin = (Library) => {
-                const { DiscordModules, DiscordAPI, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules } = Api
+                const { DiscordModules, DiscordAPI, Utilities, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules } = Api
                 const { Logger, Patcher, Settings, Tooltip, ReactComponents, ContextMenu } = ZeresPluginLibrary
                 const { React, ReactDOM } = BdApi
 
-                createElem = (...args) => { return React.createElement(...args); }
+                let createElem = (...args) => { return React.createElement(...args); }
 
                 /**
                 * @typedef { 'da' | 'de' | 'en-GB' | 'en-US' | 'es-ES' | 'fr' | 'hr' | 'it' | 'lt' | 'hu' | 'nl' | 'no' | 'pl' | 'pt-BR' | 'ro' | 'fi' | 'sv-SE' | 'vi' | 'tr' | 'cs' | 'el' | 'bg' | 'ru' | 'uk' | 'hi' | 'th' | 'zh-CN' | 'ja' | 'zh-TW' | 'ko' } locale
@@ -250,10 +250,10 @@ module.exports = (
                             "limit": "Limit",
                             "delay": "Delay",
                             "duration": "Duration",
-                            "name_note_lists": "The name of the animation of the list items.",
-                            "name_note_buttons": "The name of the animation of the buttons.",
-                            "name_note_messages": "The name of the animation of the messages.",
-                            "name_note_popouts": "The name of the animation of the popouts.",
+                            "name_note_lists": "Animation of the lists items.",
+                            "name_note_buttons": "Animation of the buttons.",
+                            "name_note_messages": "Animation of the messages.",
+                            "name_note_popouts": "Animation of the popouts.",
                             "sequence_note_lists": "The sequence in which the list items are built.",
                             "sequence_note_buttons": "The sequence in which the buttons are built.",
                             "delay_note_lists": "Delay before appearing for each list item in seconds.",
@@ -323,12 +323,9 @@ module.exports = (
                         `.${WebpackModules.getByProps('categoryItem').categoryItem}`,
                         /*discord settings list*/
                         `.${WebpackModules.getByProps('side').side} *`,
-                        /*discord settings*/
-                        `main.${WebpackModules.getByProps('contentColumnDefault').contentColumnDefault} > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:first-child > *:not(.${WebpackModules.getByProps('image', 'desaturate').image})`,
-                        `main.${WebpackModules.getByProps('contentColumnDefault').contentColumnDefault} > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > div:not(.bd-settings-group):not(:first-child)`,
-                        `main.${WebpackModules.getByProps('contentColumnDefault').contentColumnDefault} > div:not(#bd-editor-panel):not(.bd-controls):not(.bd-empty-image-container):not(.bd-addon-list):not(.bd-settings-group) > h2`,
+                        /*bd addons*/
                         `.bd-addon-card`,
-                        /*alert elements*/
+                        /*modal elements*/
                         `.${WebpackModules.getByProps('focusLock').focusLock} .${WebpackModules.getByProps('scrollerBase', 'thin').scrollerBase}:not(.bd-addon-modal-settings) > div`,
                         /*public servers*/
                         `.${WebpackModules.getAllByProps('guildList', 'subtitle')[1].guildList} > .${WebpackModules.getByProps('loaded', 'card').loaded}`
@@ -383,7 +380,7 @@ module.exports = (
                         let ButtonIcon = WebpackModules.getByProps('button', 'sizeIcon')
                         let ButtonContents = WebpackModules.getByProps('button', 'contents')
                         return {
-                            Locale: BdApi.findModuleByProps('locale', 'addChangeListener').locale,
+                            LocaleGetter: BdApi.findModuleByProps('locale', 'addChangeListener'),
                             Button: ButtonIcon?.button,
                             ButtonSizeSmall: ButtonIcon?.sizeSmall,
                             ButtonText: WebpackModules.getByProps('buttonText', 'giftIcon')?.buttonText,
@@ -402,6 +399,7 @@ module.exports = (
                             IsSending: WebpackModules.getByProps('isSending')?.isSending,
                             IsFailed: WebpackModules.getByProps('isFailed')?.isFailed,
                             Message: WebpackModules.getByProps('message')?.message,
+                            MessageDefault: WebpackModules.getByProps("default", "ThreadStarterChatMessage", "getElementFromMessageId"),
                             MessageListItem: WebpackModules.getByProps('messageListItem')?.messageListItem,
                             Member: WebpackModules.getByProps('botTag', 'member').member,
                             MembersGroup: WebpackModules.getByProps('membersGroup').membersGroup,
@@ -1285,7 +1283,7 @@ module.exports = (
                         /**
                          * @type {locale}
                          */
-                        let locale = AnimationsPlugin.modules.Locale;
+                        let locale = AnimationsPlugin.modules.LocaleGetter.locale;
 
                         let t = this.stringsGet(locale)
                         let d = AnimationsPlugin.strings
@@ -2483,7 +2481,11 @@ module.exports = (
                                         Tooltip.create(btn, span.innerText, {preventFlip: true, side: 'bottom'})
                                     }
                                     else if(btn.getAttribute('data-link')) {
-                                        Tooltip.create(btn.querySelector('svg'), btn.getAttribute('data-link'), {preventFlip: true, side: 'bottom'})
+                                        let svgs = Array.from(btn.querySelectorAll('svg'))
+                                        let svg = svgs[svgs.length - 1]
+                                        let tt = new Tooltip(btn, btn.getAttribute('data-link'), { preventFlip: true, side: 'top', disabled: true })
+                                        svg.addEventListener('mouseenter', () => tt.show())
+                                        svg.addEventListener('mouseleave', () => tt.hide())
                                     }
                                 }
                             )
@@ -2572,7 +2574,7 @@ module.exports = (
                                                             request.open("GET", 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/Animations.plugin.js' + '?ref=Animations');
                                                             request.send();
 
-                                                            request.timeout = 5000;
+                                                            request.timeout = 15000;
                                                             request.timeout
                                                             request.ontimeout = function (e) {
                                                                 c.setState({color: 'red', label: trn.view.update_err_timeout})
@@ -3725,7 +3727,27 @@ module.exports = (
                         return settings_panel
                     }
 
+                    patchAll() {
+                        Patcher.after(
+                            this.getName(),
+                            AnimationsPlugin.modules.MessageDefault.default,
+                            "type",
+                            (obj, [props], ret) => {
+                                let foundNode = Utilities.findInTree(ret, node => node?.type == "li")
+                                if(foundNode) {
+                                    console.log(props)
+                                    foundNode.props.style = {
+                                        "animation-name": this.settings.messages.custom.enabled ? this.settings.messages.custom.frames[this.settings.messages.custom.page] : this.settings.messages.name,
+                                        "animation-duration": this.settings.messages.duration,
+                                    }
+                                }
+                            }
+                        );
+                    }
+
                     start() {
+
+                        this.patchAll()
 
                         PluginUpdater.checkForUpdate(this.getName(), this.getVersion(), "https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js");
 
@@ -4200,28 +4222,6 @@ module.exports = (
                             this.resetAnimations()
                         }, 100);
 
-                        this.BadSendingStyles = (e) => {
-                            if (e.key == "Enter") { // finding parent
-                                var BadSendingTextNode = document.getElementsByClassName(AnimationsPlugin.modules.ChatContent)[0]
-                                    ?.querySelector?.(`.${AnimationsPlugin.modules.IsSending}, .${AnimationsPlugin.modules.IsFailed}`)
-
-                                if (document.querySelector('[class*=chatContent]'))
-                                    if (!BadSendingTextNode) {
-                                        setTimeout(() => {
-                                            BadSendingTextNode = this.BadSendingStyles(e)
-                                            return BadSendingTextNode
-                                        }, 50)// frequency of checks after pressing Enter
-                                    } else {
-                                        var result = BadSendingTextNode.closest(`.${AnimationsPlugin.modules.Message}`);// this is where we found it
-                                        // there styles for parent
-                                        result.style.animation = 'none'
-                                        result.style.transform = 'none'
-                                    }
-                            }
-                        }
-
-                        document.addEventListener('keyup', this.BadSendingStyles)
-
                         //this.animateServers()
                         //this.animateMembers()
                         //this.animateChannels()
@@ -4248,7 +4248,8 @@ module.exports = (
                     }
 
                     stop() {
-                        document.removeEventListener('keyup', this.BadSendingStyles);
+
+                        Patcher.unpatchAll(this.getName())
 
                         clearInterval(this.animateInterval)
 
@@ -4256,7 +4257,7 @@ module.exports = (
                         PluginUtilities.removeStyle(`${this.getName()}-comp`);
 
                         this.observer.disconnect()
-
+                        this.closeSettings()
                     }
 
                     onSwitch() {
