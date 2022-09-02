@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.3.6.2
+ * @version 1.3.7
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @invite PWtAHjBXtG
@@ -23,15 +23,15 @@ module.exports = (
                         github_username: 'Mopsgamer',
                     }
                 ],
-                version: '1.3.6.2',
+                version: '1.3.7',
                 description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
                 github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
                 github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
             },
             changelog: [
-                //{ "title": "New Stuff", "items": ["The translation of the plugin has become more comfortable, you can help. And if you don't want to, you will now receive the translation regardless of updates."] },
-                { "title": "Improvements", "type": "improved", "items": ["The link buttons can now show you the link address when you hover over the arrow icon.", "When you restart the plugin, the settings will be closed."] },
-                { "title": "Fixes", "type": "fixed", "items": ["Fixed bug when after changing language you had to reload the plugin to see another language.", "A small fix for a dumb old code to {improve performance} and {smoother animation while sending a message}. (finally)"] }
+                { "title": "New Stuff", "items": ["Added timing function setting."] },
+                { "title": "Improvements", "type": "improved", "items": ["Reworking the brick animation.", "Reworked the default settings using brick animation."] },
+                { "title": "Fixes", "type": "fixed", "items": ["Fixed some broken animations."] }
             ],
             main: 'index.js',
         };
@@ -74,121 +74,109 @@ module.exports = (
                         super();
 
                         this.defaultFrames = {
-                            template: {
-                                start: 'transform: scale(0);',
-                                anim: '0% {\ntransform: translate(0, 100%);\n}\n\n100% {\ntransform: translate(0, 0) scale(1);\n}'
-                            },
                             clear: {
-                                start: '',
-                                anim: ''
+                                anim: '',
+                                start: ''
                             },
+                            template: {
+                                anim: '0% {\ntransform: translate(0, 100%);\n}\n\n100% {\ntransform: translate(0, 0) scale(1);\n}',
+                                start: 'transform: scale(0);'
+                            }
                         }
 
                         let defaultSettings = {
-                            lists: {
-                                enabled: true,
-                                name: 'opacity',
-                                page: 0,
-                                sequence: 'fromFirst',
-                                selectors: '',
+                            buttons: {
                                 custom: {
                                     enabled: false,
-                                    frames: [
-                                        {
-                                            start: '',
-                                            anim: ''
-                                        },
-                                        {
-                                            start: '',
-                                            anim: ''
-                                        },
-                                        {
-                                            start: '',
-                                            anim: ''
-                                        },
-                                    ],
+                                    frames: [{
+                                        anim: '',
+                                        start: ''
+                                    }, {
+                                        anim: '',
+                                        start: ''
+                                    }, {
+                                        anim: '',
+                                        start: ''
+                                    }],
                                     page: 0
                                 },
-                                duration: 0.4,
-                                delay: 0.04,
-                            },
-                            buttons: {
+                                delay: 0.1,
+                                duration: 0.3,
                                 enabled: true,
-                                name: 'opacity',
+                                name: 'brick-left',
                                 page: 0,
-                                sequence: 'fromLast',
                                 selectors: '',
+                                sequence: 'fromLast',
+                                timing: 'linear'
+                            },
+                            lists: {
                                 custom: {
                                     enabled: false,
-                                    frames: [
-                                        {
-                                            start: '',
-                                            anim: ''
-                                        },
-                                        {
-                                            start: '',
-                                            anim: ''
-                                        },
-                                        {
-                                            start: '',
-                                            anim: ''
-                                        },
-                                    ],
+                                    frames: [{
+                                        anim: '',
+                                        start: ''
+                                    }, {
+                                        anim: '',
+                                        start: ''
+                                    }, {
+                                        anim: '',
+                                        start: ''
+                                    }],
+                                    page: 0
+                                },
+                                delay: 0.055,
+                                duration: 0.3,
+                                enabled: true,
+                                name: 'brick-up',
+                                page: 0,
+                                selectors: '',
+                                sequence: 'fromFirst',
+                                timing: 'linear'
+                            },
+                            messages: {
+                                custom: {
+                                    enabled: false,
+                                    frames: [{
+                                        anim: '',
+                                        start: ''
+                                    }, {
+                                        anim: '',
+                                        start: ''
+                                    }, {
+                                        anim: '',
+                                        start: ''
+                                    }],
+                                    page: 0
+                                },
+                                delay: 0.055,
+                                duration: 0.3,
+                                enabled: true,
+                                limit: 30,
+                                name: 'brick-down',
+                                page: 0,
+                                timing: 'linear'
+                            },
+                            popouts: {
+                                custom: {
+                                    enabled: false,
+                                    frames: [{
+                                        anim: '',
+                                        start: ''
+                                    }, {
+                                        anim: '',
+                                        start: ''
+                                    }, {
+                                        anim: '',
+                                        start: ''
+                                    }],
                                     page: 0
                                 },
                                 duration: 0.3,
-                                delay: 0.2
-                            },
-                            messages: {
                                 enabled: true,
-                                name: 'opacity',
-                                page: 0,
-                                custom: {
-                                    enabled: false,
-                                    frames: [
-                                        {
-                                            start: '',
-                                            anim: ''
-                                        },
-                                        {
-                                            start: '',
-                                            anim: ''
-                                        },
-                                        {
-                                            start: '',
-                                            anim: ''
-                                        },
-                                    ],
-                                    page: 0
-                                },
-                                duration: 0.4,
-                                delay: 0.04,
-                                limit: 30
-                            },
-                            popouts: {
-                                enabled: true,
-                                name: 'opacity',
+                                name: 'brick-down',
                                 page: 0,
                                 selectors: '',
-                                custom: {
-                                    enabled: false,
-                                    frames: [
-                                        {
-                                            start: '',
-                                            anim: ''
-                                        },
-                                        {
-                                            start: '',
-                                            anim: ''
-                                        },
-                                        {
-                                            start: '',
-                                            anim: ''
-                                        },
-                                    ],
-                                    page: 0
-                                },
-                                duration: 0.5
+                                timing: 'linear'
                             }
                         }
 
@@ -205,104 +193,146 @@ module.exports = (
                     getVersion() { return config.info.version }
 
                     static strings = {
-                        "view": {
-                            "changelog": "Changelog",
-                            "reset_all_settings": "Reset all",
-                            "rebuild_animations": "Rebuild animations",
-                            "resetting": "Resetting...",
-                            "update_err_timeout": "Timeout exceeded",
-                            "update_err_unknown": "An error occurred",
-                            "update_check": "Check for updates",
-                            "update_newer": "Your own version",
-                            "update_older": "Update",
-                            "update_latest": "Latest version",
-                            "link_gh_issues": "Issues",
-                            "link_gh_discussions": "Discussions",
-                            "links_dc_server": "Server",
-                            "lists": "Lists",
-                            "buttons": "Buttons",
-                            "popouts": "Popouts",
-                            "messages": "Messages",
-                            "reset_lists": "Reset lists settings",
-                            "reset_buttons": "Reset buttons settings",
-                            "reset_messages": "Reset messages settings",
-                            "reset_popouts": "Reset popouts settings",
-                            "advanced": "Advanced",
-                            "update_searching": "Searching for updates...",
-                            "selectors_lists": "Selectors of lists",
-                            "selectors_buttons": "Selectors of buttons",
-                            "selectors_popouts": "Selectors of popouts",
-                            "selectors_note_all": "If you leave this field empty, the default selectors will appear here on reload. Changes to the selectors are saved when typing (if the code is valid). The separator is a comma (,).",
-                            "upd_translation": "Update the translation file",
-                            "link_cd": "Help translate"
-                        },
-                        "pop": {
-                            "will_updated": "The plugin will be updated.",
-                            "will_downdated": "The plugin will be downdated.",
-                            "will_restored": "The plugin will be restored.",
-                            "you_can_say_no": "You can say no.",
-                            "yes": "Let's do this",
-                            "no": "No"
-                        },
-                        "stng": {
-                            "name": "Animation",
-                            "sequence": "Sequence",
-                            "limit": "Limit",
-                            "delay": "Delay",
-                            "duration": "Duration",
-                            "name_note_lists": "Animation of the lists items.",
-                            "name_note_buttons": "Animation of the buttons.",
-                            "name_note_messages": "Animation of the messages.",
-                            "name_note_popouts": "Animation of the popouts.",
-                            "sequence_note_lists": "The sequence in which the list items are built.",
-                            "sequence_note_buttons": "The sequence in which the buttons are built.",
-                            "delay_note_lists": "Delay before appearing for each list item in seconds.",
-                            "delay_note_buttons": "Delay before appearing for each button in seconds.",
-                            "delay_note_messages": "Delay before appearing for each message in seconds.",
-                            "limit_note_messages": "The maximum number of messages in the list for which the animation will be played.",
-                            "duration_note_lists": "Animation playback speed in seconds for each list item after the delay.",
-                            "duration_note_buttons": "Animation playback speed in seconds for each button after the delay.",
-                            "duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
-                            "duration_note_popouts": "Animation playback speed in seconds for a popout.",
-                            "name_mode_selecting": "Selecting",
-                            "name_mode_editing": "Editing"
-                        },
                         "edit": {
-                            "template": "Template",
                             "clear": "Clear",
+                            "default": "Default",
                             "load": "Load",
                             "save": "Save",
-                            "default": "Default"
+                            "template": "Template"
                         },
                         "name": {
-                            "in": "In",
-                            "out": "Out",
-                            "circle": "Circle",
-                            "polygon": "Polygon",
-                            "opacity": "Opacity",
-                            "slime": "Slime",
+                            "brick_down": "Brick down",
                             "brick_left": "Brick left",
                             "brick_right": "Brick right",
                             "brick_up": "Brick up",
-                            "brick_down": "Brick down",
+                            "circle": "Circle",
+                            "in": "In",
+                            "opacity": "Opacity",
+                            "out": "Out",
+                            "polygon": "Polygon",
+                            "skew_left": "Skew left",
+                            "skew_right": "Skew right",
+                            "slide_down": "Slide down",
+                            "slide_down_left": "Slide down (left)",
+                            "slide_down_right": "Slide down (right)",
                             "slide_left": "Slide left",
                             "slide_right": "Slide right",
                             "slide_up": "Slide up",
-                            "slide_down": "Slide down",
-                            "slide_up_right": "Slide up (right)",
                             "slide_up_left": "Slide up (left)",
-                            "slide_down_right": "Slide down (right)",
-                            "slide_down_left": "Slide down (left)",
-                            "skew_left": "Skew left",
-                            "skew_right": "Skew right",
+                            "slide_up_right": "Slide up (right)",
+                            "slime": "Slime",
                             "wide_skew_left": "Wide skew left",
                             "wide_skew_right": "Wide skew right"
+                        },
+                        "pop": {
+                            "no": "No",
+                            "will_downdated": "The plugin will be downdated.",
+                            "will_restored": "The plugin will be restored.",
+                            "will_updated": "The plugin will be updated.",
+                            "yes": "Let's do this",
+                            "you_can_say_no": "You can say no."
                         },
                         "seq": {
                             "from_first": "From first",
                             "from_last": "From last"
+                        },
+                        "stng": {
+                            "delay": "Delay",
+                            "delay_note_buttons": "Delay before appearing for each button in seconds.",
+                            "delay_note_lists": "Delay before appearing for each list item in seconds.",
+                            "delay_note_messages": "Delay before appearing for each message in seconds.",
+                            "duration": "Duration",
+                            "duration_note_buttons": "Animation playback speed in seconds for each button after the delay.",
+                            "duration_note_lists": "Animation playback speed in seconds for each list item after the delay.",
+                            "duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
+                            "duration_note_popouts": "Animation playback speed in seconds for a popout.",
+                            "limit": "Limit",
+                            "limit_note_messages": "The maximum number of messages in the list for which the animation will be played.",
+                            "name": "Animation",
+                            "name_mode_editing": "Editing",
+                            "name_mode_selecting": "Selecting",
+                            "name_note_buttons": "Animation of the buttons.",
+                            "name_note_lists": "Animation of the lists items.",
+                            "name_note_messages": "Animation of the messages.",
+                            "name_note_popouts": "Animation of the popouts.",
+                            "sequence": "Sequence",
+                            "sequence_note_buttons": "The sequence in which the buttons are built.",
+                            "sequence_note_lists": "The sequence in which the list items are built.",
+                            "timing": "Timing function",
+                            "timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+                            "timing_note_lists": "Defines the change in animation playback speed for lists.",
+                            "timing_note_messages": "Defines the change in animation playback speed for messages.",
+                            "timing_note_popouts": "Defines the change in animation playback speed for popouts.",
+                        },
+                        "view": {
+                            "advanced": "Advanced",
+                            "buttons": "Buttons",
+                            "changelog": "Changelog",
+                            "link_cd": "Help translate",
+                            "link_gh_discussions": "Discussions",
+                            "link_gh_issues": "Issues",
+                            "links_dc_server": "Server",
+                            "lists": "Lists",
+                            "messages": "Messages",
+                            "popouts": "Popouts",
+                            "rebuild_animations": "Rebuild animations",
+                            "reset_all_settings": "Reset all",
+                            "reset_buttons": "Reset buttons settings",
+                            "reset_lists": "Reset lists settings",
+                            "reset_messages": "Reset messages settings",
+                            "reset_popouts": "Reset popouts settings",
+                            "resetting": "Resetting...",
+                            "selectors_buttons": "Selectors of buttons",
+                            "selectors_lists": "Selectors of lists",
+                            "selectors_note_all": "If you leave this field empty, the default selectors will appear here on reload. Changes to the selectors are saved when typing (if the code is valid). The separator is a comma (,).",
+                            "selectors_popouts": "Selectors of popouts",
+                            "upd_translation": "Update the translation file",
+                            "update_check": "Check for updates",
+                            "update_err_timeout": "Timeout exceeded",
+                            "update_err_unknown": "An error occurred",
+                            "update_latest": "Latest version",
+                            "update_newer": "Your own version",
+                            "update_older": "Update",
+                            "update_searching": "Searching for updates..."
                         }
                     }
+                    
+                    static easings = [
+                        'linear',
+                        'ease-in',
+                        'ease-out',
+                        'ease-in-out'
+                    ]
+
+                    static names = [
+                        'brick-down',
+                        'brick-left',
+                        'brick-right',
+                        'brick-up',
+                        'circle',
+                        'in',
+                        'opacity',
+                        'out',
+                        'polygon',
+                        'skew-left',
+                        'skew-right',
+                        'slide-down-left',
+                        'slide-down-right',
+                        'slide-down',
+                        'slide-left',
+                        'slide-right',
+                        'slide-up-left',
+                        'slide-up-right',
+                        'slide-up',
+                        'slime',
+                        'wide-skew-left',
+                        'wide-skew-right',
+                    ]
+
+                    static sequences = [
+                        'fromFirst',
+                        'fromLast',
+                    ]
 
                     static selectorsLists = [
                         /*active threads button*/
@@ -343,37 +373,9 @@ module.exports = (
                     ]
 
                     static selectorsPopouts = [
-                        `[role="dialog"].${WebpackModules.getByProps('focusLock').focusLock} > *:not(.bd-addon-modal)`
-                    ]
-
-                    static names = [
-                        'circle',
-                        'polygon',
-                        'opacity',
-                        'slime',
-                        'brick-right',
-                        'brick-left',
-                        'brick-up',
-                        'brick-down',
-                        'in',
-                        'out',
-                        'slide-right',
-                        'slide-left',
-                        'slide-up',
-                        'slide-up-right',
-                        'slide-up-left',
-                        'slide-down',
-                        'slide-down-right',
-                        'slide-down-left',
-                        'skew-right',
-                        'skew-left',
-                        'wide-skew-right',
-                        'wide-skew-left',
-                    ]
-
-                    static sequences = [
-                        'fromFirst',
-                        'fromLast',
+                        `[role="dialog"].${WebpackModules.getByProps('focusLock').focusLock} > *:not(.bd-addon-modal)`,
+                        `[id^=popout]`,
+                        `[role=menu]`
                     ]
 
                     static modules = (() => {
@@ -429,6 +431,7 @@ module.exports = (
                                 ${this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start : `transform: scale(0);`}
                                 animation-fill-mode: forwards;
                                 animation-duration: ${this.settings.lists.duration}s;
+                                animation-timing-function: ${this.settings.lists.timing};
                             }
                         `)
 
@@ -471,7 +474,7 @@ module.exports = (
 
                         }
 
-                        setTimeout(() => PluginUtilities.removeStyle(`${this.getName()}-channelslist`), (count * this.settings.lists.delay) + this.settings.lists.duration)
+                        setTimeout(() => PluginUtilities.removeStyle(`${this.getName()}-channelslist`), ((count * this.settings.lists.delay) + this.settings.lists.duration) * 1000)
 
                     }
 
@@ -490,15 +493,10 @@ module.exports = (
                         /*member-groups*/
                         h2.${AnimationsPlugin.modules.MembersGroup}
                         {
-                            ${this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start : `transform: scale(0);`}
+                            ${this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start && this.settings.lists.custom.enabled ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start : `transform: scale(0);`}
                             animation-fill-mode: forwards;
                             animation-duration: ${this.settings.lists.duration}s;
-                        }
-
-                        /* members offline */
-                        .${AnimationsPlugin.modules.Offline}
-                        {
-                            animation-name: ${this.settings.lists.name}_offline !important;
+                            animation-timing-function: ${this.settings.lists.timing};
                         }
                     `)
 
@@ -513,11 +511,10 @@ module.exports = (
                                     this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() != '' &&
                                     this.isValidKeyframe(this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim)
                                     : 0)
-                                ? 'custom-lists' : this.settings.lists.name;
+                                ? 'custom-lists' : this.settings.lists.name + (children.getAttribute('class').includes('offline') ? '_offline' : '');
                         }
 
-                        setTimeout(() => PluginUtilities.removeStyle(`${this.getName()}-memberslist`), (count * this.settings.lists.delay) + this.settings.lists.duration)
-
+                        setTimeout(() => PluginUtilities.removeStyle(`${this.getName()}-memberslist`), ((count * this.settings.lists.delay) + this.settings.lists.duration) * 1000)
                     }
 
                     animateServers = () => {
@@ -534,6 +531,7 @@ module.exports = (
                             ${this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start : `transform: scale(0);`}
                             animation-fill-mode: forwards;
                             animation-duration: ${this.settings.lists.duration}s;
+                            animation-timing-function: ${this.settings.lists.timing};
                         }
 
                         ${!BdApi.Themes.isEnabled('Horizontal Server List') ? '' : `
@@ -555,7 +553,7 @@ module.exports = (
                                 ? 'custom-lists' : (this.settings.lists.name + (!BdApi.Themes.isEnabled('Horizontal Server List') ? '' : '_90'));
                         }
 
-                        setTimeout(() => PluginUtilities.removeStyle(`${this.getName()}-serverslist`), (count * this.settings.lists.delay) + this.settings.lists.duration)
+                        setTimeout(() => PluginUtilities.removeStyle(`${this.getName()}-serverslist`), ((count * this.settings.lists.delay) + this.settings.lists.duration) * 1000)
 
                     }
 
@@ -661,8 +659,18 @@ module.exports = (
                                     `@keyframes ${name} {
                                 0% {
                                     transform-origin: 50%;
-                                    transform: scale(1) translate(0, 500%) rotate(${rotate}deg);
+                                    transform: scale(1) translate(0, 200%) rotate(${rotate}deg);
                                     opacity: 0;
+                                }
+                                60% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                                    opacity: ${opacity};
+                                }
+                                80% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(0, 20%) rotate(${rotate}deg);
+                                    opacity: ${opacity};
                                 }
                                 100% {
                                     transform-origin: 50%;
@@ -674,8 +682,18 @@ module.exports = (
                                     `@keyframes ${name} {
                                 0% {
                                     transform-origin: 50%;
-                                    transform: scale(1) translate(-500%, 0) rotate(${rotate}deg);
+                                    transform: scale(1) translate(-200%, 0) rotate(${rotate}deg);
                                     opacity: 0;
+                                }
+                                60% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                                    opacity: ${opacity};
+                                }
+                                80% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(-20%, 0) rotate(${rotate}deg);
+                                    opacity: ${opacity};
                                 }
                                 100% {
                                     transform-origin: 50%;
@@ -687,8 +705,18 @@ module.exports = (
                                     `@keyframes ${name} {
                                 0% {
                                     transform-origin: 50%;
-                                    transform: scale(1) translate(500%, 0) rotate(${rotate}deg);
+                                    transform: scale(1) translate(200%, 0) rotate(${rotate}deg);
                                     opacity: 0;
+                                }
+                                60% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                                    opacity: ${opacity};
+                                }
+                                80% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(20%, 0) rotate(${rotate}deg);
+                                    opacity: ${opacity};
                                 }
                                 100% {
                                     transform-origin: 50%;
@@ -700,8 +728,18 @@ module.exports = (
                                     `@keyframes ${name} {
                                 0% {
                                     transform-origin: 50%;
-                                    transform: scale(1) translate(0, -500%) rotate(${rotate}deg);
+                                    transform: scale(1) translate(0, -200%) rotate(${rotate}deg);
                                     opacity: 0;
+                                }
+                                60% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                                    opacity: ${opacity};
+                                }
+                                80% {
+                                    transform-origin: 50%;
+                                    transform: scale(1) translate(0, -20%) rotate(${rotate}deg);
+                                    opacity: ${opacity};
                                 }
                                 100% {
                                     transform-origin: 50%;
@@ -1015,6 +1053,7 @@ module.exports = (
                                     ? 'custom-lists' : this.settings.lists.name};
                     animation-fill-mode: forwards;
                     animation-duration: ${this.settings.lists.duration}s;
+                    animation-timing-function: ${this.settings.lists.timing};
                 }
                 `}
 
@@ -1030,6 +1069,7 @@ module.exports = (
                                     ? 'custom-buttons' : this.settings.buttons.name};
                     animation-fill-mode: forwards;
                     animation-duration: ${this.settings.buttons.duration}s;
+                    animation-timing-function: ${this.settings.buttons.timing};
                 }
                 `}
 
@@ -1043,7 +1083,9 @@ module.exports = (
                                         this.isValidKeyframe(this.settings.popouts.custom.frames[this.settings.popouts.custom.page].anim)
                                         : 0)
                                     ? 'custom-popouts' : this.settings.popouts.name};
+                    animation-fill-mode: forwards;
                     animation-duration: ${this.settings.popouts.duration}s;
+                    animation-timing-function: ${this.settings.popouts.timing};
                 }
                 `}
 
@@ -1060,6 +1102,7 @@ module.exports = (
                                         : 0)
                                     ? 'custom-messages' : this.settings.messages.name};
                     animation-duration: ${this.settings.messages.duration}s;
+                    animation-timing-function: ${this.settings.messages.timing};
                 }
 
                 /*lines-forward-messages fix*/
@@ -1302,7 +1345,42 @@ module.exports = (
 
                         var ElementsPanel = (containersTemp = [], options = {}) => {
 
+                            class ElementSvg extends React.Component {
 
+                                constructor(props) {
+                                    super(props)
+                                    this.state = {
+                                        paths: [],
+                                        color: '#fff',
+                                        width: '16px',
+                                        height: '16px',
+                                        align: false,
+                                        viewBox: '0 0 24 24',
+                                        ...props
+                                    }
+                                }
+
+                                render() {
+
+                                    return React.createElement('svg',
+                                        {
+                                            viewBox: this.state.viewBox,
+                                            fill: this.state.color,
+                                            id: this.state.id ?? '',
+                                            class: this.state.class ?? '',
+                                            style: {
+                                                width: this.state.width,
+                                                height: this.state.height,
+                                                position: (['right', 'left']).includes(this.state.align) ? 'absolute' : 'relative',
+                                                right: (this.state.align == 'right') ? '12px' : 'none',
+                                                left: (this.state.align == 'left') ? '12px' : 'none',
+                                                'margin-right': '4px'
+                                            }
+                                        },
+                                        this.state.paths.map(path => React.createElement('path', { d: path }))
+                                    )
+                                }
+                            }
 
                             class ElementButton extends React.Component {
 
@@ -1328,37 +1406,6 @@ module.exports = (
                                 }
 
                                 render() {
-                                    class SvgElement extends React.Component {
-
-                                        constructor(props) {
-                                            super(props)
-                                            this.paths = props.paths ?? []
-                                            this.color = props.color ?? '#fff'
-                                            this.width = props.width ?? '16px'
-                                            this.height = props.height ?? '16px'
-                                            this.align = props.align ?? false
-                                            this.viewBox = props.viewBox ?? '0 0 24 24'
-                                        }
-
-                                        render() {
-
-                                            return React.createElement('svg',
-                                                {
-                                                    viewBox: this.viewBox,
-                                                    fill: this.color,
-                                                    style: {
-                                                        width: this.width,
-                                                        height: this.height,
-                                                        position: (['right', 'left']).includes(this.align) ? 'absolute' : 'relative',
-                                                        right: (this.align == 'right') ? '12px' : 'none',
-                                                        left: (this.align == 'left') ? '12px' : 'none',
-                                                        'margin-right': '4px'
-                                                    }
-                                                },
-                                                this.paths.map(path => React.createElement('path', { d: path }))
-                                            )
-                                        }
-                                    }
 
                                     var button = this.state;
                                     return React.createElement('button', {
@@ -1382,7 +1429,7 @@ module.exports = (
                                         }
                                     },
                                         [
-                                            Array.isArray(button.svgs) ? button.svgs.map((svgTemp) => React.createElement(SvgElement, svgTemp)) : null,
+                                            Array.isArray(button.svgs) ? button.svgs.map((svgTemp) => React.createElement(ElementSvg, svgTemp)) : null,
                                             React.createElement('span', {
                                                 style: {
                                                     'max-width': 'none'
@@ -1391,7 +1438,7 @@ module.exports = (
                                             },
                                                 button.label
                                             ),
-                                            typeof button.link == 'string' ? React.createElement(SvgElement, {
+                                            typeof button.link == 'string' ? React.createElement(ElementSvg, {
                                                 ...SvgTemps.linkArrow,
                                                 align: 'right'
                                             }) : null
@@ -1497,6 +1544,14 @@ module.exports = (
                                                         case 'divider':
                                                             return (
                                                                 React.createElement('div', { class: 'animFieldDivider' })
+                                                            )
+                                                        //break;
+
+                                                        case 'svg':
+                                                            return (
+                                                                React.createElement(ElementSvg, {
+                                                                    ...elementTemp
+                                                                })
                                                             )
                                                         //break;
 
@@ -2260,219 +2315,167 @@ module.exports = (
                         }
 
                         let SvgTemps = {
-                            switcherTick: {
-                                paths: [
-                                    'M7.89561 14.8538L6.30462 13.2629L14.3099 5.25755L15.9009 6.84854L7.89561 14.8538Z',
-                                    'M4.08643 11.0903L5.67742 9.49929L9.4485 13.2704L7.85751 14.8614L4.08643 11.0903Z'
-                                ],
-                                viewBox: '0 0 20 20'
-                            },
-                            switcherCross: {
-                                paths: [
-                                    'M5.13231 6.72963L6.7233 5.13864L14.855 13.2704L13.264 14.8614L5.13231 6.72963Z',
-                                    'M13.2704 5.13864L14.8614 6.72963L6.72963 14.8614L5.13864 13.2704L13.2704 5.13864Z'
-                                ],
-                                viewBox: '0 0 20 20'
-                            },
                             checked: {
-                                paths: [
-                                    'M5.37499 3H18.625C19.9197 3 21.0056 4.08803 21 5.375V18.625C21 19.936 19.9359 21 18.625 21H5.37499C4.06518 21 3 19.936 3 18.625V5.375C3 4.06519 4.06518 3 5.37499 3Z M9.58473 14.8636L6.04944 11.4051L4.50003 12.9978L9.58473 18L19.5 8.26174L17.9656 6.64795L9.58473 14.8636Z',
-                                ],
+                                paths: ['M5.37499 3H18.625C19.9197 3 21.0056 4.08803 21 5.375V18.625C21 19.936 19.9359 21 18.625 21H5.37499C4.06518 21 3 19.936 3 18.625V5.375C3 4.06519 4.06518 3 5.37499 3Z M9.58473 14.8636L6.04944 11.4051L4.50003 12.9978L9.58473 18L19.5 8.26174L17.9656 6.64795L9.58473 14.8636Z'],
                                 viewBox: '0 0 24 24'
-                            },
-                            unchecked: {
-                                paths: [
-                                    'M5.37499 3H18.625C19.9197 3 21.0056 4.08803 21 5.375V18.625C21 19.936 19.9359 21 18.625 21H5.37499C4.06518 21 3 19.936 3 18.625V5.375C3 4.06519 4.06518 3 5.37499 3Z M 19 19 V 5 H 5 V 19 H 19 Z',
-                                ],
-                                viewBox: '0 0 24 24'
-                            },
-                            radioChecked: {
-                                paths: [
-                                    { fill: '#fff', 'fill-rule': 'evenodd', 'clip-rule': 'evenodd', d: 'M12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z' },
-                                    { tag: 'circle', cx: '12', cy: '12', r: '5' },
-                                ],
-                                viewBox: '0 0 24 24'
-                            },
-                            radioUnchecked: {
-                                paths: [
-                                    { 'fill-rule': 'evenodd', 'clip-rule': 'evenodd', d: 'M12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z' },
-                                ],
-                                viewBox: '0 0 24 24'
-                            },
-                            searchLoupe: {
-                                paths: [
-                                    'M21.707 20.293L16.314 14.9C17.403 13.504 18 11.799 18 10C18 7.863 17.167 5.854 15.656 4.344C14.146 2.832 12.137 2 10 2C7.863 2 5.854 2.832 4.344 4.344C2.833 5.854 2 7.863 2 10C2 12.137 2.833 14.146 4.344 15.656C5.854 17.168 7.863 18 10 18C11.799 18 13.504 17.404 14.9 16.314L20.293 21.706L21.707 20.293ZM10 16C8.397 16 6.891 15.376 5.758 14.243C4.624 13.11 4 11.603 4 10C4 8.398 4.624 6.891 5.758 5.758C6.891 4.624 8.397 4 10 4C11.603 4 13.109 4.624 14.242 5.758C15.376 6.891 16 8.398 16 10C16 11.603 15.376 13.11 14.242 14.243C13.109 15.376 11.603 16 10 16Z',
-                                ],
-                                viewBox: '0 0 24 24'
-                            },
-                            searchCross: {
-                                paths: [
-                                    'M18.4 4L12 10.4L5.6 4L4 5.6L10.4 12L4 18.4L5.6 20L12 13.6L18.4 20L20 18.4L13.6 12L20 5.6L18.4 4Z'
-                                ],
-                                viewBox: '0 0 24 24'
-                            },
-                            gear: {
-                                paths: [
-                                    'M19.738 10H22V14H19.739C19.498 14.931 19.1 15.798 18.565 16.564L20 18L18 20L16.565 18.564C15.797 19.099 14.932 19.498 14 19.738V22H10V19.738C9.069 19.498 8.203 19.099 7.436 18.564L6 20L4 18L5.436 16.564C4.901 15.799 4.502 14.932 4.262 14H2V10H4.262C4.502 9.068 4.9 8.202 5.436 7.436L4 6L6 4L7.436 5.436C8.202 4.9 9.068 4.502 10 4.262V2H14V4.261C14.932 4.502 15.797 4.9 16.565 5.435L18 3.999L20 5.999L18.564 7.436C19.099 8.202 19.498 9.069 19.738 10ZM12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z',
-                                ],
-                                viewBox: '0 0 24 24'
-                            },
-                            pencil: {
-                                paths: [
-                                    "M19.2929 9.8299L19.9409 9.18278C21.353 7.77064 21.353 5.47197 19.9409 4.05892C18.5287 2.64678 16.2292 2.64678 14.817 4.05892L14.1699 4.70694L19.2929 9.8299ZM12.8962 5.97688L5.18469 13.6906L10.3085 18.813L18.0201 11.0992L12.8962 5.97688ZM4.11851 20.9704L8.75906 19.8112L4.18692 15.239L3.02678 19.8796C2.95028 20.1856 3.04028 20.5105 3.26349 20.7337C3.48669 20.9569 3.8116 21.046 4.11851 20.9704Z",
-                                ],
-                                viewBox: '0 1 22 22'
                             },
                             closeCross: {
-                                paths: [
-                                    "M18.4 4L12 10.4L5.6 4L4 5.6L10.4 12L4 18.4L5.6 20L12 13.6L18.4 20L20 18.4L13.6 12L20 5.6L18.4 4Z",
-                                ],
+                                paths: ["M18.4 4L12 10.4L5.6 4L4 5.6L10.4 12L4 18.4L5.6 20L12 13.6L18.4 20L20 18.4L13.6 12L20 5.6L18.4 4Z"],
                                 viewBox: '3 2 19 19'
                             },
-                            info: {
-                                paths: [
-                                    "M6 1C3.243 1 1 3.244 1 6c0 2.758 2.243 5 5 5s5-2.242 5-5c0-2.756-2.243-5-5-5zm0 2.376a.625.625 0 110 1.25.625.625 0 010-1.25zM7.5 8.5h-3v-1h1V6H5V5h1a.5.5 0 01.5.5v2h1v1z",
-                                ],
-                                viewBox: '0 0 12 12'
-                            },
-                            help: {
-                                paths: [
-                                    "M12 2C6.486 2 2 6.487 2 12C2 17.515 6.486 22 12 22C17.514 22 22 17.515 22 12C22 6.487 17.514 2 12 2ZM12 18.25C11.31 18.25 10.75 17.691 10.75 17C10.75 16.31 11.31 15.75 12 15.75C12.69 15.75 13.25 16.31 13.25 17C13.25 17.691 12.69 18.25 12 18.25ZM13 13.875V15H11V12H12C13.104 12 14 11.103 14 10C14 8.896 13.104 8 12 8C10.896 8 10 8.896 10 10H8C8 7.795 9.795 6 12 6C14.205 6 16 7.795 16 10C16 11.861 14.723 13.429 13 13.875Z"
-                                ],
-                                viewBox: '0 0 24 24'
-                            },
-                            warn: {
-                                paths: [
-                                    "M10 0C4.486 0 0 4.486 0 10C0 15.515 4.486 20 10 20C15.514 20 20 15.515 20 10C20 4.486 15.514 0 10 0ZM9 4H11V11H9V4ZM10 15.25C9.31 15.25 8.75 14.691 8.75 14C8.75 13.31 9.31 12.75 10 12.75C10.69 12.75 11.25 13.31 11.25 14C11.25 14.691 10.69 15.25 10 15.25Z",
-                                ],
-                                viewBox: '-2 -2 24 24'
-                            },
                             downloadArrow: {
-                                paths: [
-                                    'M16.293 9.293L17.707 10.707L12 16.414L6.29297 10.707L7.70697 9.293L11 12.586V2H13V12.586L16.293 9.293ZM18 20V18H20V20C20 21.102 19.104 22 18 22H6C4.896 22 4 21.102 4 20V18H6V20H18Z',
-                                ],
+                                paths: ['M16.293 9.293L17.707 10.707L12 16.414L6.29297 10.707L7.70697 9.293L11 12.586V2H13V12.586L16.293 9.293ZM18 20V18H20V20C20 21.102 19.104 22 18 22H6C4.896 22 4 21.102 4 20V18H6V20H18Z'],
                                 viewBox: '-1 -1 26 26'
                             },
+                            gear: {
+                                paths: ['M19.738 10H22V14H19.739C19.498 14.931 19.1 15.798 18.565 16.564L20 18L18 20L16.565 18.564C15.797 19.099 14.932 19.498 14 19.738V22H10V19.738C9.069 19.498 8.203 19.099 7.436 18.564L6 20L4 18L5.436 16.564C4.901 15.799 4.502 14.932 4.262 14H2V10H4.262C4.502 9.068 4.9 8.202 5.436 7.436L4 6L6 4L7.436 5.436C8.202 4.9 9.068 4.502 10 4.262V2H14V4.261C14.932 4.502 15.797 4.9 16.565 5.435L18 3.999L20 5.999L18.564 7.436C19.099 8.202 19.498 9.069 19.738 10ZM12 16C14.2091 16 16 14.2091 16 12C16 9.79086 14.2091 8 12 8C9.79086 8 8 9.79086 8 12C8 14.2091 9.79086 16 12 16Z'],
+                                viewBox: '0 0 24 24'
+                            },
+                            help: {
+                                paths: ["M12 2C6.486 2 2 6.487 2 12C2 17.515 6.486 22 12 22C17.514 22 22 17.515 22 12C22 6.487 17.514 2 12 2ZM12 18.25C11.31 18.25 10.75 17.691 10.75 17C10.75 16.31 11.31 15.75 12 15.75C12.69 15.75 13.25 16.31 13.25 17C13.25 17.691 12.69 18.25 12 18.25ZM13 13.875V15H11V12H12C13.104 12 14 11.103 14 10C14 8.896 13.104 8 12 8C10.896 8 10 8.896 10 10H8C8 7.795 9.795 6 12 6C14.205 6 16 7.795 16 10C16 11.861 14.723 13.429 13 13.875Z"],
+                                viewBox: '0 0 24 24'
+                            },
+                            info: {
+                                paths: ["M6 1C3.243 1 1 3.244 1 6c0 2.758 2.243 5 5 5s5-2.242 5-5c0-2.756-2.243-5-5-5zm0 2.376a.625.625 0 110 1.25.625.625 0 010-1.25zM7.5 8.5h-3v-1h1V6H5V5h1a.5.5 0 01.5.5v2h1v1z"],
+                                viewBox: '0 0 12 12'
+                            },
+                            leftArrow: {
+                                paths: ['M18.35 4.35 16 2 6 12 16 22 18.35 19.65 10.717 12Z'],
+                                viewBox: '0 0 24 24'
+                            },
                             linkArrow: {
-                                paths: [
-                                    'M10 5V3H5.375C4.06519 3 3 4.06519 3 5.375V18.625C3 19.936 4.06519 21 5.375 21H18.625C19.936 21 21 19.936 21 18.625V14H19V19H5V5H10Z',
-                                    'M21 2.99902H14V4.99902H17.586L9.29297 13.292L10.707 14.706L19 6.41302V9.99902H21V2.99902Z'
-                                ],
+                                paths: ['M10 5V3H5.375C4.06519 3 3 4.06519 3 5.375V18.625C3 19.936 4.06519 21 5.375 21H18.625C19.936 21 21 19.936 21 18.625V14H19V19H5V5H10Z', 'M21 2.99902H14V4.99902H17.586L9.29297 13.292L10.707 14.706L19 6.41302V9.99902H21V2.99902Z'],
                                 viewBox: '0 0 24 24'
                             },
                             Logos: {
-                                discord: {
-                                    paths: [
-                                        'M23.0212 1.67671C21.3107 0.879656 19.5079 0.318797 17.6584 0C17.4062 0.461742 17.1749 0.934541 16.9708 1.4184C15.003 1.12145 12.9974 1.12145 11.0283 1.4184C10.819 0.934541 10.589 0.461744 10.3368 0.00546311C8.48074 0.324393 6.67795 0.885118 4.96746 1.68231C1.56727 6.77853 0.649666 11.7538 1.11108 16.652C3.10102 18.1418 5.3262 19.2743 7.69177 20C8.22338 19.2743 8.69519 18.4993 9.09812 17.691C8.32996 17.3997 7.58522 17.0424 6.87684 16.6135C7.06531 16.4762 7.24726 16.3387 7.42403 16.1847C11.5911 18.1749 16.408 18.1749 20.5763 16.1847C20.7531 16.3332 20.9351 16.4762 21.1171 16.6135C20.41 17.0369 19.6639 17.3997 18.897 17.691C19.3052 '
-                                        + '18.4993 19.7718 19.2689 20.3021 19.9945C22.6677 19.2689 24.8929 18.1364 26.8828 16.6466H26.8893C27.43 10.9731 25.9665 6.04728 23.0212 1.67671ZM9.68041 13.6383C8.39754 13.6383 7.34085 12.4453 7.34085 10.994C7.34085 9.54272 8.37155 8.34973 9.68041 8.34973C10.9893 8.34973 12.0395 9.54272 12.0187 10.994C12.0187 12.4453 10.9828 13.6383 9.68041 13.6383ZM18.3161 13.6383C17.0332 13.6383 15.9765 12.4453 15.9765 10.994C15.9765 9.54272 17.0124 8.34973 18.3161 8.34973C19.6184 8.34973 20.6751 9.54272 20.6543 10.994C20.6543 12.4453 19.6184 13.6383 18.3161 13.6383Z',
-                                    ],
-                                    viewBox: '0 -5 28 28'
-                                },
                                 betterdiscord: {
-                                    paths: [
-                                        'M1402.2,631.7c-9.7-353.4-286.2-496-642.6-496H68.4v714.1l442,398V490.7h257c274.5,0,274.5,344.9,0,344.9H597.6v329.5h169.8c274.5,0,274.5,344.8,0,344.8h-699v354.9h691.2c356.3,0,632.8-142.6,642.6-496c0-162.6-44.5-284.1-122.9-368.6C1357.7,915.8,1402.2,794.3,1402.2,631.7z',
-                                        'M1262.5,135.2L1262.5,135.2l-76.8,0c26.6,13.3,51.7,28.1,75,44.3c70.7,49.1,126.1,111.5,164.6,185.3c39.9,76.6,61.5,165.6,64.3,264.6l0,1.2v1.2c0,141.1,0,596.1,0,737.1v1.2l0,1.2c-2.7,99-24.3,188-64.3,264.6c-38.5,73.8-93.8,136.2-164.6,185.3c-22.6,15.7-46.9,30.1-72.6,43.1h72.5c346.2,1.9,671-171.2,671-567.9V716.7C1933.5,312.2,1608.7,135.2,1262.5,135.2z',
-                                    ],
+                                    paths: ['M1402.2,631.7c-9.7-353.4-286.2-496-642.6-496H68.4v714.1l442,398V490.7h257c274.5,0,274.5,344.9,0,344.9H597.6v329.5h169.8c274.5,0,274.5,344.8,0,344.8h-699v354.9h691.2c356.3,0,632.8-142.6,642.6-496c0-162.6-44.5-284.1-122.9-368.6C1357.7,915.8,1402.2,794.3,1402.2,631.7z', 'M1262.5,135.2L1262.5,135.2l-76.8,0c26.6,13.3,51.7,28.1,75,44.3c70.7,49.1,126.1,111.5,164.6,185.3c39.9,76.6,61.5,165.6,64.3,264.6l0,1.2v1.2c0,141.1,0,596.1,0,737.1v1.2l0,1.2c-2.7,99-24.3,188-64.3,264.6c-38.5,73.8-93.8,136.2-164.6,185.3c-22.6,15.7-46.9,30.1-72.6,43.1h72.5c346.2,1.9,671-171.2,671-567.9V716.7C1933.5,312.2,1608.7,135.2,1262.5,135.2z'],
                                     viewBox: '0 0 2000 2000'
                                 },
+                                discord: {
+                                    paths: ['M23.0212 1.67671C21.3107 0.879656 19.5079 0.318797 17.6584 0C17.4062 0.461742 17.1749 0.934541 16.9708 1.4184C15.003 1.12145 12.9974 1.12145 11.0283 1.4184C10.819 0.934541 10.589 0.461744 10.3368 0.00546311C8.48074 0.324393 6.67795 0.885118 4.96746 1.68231C1.56727 6.77853 0.649666 11.7538 1.11108 16.652C3.10102 18.1418 5.3262 19.2743 7.69177 20C8.22338 19.2743 8.69519 18.4993 9.09812 17.691C8.32996 17.3997 7.58522 17.0424 6.87684 16.6135C7.06531 16.4762 7.24726 16.3387 7.42403 16.1847C11.5911 18.1749 16.408 18.1749 20.5763 16.1847C20.7531 16.3332 20.9351 16.4762 21.1171 16.6135C20.41 17.0369 19.6639 17.3997 18.897 17.691C19.3052 ' + '18.4993 19.7718 19.2689 20.3021 19.9945C22.6677 19.2689 24.8929 18.1364 26.8828 16.6466H26.8893C27.43 10.9731 25.9665 6.04728 23.0212 1.67671ZM9.68041 13.6383C8.39754 13.6383 7.34085 12.4453 7.34085 10.994C7.34085 9.54272 8.37155 8.34973 9.68041 8.34973C10.9893 8.34973 12.0395 9.54272 12.0187 10.994C12.0187 12.4453 10.9828 13.6383 9.68041 13.6383ZM18.3161 13.6383C17.0332 13.6383 15.9765 12.4453 15.9765 10.994C15.9765 9.54272 17.0124 8.34973 18.3161 8.34973C19.6184 8.34973 20.6751 9.54272 20.6543 10.994C20.6543 12.4453 19.6184 13.6383 18.3161 13.6383Z'],
+                                    viewBox: '0 -5 28 28'
+                                },
                                 github: {
-                                    paths: [
-                                        'm12 .5c-6.63 0-12 5.28-12 11.792 0 5.211 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.361-1.335-1.725-1.335-1.725-1.087-.731.084-.716.084-.716 1.205.082 1.838 1.215 1.838 1.215 1.07 1.803 2.809 1.282 3.495.981.108-.763.417-1.282.76-1.577-2.665-.295-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.235-3.164-.135-.298-.54-1.497.105-3.121 0 0 1.005-.316 3.3 1.209.96-.262 1.98-.392 3-.398 1.02.006 2.04.136 3 .398 2.28-1.525 3.285-1.209 '
-                                        + '3.285-1.209.645 1.624.24 2.823.12 3.121.765.825 1.23 1.877 1.23 3.164 0 4.53-2.805 5.527-5.475 5.817.42.354.81 1.077.81 2.182 0 1.578-.015 2.846-.015 3.229 0 .309.21.678.825.56 4.801-1.548 8.236-5.97 8.236-11.173 0-6.512-5.373-11.792-12-11.792z',
-                                    ],
+                                    paths: ['m12 .5c-6.63 0-12 5.28-12 11.792 0 5.211 3.438 9.63 8.205 11.188.6.111.82-.254.82-.567 0-.28-.01-1.022-.015-2.005-3.338.711-4.042-1.582-4.042-1.582-.546-1.361-1.335-1.725-1.335-1.725-1.087-.731.084-.716.084-.716 1.205.082 1.838 1.215 1.838 1.215 1.07 1.803 2.809 1.282 3.495.981.108-.763.417-1.282.76-1.577-2.665-.295-5.466-1.309-5.466-5.827 0-1.287.465-2.339 1.235-3.164-.135-.298-.54-1.497.105-3.121 0 0 1.005-.316 3.3 1.209.96-.262 1.98-.392 3-.398 1.02.006 2.04.136 3 .398 2.28-1.525 3.285-1.209 ' + '3.285-1.209.645 1.624.24 2.823.12 3.121.765.825 1.23 1.877 1.23 3.164 0 4.53-2.805 5.527-5.475 5.817.42.354.81 1.077.81 2.182 0 1.578-.015 2.846-.015 3.229 0 .309.21.678.825.56 4.801-1.548 8.236-5.97 8.236-11.173 0-6.512-5.373-11.792-12-11.792z'],
                                     viewBox: '0 0 24 24'
                                 },
                                 patreon: {
-                                    paths: [
-                                        'm0 .5h4.219v23h-4.219z',
-                                        'm15.384.5c-4.767 0-8.644 3.873-8.644 8.633 0 4.75 3.877 8.61 8.644 8.61 4.754 0 8.616-3.865 8.616-8.61 0-4.759-3.863-8.633-8.616-8.633z'
-                                    ],
+                                    paths: ['m0 .5h4.219v23h-4.219z', 'm15.384.5c-4.767 0-8.644 3.873-8.644 8.633 0 4.75 3.877 8.61 8.644 8.61 4.754 0 8.616-3.865 8.616-8.61 0-4.759-3.863-8.633-8.616-8.633z'],
                                     viewBox: '0 0 24 24'
-                                },
+                                }
                             },
                             Other: {
-                                list: {
-                                    paths: [
-                                        'M4 18h17v-6H4v6zM4 5v6h17V5H4z',
-                                    ],
-                                    viewBox: '3 2 19 19'
-                                },
-                                tile: {
-                                    paths: [
-                                        'M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z',
-                                    ],
-                                    viewBox: '3 2 19 19'
-                                },
-                                puzzle: {
-                                    paths: [
-                                        'M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z',
-                                    ],
-                                    viewBox: '0 0 24 24'
-                                },
-                                gear: {
-                                    paths: [
-                                        'M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z',
-                                    ],
-                                    viewBox: '1 1 18 18'
-                                },
-                                pencil: {
-                                    paths: [
-                                        'M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z',
-                                    ],
-                                    viewBox: '0 0 24 24'
-                                },
-                                trash: {
-                                    paths: [
-                                        'M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z'
-                                    ],
-                                    viewBox: '0 0 24 24'
-                                },
-                                web: {
-                                    paths: [
-                                        'M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z'
-                                    ],
-                                    viewBox: '2 2 20 20'
-                                },
-                                help: {
-                                    paths: [
-                                        'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z',
-                                    ],
-                                    viewBox: '2 2 20 20'
-                                },
-                                donate: {
-                                    paths: [
-                                        'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z',
-                                    ],
-                                    viewBox: '2 2 20 20'
-                                },
                                 changelogArrow: {
-                                    paths: [
-                                        'M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z',
-                                    ],
+                                    paths: ['M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z'],
                                     viewBox: '0 0 24 24'
                                 },
                                 circleArrow: {
-                                    paths: [
-                                        'M 13 3 c -4.97 0 -9 4.03 -9 9 H 1 l 3.89 3.89 l 0.07 0.14 L 9 12 H 6 c 0 -3.87 3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 z',
-                                    ],
+                                    paths: ['M 13 3 c -4.97 0 -9 4.03 -9 9 H 1 l 3.89 3.89 l 0.07 0.14 L 9 12 H 6 c 0 -3.87 3.13 -7 7 -7 s 7 3.13 7 7 s -3.13 7 -7 7 c -1.93 0 -3.68 -0.79 -4.94 -2.06 l -1.42 1.42 C 8.27 19.99 10.51 21 13 21 c 4.97 0 9 -4.03 9 -9 s -4.03 -9 -9 -9 z'],
                                     viewBox: '0 0 24 24'
                                 },
-                                list2: {
-                                    paths: [
-                                        'M 4 18 h 17 v -3 H 4 v 3 z M 4 10 v 3 h 17 v -3 h -17 M 4 5 v 3 h 17 V 5 H 4 z',
-                                    ],
-                                    viewBox: '3 2 19 19'
+                                donate: {
+                                    paths: ['M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1.41 16.09V20h-2.67v-1.93c-1.71-.36-3.16-1.46-3.27-3.4h1.96c.1 1.05.82 1.87 2.65 1.87 1.96 0 2.4-.98 2.4-1.59 0-.83-.44-1.61-2.67-2.14-2.48-.6-4.18-1.62-4.18-3.67 0-1.72 1.39-2.84 3.11-3.21V4h2.67v1.95c1.86.45 2.79 1.86 2.85 3.39H14.3c-.05-1.11-.64-1.87-2.22-1.87-1.5 0-2.4.68-2.4 1.64 0 .84.65 1.39 2.67 1.91s4.18 1.39 4.18 3.91c-.01 1.83-1.38 2.83-3.12 3.16z'],
+                                    viewBox: '2 2 20 20'
                                 },
                                 eye: {
-                                    paths: [
-                                        'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'
-                                    ],
+                                    paths: ['M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'],
                                     viewBox: '0 0 24 24'
                                 },
+                                gear: {
+                                    paths: ['M15.95 10.78c.03-.25.05-.51.05-.78s-.02-.53-.06-.78l1.69-1.32c.15-.12.19-.34.1-.51l-1.6-2.77c-.1-.18-.31-.24-.49-.18l-1.99.8c-.42-.32-.86-.58-1.35-.78L12 2.34c-.03-.2-.2-.34-.4-.34H8.4c-.2 0-.36.14-.39.34l-.3 2.12c-.49.2-.94.47-1.35.78l-1.99-.8c-.18-.07-.39 0-.49.18l-1.6 2.77c-.1.18-.06.39.1.51l1.69 1.32c-.04.25-.07.52-.07.78s.02.53.06.78L2.37 12.1c-.15.12-.19.34-.1.51l1.6 2.77c.1.18.31.24.49.18l1.99-.8c.42.32.86.58 1.35.78l.3 2.12c.04.2.2.34.4.34h3.2c.2 0 .37-.14.39-.34l.3-2.12c.49-.2.94-.47 1.35-.78l1.99.8c.18.07.39 0 .49-.18l1.6-2.77c.1-.18.06-.39-.1-.51l-1.67-1.32zM10 13c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z'],
+                                    viewBox: '1 1 18 18'
+                                },
+                                help: {
+                                    paths: ['M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z'],
+                                    viewBox: '2 2 20 20'
+                                },
+                                list: {
+                                    paths: ['M4 18h17v-6H4v6zM4 5v6h17V5H4z'],
+                                    viewBox: '3 2 19 19'
+                                },
+                                list2: {
+                                    paths: ['M 4 18 h 17 v -3 H 4 v 3 z M 4 10 v 3 h 17 v -3 h -17 M 4 5 v 3 h 17 V 5 H 4 z'],
+                                    viewBox: '3 2 19 19'
+                                },
+                                pencil: {
+                                    paths: ['M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z'],
+                                    viewBox: '0 0 24 24'
+                                },
+                                puzzle: {
+                                    paths: ['M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z'],
+                                    viewBox: '0 0 24 24'
+                                },
+                                tile: {
+                                    paths: ['M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z'],
+                                    viewBox: '3 2 19 19'
+                                },
+                                trash: {
+                                    paths: ['M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zm2.46-7.12l1.41-1.41L12 12.59l2.12-2.12 1.41 1.41L13.41 14l2.12 2.12-1.41 1.41L12 15.41l-2.12 2.12-1.41-1.41L10.59 14l-2.13-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4z'],
+                                    viewBox: '0 0 24 24'
+                                },
+                                web: {
+                                    paths: ['M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z'],
+                                    viewBox: '2 2 20 20'
+                                }
                             },
+                            pencil: {
+                                paths: ["M19.2929 9.8299L19.9409 9.18278C21.353 7.77064 21.353 5.47197 19.9409 4.05892C18.5287 2.64678 16.2292 2.64678 14.817 4.05892L14.1699 4.70694L19.2929 9.8299ZM12.8962 5.97688L5.18469 13.6906L10.3085 18.813L18.0201 11.0992L12.8962 5.97688ZM4.11851 20.9704L8.75906 19.8112L4.18692 15.239L3.02678 19.8796C2.95028 20.1856 3.04028 20.5105 3.26349 20.7337C3.48669 20.9569 3.8116 21.046 4.11851 20.9704Z"],
+                                viewBox: '0 1 22 22'
+                            },
+                            radioChecked: {
+                                paths: [{
+                                    'clip-rule': 'evenodd',
+                                    d: 'M12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z',
+                                    fill: '#fff',
+                                    'fill-rule': 'evenodd'
+                                }, {
+                                    cx: '12',
+                                    cy: '12',
+                                    r: '5',
+                                    tag: 'circle'
+                                }],
+                                viewBox: '0 0 24 24'
+                            },
+                            radioUnchecked: {
+                                paths: [{
+                                    'clip-rule': 'evenodd',
+                                    d: 'M12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20ZM12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z',
+                                    'fill-rule': 'evenodd'
+                                }],
+                                viewBox: '0 0 24 24'
+                            },
+                            rightArrow: {
+                                paths: ['M8.47 2 6.12 4.35 13.753 12 6.12 19.65 8.47 22 18.47 12Z'],
+                                viewBox: '0 0 24 24'
+                            },
+                            searchCross: {
+                                paths: ['M18.4 4L12 10.4L5.6 4L4 5.6L10.4 12L4 18.4L5.6 20L12 13.6L18.4 20L20 18.4L13.6 12L20 5.6L18.4 4Z'],
+                                viewBox: '0 0 24 24'
+                            },
+                            searchLoupe: {
+                                paths: ['M21.707 20.293L16.314 14.9C17.403 13.504 18 11.799 18 10C18 7.863 17.167 5.854 15.656 4.344C14.146 2.832 12.137 2 10 2C7.863 2 5.854 2.832 4.344 4.344C2.833 5.854 2 7.863 2 10C2 12.137 2.833 14.146 4.344 15.656C5.854 17.168 7.863 18 10 18C11.799 18 13.504 17.404 14.9 16.314L20.293 21.706L21.707 20.293ZM10 16C8.397 16 6.891 15.376 5.758 14.243C4.624 13.11 4 11.603 4 10C4 8.398 4.624 6.891 5.758 5.758C6.891 4.624 8.397 4 10 4C11.603 4 13.109 4.624 14.242 5.758C15.376 6.891 16 8.398 16 10C16 11.603 15.376 13.11 14.242 14.243C13.109 15.376 11.603 16 10 16Z'],
+                                viewBox: '0 0 24 24'
+                            },
+                            switcherCross: {
+                                paths: ['M5.13231 6.72963L6.7233 5.13864L14.855 13.2704L13.264 14.8614L5.13231 6.72963Z', 'M13.2704 5.13864L14.8614 6.72963L6.72963 14.8614L5.13864 13.2704L13.2704 5.13864Z'],
+                                viewBox: '0 0 20 20'
+                            },
+                            switcherTick: {
+                                paths: ['M7.89561 14.8538L6.30462 13.2629L14.3099 5.25755L15.9009 6.84854L7.89561 14.8538Z', 'M4.08643 11.0903L5.67742 9.49929L9.4485 13.2704L7.85751 14.8614L4.08643 11.0903Z'],
+                                viewBox: '0 0 20 20'
+                            },
+                            unchecked: {
+                                paths: ['M5.37499 3H18.625C19.9197 3 21.0056 4.08803 21 5.375V18.625C21 19.936 19.9359 21 18.625 21H5.37499C4.06518 21 3 19.936 3 18.625V5.375C3 4.06519 4.06518 3 5.37499 3Z M 19 19 V 5 H 5 V 19 H 19 Z'],
+                                viewBox: '0 0 24 24'
+                            },
+                            warn: {
+                                paths: ["M10 0C4.486 0 0 4.486 0 10C0 15.515 4.486 20 10 20C15.514 20 20 15.515 20 10C20 4.486 15.514 0 10 0ZM9 4H11V11H9V4ZM10 15.25C9.31 15.25 8.75 14.691 8.75 14C8.75 13.31 9.31 12.75 10 12.75C10.69 12.75 11.25 13.31 11.25 14C11.25 14.691 10.69 15.25 10 15.25Z"],
+                                viewBox: '-2 -2 24 24'
+                            }
                         }
 
-                        if(1) setTimeout(() => {
+                        if(1) setTimeout(function createTooltips() {
                             let mymodal = [...document.getElementsByClassName('bd-addon-modal')].find(modal => modal.querySelector('h4').innerText == 'ANIMATIONS SETTINGS')
                             mymodal.querySelectorAll('.animButton').forEach(
                                 btn => {
@@ -2495,6 +2498,12 @@ module.exports = (
                                     if (label.offsetHeight < label.scrollHeight) {
                                         Tooltip.create(btn, label.innerText, {preventFlip: true, side: 'bottom'})
                                     }
+                                }
+                            )
+                            mymodal.querySelectorAll('svg[id*=help-timing-]').forEach(
+                                svg => {
+                                    let link = 'https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timing-function'
+                                    svg.addEventListener('click', () => window.open(link))
                                 }
                             )
                         }, 500)
@@ -2886,6 +2895,50 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
+                                                    Field(trn.stng.timing, trn.stng.timing_note_lists,
+                                                        ElementsPanel(
+                                                            [
+                                                                {
+                                                                    elements: [
+                                                                        {
+                                                                            component: 'input',
+                                                                            value: this.settings.lists.timing,
+                                                                            max: 0.35,
+                                                                            step: 0.01,
+                                                                            type: 'string',
+                                                                            onchange: (e, v) => {
+                                                                                this.settings.lists.timing = v;
+                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                this.resetAnimations()
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            component: 'svg',
+                                                                            id: 'help-timing-lists',
+                                                                            width: '25px',
+                                                                            height: '50px',
+                                                                            ...SvgTemps.Other.help
+                                                                        },
+                                                                        {
+                                                                            component: 'button',
+                                                                            padding: '6px',
+                                                                            svgs: [{ ...SvgTemps.Other.circleArrow, width: '22px', height: '22px' }],
+                                                                            onclick: (e) => {
+                                                                                var button = e.currentTarget;
+                                                                                var input = button.closest('.elementsContainer').querySelector('input');
+
+                                                                                input.value = this.defaultSettings.lists.timing;
+                                                                                this.settings.lists.timing = this.defaultSettings.lists.timing;
+                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                this.resetAnimations()
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                },
+                                                            ]
+                                                        ).render
+                                                    ).render,
+
                                                     Field(trn.stng.delay, trn.stng.delay_note_lists,
                                                         ElementsPanel(
                                                             [
@@ -3089,6 +3142,50 @@ module.exports = (
                                                         ).render
                                                     ).render,
 
+                                                    Field(trn.stng.timing, trn.stng.timing_note_buttons,
+                                                        ElementsPanel(
+                                                            [
+                                                                {
+                                                                    elements: [
+                                                                        {
+                                                                            component: 'input',
+                                                                            value: this.settings.buttons.timing,
+                                                                            max: 0.35,
+                                                                            step: 0.01,
+                                                                            type: 'string',
+                                                                            onchange: (e, v) => {
+                                                                                this.settings.buttons.timing = v;
+                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                this.resetAnimations()
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            component: 'svg',
+                                                                            id: 'help-timing-buttons',
+                                                                            width: '25px',
+                                                                            height: '50px',
+                                                                            ...SvgTemps.Other.help
+                                                                        },
+                                                                        {
+                                                                            component: 'button',
+                                                                            padding: '6px',
+                                                                            svgs: [{ ...SvgTemps.Other.circleArrow, width: '22px', height: '22px' }],
+                                                                            onclick: (e) => {
+                                                                                var button = e.currentTarget;
+                                                                                var input = button.closest('.elementsContainer').querySelector('input');
+
+                                                                                input.value = this.defaultSettings.buttons.timing;
+                                                                                this.settings.buttons.timing = this.defaultSettings.buttons.timing;
+                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                this.resetAnimations()
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                },
+                                                            ]
+                                                        ).render
+                                                    ).render,
+
                                                     Field(trn.stng.delay, trn.stng.delay_note_buttons,
                                                         ElementsPanel(
                                                             [
@@ -3268,6 +3365,50 @@ module.exports = (
                                                                 PluginUtilities.saveSettings(this.getName(), this.settings);
                                                                 this.resetAnimations()
                                                             }
+                                                        ).render
+                                                    ).render,
+
+                                                    Field(trn.stng.timing, trn.stng.timing_note_messages,
+                                                        ElementsPanel(
+                                                            [
+                                                                {
+                                                                    elements: [
+                                                                        {
+                                                                            component: 'input',
+                                                                            value: this.settings.messages.timing,
+                                                                            max: 0.35,
+                                                                            step: 0.01,
+                                                                            type: 'string',
+                                                                            onchange: (e, v) => {
+                                                                                this.settings.messages.timing = v;
+                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                this.resetAnimations()
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            component: 'svg',
+                                                                            id: 'help-timing-messages',
+                                                                            width: '25px',
+                                                                            height: '50px',
+                                                                            ...SvgTemps.Other.help
+                                                                        },
+                                                                        {
+                                                                            component: 'button',
+                                                                            padding: '6px',
+                                                                            svgs: [{ ...SvgTemps.Other.circleArrow, width: '22px', height: '22px' }],
+                                                                            onclick: (e) => {
+                                                                                var button = e.currentTarget;
+                                                                                var input = button.closest('.elementsContainer').querySelector('input');
+
+                                                                                input.value = this.defaultSettings.messages.timing;
+                                                                                this.settings.messages.timing = this.defaultSettings.messages.timing;
+                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                this.resetAnimations()
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                },
+                                                            ]
                                                         ).render
                                                     ).render,
 
@@ -3492,6 +3633,50 @@ module.exports = (
                                                                 PluginUtilities.saveSettings(this.getName(), this.settings);
                                                                 this.resetAnimations()
                                                             }
+                                                        ).render
+                                                    ).render,
+
+                                                    Field(trn.stng.timing, trn.stng.timing_note_popouts,
+                                                        ElementsPanel(
+                                                            [
+                                                                {
+                                                                    elements: [
+                                                                        {
+                                                                            component: 'input',
+                                                                            value: this.settings.popouts.timing,
+                                                                            max: 0.35,
+                                                                            step: 0.01,
+                                                                            type: 'string',
+                                                                            onchange: (e, v) => {
+                                                                                this.settings.popouts.timing = v;
+                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                this.resetAnimations()
+                                                                            }
+                                                                        },
+                                                                        {
+                                                                            component: 'svg',
+                                                                            id: 'help-timing-lists',
+                                                                            width: '25px',
+                                                                            height: '50px',
+                                                                            ...SvgTemps.Other.help
+                                                                        },
+                                                                        {
+                                                                            component: 'button',
+                                                                            padding: '6px',
+                                                                            svgs: [{ ...SvgTemps.Other.circleArrow, width: '22px', height: '22px' }],
+                                                                            onclick: (e) => {
+                                                                                var button = e.currentTarget;
+                                                                                var input = button.closest('.elementsContainer').querySelector('input');
+
+                                                                                input.value = this.defaultSettings.popouts.timing;
+                                                                                this.settings.popouts.timing = this.defaultSettings.popouts.timing;
+                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                this.resetAnimations()
+                                                                            }
+                                                                        }
+                                                                    ]
+                                                                },
+                                                            ]
                                                         ).render
                                                     ).render,
 
@@ -3735,10 +3920,10 @@ module.exports = (
                             (obj, [props], ret) => {
                                 let foundNode = Utilities.findInTree(ret, node => node?.type == "li")
                                 if(foundNode) {
-                                    console.log(props)
                                     foundNode.props.style = {
                                         "animation-name": this.settings.messages.custom.enabled ? this.settings.messages.custom.frames[this.settings.messages.custom.page] : this.settings.messages.name,
                                         "animation-duration": this.settings.messages.duration,
+                                        "animation-timing-function": this.settings.messages.timing
                                     }
                                 }
                             }
@@ -4222,9 +4407,7 @@ module.exports = (
                             this.resetAnimations()
                         }, 100);
 
-                        //this.animateServers()
-                        //this.animateMembers()
-                        //this.animateChannels()
+                        this.animateServers()
 
                         // on themes switch
                         this.observer = new MutationObserver(
