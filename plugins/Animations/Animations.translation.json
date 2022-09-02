@@ -2349,11 +2349,11 @@
 			"duration_note_popouts": "Скорость воспроизведения анимации в секундах для всплывающего окна.",
 			"name_mode_selecting": "Выбрать",
 			"name_mode_editing": "Редактировать",
-			"timing": "Timing function",
-			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
-			"timing_note_lists": "Defines the change in animation playback speed for lists.",
-			"timing_note_messages": "Defines the change in animation playback speed for messages.",
-			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
+			"timing": "Функция тайминга",
+			"timing_note_buttons": "Определяет изменение скорости воспроизведения анимации кнопок.",
+			"timing_note_lists": "Определяет изменение скорости воспроизведения анимации списков.",
+			"timing_note_messages": "Определяет изменение скорости воспроизведения анимации сообщений.",
+			"timing_note_popouts": "Определяет изменение скорости воспроизведения анимации всплывающих окон."
 		},
 		"edit": {
 			"template": "Шаблон",
@@ -2765,11 +2765,11 @@
 			"duration_note_popouts": "Швидкість відтворення анімації в секундах для спливаючого вікна.",
 			"name_mode_selecting": "Вибрати",
 			"name_mode_editing": "Редагувати",
-			"timing": "Timing function",
-			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
-			"timing_note_lists": "Defines the change in animation playback speed for lists.",
-			"timing_note_messages": "Defines the change in animation playback speed for messages.",
-			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
+			"timing": "Функція таймінгу",
+			"timing_note_buttons": "Визначає зміну швидкості відтворення анімації для кнопок.",
+			"timing_note_lists": "Визначає зміну швидкості відтворення анімації для списків.",
+			"timing_note_messages": "Визначає зміну швидкості відтворення анімації для повідомлень.",
+			"timing_note_popouts": "Визначає зміну швидкості відтворення анімації для спливаючих вікон."
 		},
 		"edit": {
 			"template": "Шаблон",
