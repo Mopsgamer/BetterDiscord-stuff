@@ -2629,7 +2629,7 @@ module.exports = (
                                                                         try {
                                                                             let fs = require('fs')
                                                                             let path = require('path')
-                                                                            fs.writeFile(path.join(BdApi.Plugins.folder, __filename), GitHubFileText, rs)
+                                                                            fs.writeFile(__filename, GitHubFileText, rs)
                                                                         } catch (err) {
                                                                             Logger.err(this.getName(), err)
                                                                         }
