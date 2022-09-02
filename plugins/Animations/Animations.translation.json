@@ -60,7 +60,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -159,7 +164,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -258,7 +268,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -357,7 +372,12 @@
 			"duration_note_messages": "Wiedergabegeschwindigkeit der Animation in Sekunden für jede Nachricht nach der Verzögerung.",
 			"duration_note_popouts": "Wiedergabegeschwindigkeit der Animation in Sekunden für ein Popout.",
 			"name_mode_selecting": "Auswahl",
-			"name_mode_editing": "Bearbeitung"
+			"name_mode_editing": "Bearbeitung",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Vorlage",
@@ -456,7 +476,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -555,7 +580,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -654,7 +684,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -753,7 +788,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -852,7 +892,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -951,7 +996,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -1050,7 +1100,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -1149,7 +1204,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -1248,7 +1308,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -1347,7 +1412,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -1446,7 +1516,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -1545,7 +1620,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -1644,7 +1724,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -1743,7 +1828,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -1842,7 +1932,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -1941,7 +2036,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -2040,7 +2140,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -2139,7 +2244,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -2238,7 +2348,12 @@
 			"duration_note_messages": "Скорость воспроизведения анимации в секундах для каждого сообщения после задержки.",
 			"duration_note_popouts": "Скорость воспроизведения анимации в секундах для всплывающего окна.",
 			"name_mode_selecting": "Выбрать",
-			"name_mode_editing": "Редактировать"
+			"name_mode_editing": "Редактировать",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Шаблон",
@@ -2337,7 +2452,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -2436,7 +2556,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -2535,7 +2660,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -2634,7 +2764,12 @@
 			"duration_note_messages": "Швидкість відтворення анімації в секундах для кожного повідомлення після затримки.",
 			"duration_note_popouts": "Швидкість відтворення анімації в секундах для спливаючого вікна.",
 			"name_mode_selecting": "Вибрати",
-			"name_mode_editing": "Редагувати"
+			"name_mode_editing": "Редагувати",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Шаблон",
@@ -2733,7 +2868,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -2832,7 +2972,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
@@ -2931,7 +3076,12 @@
 			"duration_note_messages": "Animation playback speed in seconds for each message after the delay.",
 			"duration_note_popouts": "Animation playback speed in seconds for a popout.",
 			"name_mode_selecting": "Selecting",
-			"name_mode_editing": "Editing"
+			"name_mode_editing": "Editing",
+			"timing": "Timing function",
+			"timing_note_buttons": "Defines the change in animation playback speed for buttons.",
+			"timing_note_lists": "Defines the change in animation playback speed for lists.",
+			"timing_note_messages": "Defines the change in animation playback speed for messages.",
+			"timing_note_popouts": "Defines the change in animation playback speed for popouts."
 		},
 		"edit": {
 			"template": "Template",
