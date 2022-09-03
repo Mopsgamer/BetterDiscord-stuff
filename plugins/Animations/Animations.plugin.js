@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.3.7
+ * @version 1.3.7.1
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @invite PWtAHjBXtG
@@ -23,15 +23,15 @@ module.exports = (
                         github_username: 'Mopsgamer',
                     }
                 ],
-                version: '1.3.7',
+                version: '1.3.7.1',
                 description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
                 github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
                 github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
             },
             changelog: [
-                { "title": "New Stuff", "items": ["Added timing function setting."] },
-                { "title": "Improvements", "type": "improved", "items": ["Reworking the brick animation.", "Reworked the default settings using brick animation."] },
-                { "title": "Fixes", "type": "fixed", "items": ["Fixed some broken animations."] }
+                //{ "title": "New Stuff", "items": ["Added timing function setting."] },
+                { "title": "Improvements", "type": "improved", "items": ["The Upd. transl. button is now more informative."] },
+                { "title": "Fixes", "type": "fixed", "items": ["Fixed broken selectors."] }
             ],
             main: 'index.js',
         };
@@ -57,16 +57,53 @@ module.exports = (
             start() { }
             stop() { }
         } : (([Plugin, Api]) => {
-                const plugin = (Library) => {
-                const { DiscordModules, DiscordAPI, Utilities, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules } = Api
-                const { Logger, Patcher, Settings, Tooltip, ReactComponents, ContextMenu } = ZeresPluginLibrary
-                const { React, ReactDOM } = BdApi
 
-                let createElem = (...args) => { return React.createElement(...args); }
+                const plugin = (Plugin, Api) => {
+                const { DiscordModules, DiscordAPI, Utilities, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules, Logger, Patcher, Settings, Tooltip, ReactComponents, ContextMenu } = Api
+                const { React, ReactDOM } = BdApi
 
                 /**
                 * @typedef { 'da' | 'de' | 'en-GB' | 'en-US' | 'es-ES' | 'fr' | 'hr' | 'it' | 'lt' | 'hu' | 'nl' | 'no' | 'pl' | 'pt-BR' | 'ro' | 'fi' | 'sv-SE' | 'vi' | 'tr' | 'cs' | 'el' | 'bg' | 'ru' | 'uk' | 'hi' | 'th' | 'zh-CN' | 'ja' | 'zh-TW' | 'ko' } locale
                 */
+
+                let FindedModules = (() => {
+                    let ButtonContents = WebpackModules.getByProps('button', 'contents')
+                    let ButtonIcon = WebpackModules.getByProps('button', 'sizeIcon')
+                    return {
+                        Button: ButtonIcon?.button,
+                        ButtonContents: ButtonContents.contents,
+                        ButtonLookInverted: ButtonContents.lookInverted,
+                        ButtonSizeSmall: ButtonIcon?.sizeSmall,
+                        ButtonText: WebpackModules.getByProps('buttonText', 'giftIcon')?.buttonText,
+                        Card: WebpackModules.getByProps('cardBrand')?.card,
+                        ChatContent: WebpackModules.getByProps('chatContent')?.chatContent,
+                        CodeRedemptionRedirect: WebpackModules.getByProps('codeRedemptionRedirect')?.codeRedemptionRedirect ?? 'codeRedemptionRedirect-2hYMSQ',
+                        ContainerDefault: WebpackModules.getByProps('containerDefault')?.containerDefault,
+                        ContainerDefaultSpaceBeforeCategory: WebpackModules.getByProps('containerDefault', 'spaceBeforeCategory')?.containerDefault,
+                        ContainerSpine: WebpackModules.getByProps('container', 'spine')?.container,
+                        ContentThin: WebpackModules.getByProps('content', 'thin')?.content,
+                        DividerReplying: WebpackModules.getByProps('divider', 'replying')?.divider,
+                        GuildsSidebar: WebpackModules.getByProps('guilds', 'sidebar')?.guilds,
+                        InputDefault: WebpackModules.getByProps('inputDefault', 'focused')?.inputDefault,
+                        IsFailed: WebpackModules.getByProps('isFailed')?.isFailed,
+                        IsSending: WebpackModules.getByProps('isSending')?.isSending,
+                        LayerContainer: WebpackModules.getByProps('layerContainer')?.layerContainer,
+                        LocaleGetter: BdApi.findModuleByProps('locale', 'addChangeListener'),
+                        Member: WebpackModules.getByProps('botTag', 'member').member,
+                        MembersGroup: WebpackModules.getByProps('membersGroup').membersGroup,
+                        Message: WebpackModules.getByProps('message')?.message,
+                        MessageDefault: WebpackModules.getByProps("default", "ThreadStarterChatMessage", "getElementFromMessageId"),
+                        MessageListItem: WebpackModules.getByProps('messageListItem')?.messageListItem,
+                        Offline: WebpackModules.getByProps('offline')?.offline,
+                        RoundButton: WebpackModules.getByProps('roundButton').roundButton,
+                        ScrollbarDefault: WebpackModules.getByProps('scrollbarDefault')?.scrollbarDefault,
+                        Side: WebpackModules.getByProps('side')?.side,
+                        SubmenuContainer: WebpackModules.getByProps('submenuContainer').submenuContainer,
+                        TextArea: WebpackModules.getByProps('textArea')?.textArea,
+                        VideoLead: WebpackModules.getByProps('video', 'lead')?.video,
+                        WrapperTypeThread: WebpackModules.getByProps('wrapper', 'typeThread')?.wrapper,
+                    }
+                })()
 
                 return class AnimationsPlugin extends Plugin {
 
@@ -373,60 +410,24 @@ module.exports = (
                     ]
 
                     static selectorsPopouts = [
+                        /*modals*/
                         `[role="dialog"].${WebpackModules.getByProps('focusLock').focusLock} > *:not(.bd-addon-modal)`,
-                        `[id^=popout]`,
-                        `[role=menu]`
+                        /*popouts*/
+                        `.${FindedModules.LayerContainer} > [id^=popout]`
                     ]
-
-                    static modules = (() => {
-                        let ButtonIcon = WebpackModules.getByProps('button', 'sizeIcon')
-                        let ButtonContents = WebpackModules.getByProps('button', 'contents')
-                        return {
-                            LocaleGetter: BdApi.findModuleByProps('locale', 'addChangeListener'),
-                            Button: ButtonIcon?.button,
-                            ButtonSizeSmall: ButtonIcon?.sizeSmall,
-                            ButtonText: WebpackModules.getByProps('buttonText', 'giftIcon')?.buttonText,
-                            ButtonContents: ButtonContents.contents,
-                            ButtonLookInverted: ButtonContents.lookInverted,
-                            ContentThin: WebpackModules.getByProps('content', 'thin')?.content,
-                            ContainerDefault: WebpackModules.getByProps('containerDefault')?.containerDefault,
-                            ContainerDefaultSpaceBeforeCategory: WebpackModules.getByProps('containerDefault', 'spaceBeforeCategory')?.containerDefault,
-                            ContainerSpine: WebpackModules.getByProps('container', 'spine')?.container,
-                            Card: WebpackModules.getByProps('cardBrand')?.card,
-                            RoundButton: WebpackModules.getByProps('roundButton').roundButton,
-                            CodeRedemptionRedirect: WebpackModules.getByProps('codeRedemptionRedirect')?.codeRedemptionRedirect ?? 'codeRedemptionRedirect-2hYMSQ',
-                            ChatContent: WebpackModules.getByProps('chatContent')?.chatContent,
-                            DividerReplying: WebpackModules.getByProps('divider', 'replying')?.divider,
-                            InputDefault: WebpackModules.getByProps('inputDefault', 'focused')?.inputDefault,
-                            IsSending: WebpackModules.getByProps('isSending')?.isSending,
-                            IsFailed: WebpackModules.getByProps('isFailed')?.isFailed,
-                            Message: WebpackModules.getByProps('message')?.message,
-                            MessageDefault: WebpackModules.getByProps("default", "ThreadStarterChatMessage", "getElementFromMessageId"),
-                            MessageListItem: WebpackModules.getByProps('messageListItem')?.messageListItem,
-                            Member: WebpackModules.getByProps('botTag', 'member').member,
-                            MembersGroup: WebpackModules.getByProps('membersGroup').membersGroup,
-                            Side: WebpackModules.getByProps('side')?.side,
-                            ScrollbarDefault: WebpackModules.getByProps('scrollbarDefault')?.scrollbarDefault,
-                            TextArea: WebpackModules.getByProps('textArea')?.textArea,
-                            Offline: WebpackModules.getByProps('offline')?.offline,
-                            GuildsSidebar: WebpackModules.getByProps('guilds', 'sidebar')?.guilds,
-                            WrapperTypeThread: WebpackModules.getByProps('wrapper', 'typeThread')?.wrapper,
-                            VideoLead: WebpackModules.getByProps('video', 'lead')?.video
-                        }
-                    })()
 
                     animateChannels = () => {
 
                         if (!this.settings.lists.enabled) return;
-                        var channelsListElements = document.querySelectorAll(`#channels .${AnimationsPlugin.modules.ContentThin} > [class]`);
+                        var channelsListElements = document.querySelectorAll(`#channels .${FindedModules.ContentThin} > [class]`);
                         var count = channelsListElements?.length ?? 40;
 
                         if (channelsListElements?.length == 1) return setTimeout(() => this.animateChannels(), 100);
 
                         PluginUtilities.addStyle(`${this.getName()}-channelslist`,
                             `/*channels*/
-                            .${AnimationsPlugin.modules.ContainerDefaultSpaceBeforeCategory},
-                            .${AnimationsPlugin.modules.ContainerDefault}
+                            .${FindedModules.ContainerDefaultSpaceBeforeCategory},
+                            .${FindedModules.ContainerDefault}
                             {
                                 ${this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start : `transform: scale(0);`}
                                 animation-fill-mode: forwards;
@@ -439,9 +440,9 @@ module.exports = (
                             let children = channelsListElements[(this.settings.lists.sequence == "fromFirst" ? i : count - i - 1)];
                             if (!children) return;
 
-                            if (children.classList.contains(AnimationsPlugin.modules.ContainerDefault)
-                                || children.classList.contains(AnimationsPlugin.modules.ContainerDefaultSpaceBeforeCategory)
-                                || children.classList.contains(AnimationsPlugin.modules.WrapperTypeThread)
+                            if (children.classList.contains(FindedModules.ContainerDefault)
+                                || children.classList.contains(FindedModules.ContainerDefaultSpaceBeforeCategory)
+                                || children.classList.contains(FindedModules.WrapperTypeThread)
                             ) {
                                 children.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
                                 children.style.animationFillMode = 'forwards';
@@ -453,9 +454,9 @@ module.exports = (
                                     ? 'custom-lists' : this.settings.lists.name;
                             }
 
-                            else if (children.classList.contains(AnimationsPlugin.modules.ContainerSpine)) {
-                                var threadsForkElement = children.querySelector(`.${AnimationsPlugin.modules.ContainerSpine} > svg`);
-                                var threadsListElements = children.querySelectorAll(`.${AnimationsPlugin.modules.ContainerDefault}`);
+                            else if (children.classList.contains(FindedModules.ContainerSpine)) {
+                                var threadsForkElement = children.querySelector(`.${FindedModules.ContainerSpine} > svg`);
+                                var threadsListElements = children.querySelectorAll(`.${FindedModules.ContainerDefault}`);
 
                                 threadsForkElement.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
                                 threadsForkElement.style.animationName = 'slide-right';
@@ -482,16 +483,16 @@ module.exports = (
 
                         if (!this.settings.lists.enabled) return;
 
-                        var membersListElements = document.querySelectorAll(`.${AnimationsPlugin.modules.Member}:not([class*=placeholder]), h2.${AnimationsPlugin.modules.MembersGroup}`);
+                        var membersListElements = document.querySelectorAll(`.${FindedModules.Member}:not([class*=placeholder]), h2.${FindedModules.MembersGroup}`);
                         var count = membersListElements?.length ?? 40;
 
                         if (membersListElements?.length == 1) return setTimeout(() => this.animateMembers(), 100);
 
                         PluginUtilities.addStyle(`${this.getName()}-memberslist`,
                             `/*members*/
-                        .${AnimationsPlugin.modules.Member}:not([class*=placeholder]),
+                        .${FindedModules.Member}:not([class*=placeholder]),
                         /*member-groups*/
-                        h2.${AnimationsPlugin.modules.MembersGroup}
+                        h2.${FindedModules.MembersGroup}
                         {
                             ${this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start && this.settings.lists.custom.enabled ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start : `transform: scale(0);`}
                             animation-fill-mode: forwards;
@@ -521,12 +522,12 @@ module.exports = (
 
                         if (!this.settings.lists.enabled) return;
 
-                        var serversListElements = document.querySelectorAll(`#app-mount .${AnimationsPlugin.modules.GuildsSidebar} [class*="listItem"]:not([class*="listItemWrapper"])`);
+                        var serversListElements = document.querySelectorAll(`#app-mount .${FindedModules.GuildsSidebar} [class*="listItem"]:not([class*="listItemWrapper"])`);
                         var count = serversListElements?.length ?? 40;
 
                         PluginUtilities.addStyle(`${this.getName()}-serverslist`,
                             `/*servers*/
-                        #app-mount .${AnimationsPlugin.modules.GuildsSidebar} [class*="listItem"]:not([class*="listItemWrapper"])
+                        #app-mount .${FindedModules.GuildsSidebar} [class*="listItem"]:not([class*="listItemWrapper"])
                         {
                             ${this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start : `transform: scale(0);`}
                             animation-fill-mode: forwards;
@@ -535,7 +536,7 @@ module.exports = (
                         }
 
                         ${!BdApi.Themes.isEnabled('Horizontal Server List') ? '' : `
-                        #app-mount .${AnimationsPlugin.modules.GuildsSidebar} [class*=listItem]:not([class*=listItemWrapper])
+                        #app-mount .${FindedModules.GuildsSidebar} [class*=listItem]:not([class*=listItemWrapper])
                         { transform: scaleX(0) rotate(90deg); }`}
                     `)
 
@@ -557,7 +558,7 @@ module.exports = (
 
                     }
 
-                    async resetAnimations(pause = 0) {
+                    async resetAnimations(pause = 100) {
                         var createKeyFrame = function (/** @type {string} */ name, /** @type {string} */ originalName, rotate = 0, opacity = 1) {
                             var keyframes = {
                                 "in":
@@ -991,7 +992,7 @@ module.exports = (
                             }
 
                             for (var i = 1; i < this.settings.messages.limit; i++) {
-                                result += `.${AnimationsPlugin.modules.MessageListItem}:nth-last-child(${i}) > .${AnimationsPlugin.modules.Message}
+                                result += `.${FindedModules.MessageListItem}:nth-last-child(${i}) > .${FindedModules.Message}
                             {animation-delay:${((i - 1) * this.settings.messages.delay).toFixed(2)}s}\n`
                             }
 
@@ -1091,7 +1092,7 @@ module.exports = (
 
                 ${!this.settings.messages.enabled ? '' : `
                 /* messages */
-                .${AnimationsPlugin.modules.MessageListItem} > .${AnimationsPlugin.modules.Message}
+                .${FindedModules.MessageListItem} > .${FindedModules.Message}
                 {
                     ${this.settings.messages.custom.frames[this.settings.messages.custom.page]?.start ? this.settings.messages.custom.frames[this.settings.messages.custom.page]?.start : `transform: scale(0);`}
                     animation-fill-mode: forwards;
@@ -1106,13 +1107,13 @@ module.exports = (
                 }
 
                 /*lines-forward-messages fix*/
-                .${AnimationsPlugin.modules.DividerReplying} {z-index: 0}
+                .${FindedModules.DividerReplying} {z-index: 0}
                 `}
 
                 /**Non-custom**/
 
                 /*threads fork*/
-                .${AnimationsPlugin.modules.ContainerSpine} > svg {
+                .${FindedModules.ContainerSpine} > svg {
                     transform: scale(0);
                     transform-oringin: 100% 50%;
                     animation-timing-function: linear;
@@ -1121,7 +1122,7 @@ module.exports = (
                 }
 
                 /*discord changelog video*/
-                .${AnimationsPlugin.modules.VideoLead} {
+                .${FindedModules.VideoLead} {
                     animation-name: out !important;
                 }
 
@@ -1154,7 +1155,7 @@ module.exports = (
 
                         PluginUtilities.removeStyle(`${this.getName()}-main`);
 
-                        await this.wait(pause)
+                        await this.wait(pause > 100 ? pause : 100)
                         PluginUtilities.addStyle(`${this.getName()}-main`, this.styles);
                         this.animateChannels();
                         this.animateMembers();
@@ -1201,9 +1202,10 @@ module.exports = (
                     }
                     
                     /**
+                     * Reads file
                      * @param {locale} [key]
                      */
-                     stringsGet(key = undefined) {
+                    stringsGet(key = undefined) {
                         try {
                             let fs = require('fs')
                             let path = require('path')
@@ -1217,6 +1219,9 @@ module.exports = (
                         }
                     }
 
+                    /**
+                     * @returns ` new == old `
+                     */
                     stringsLoad(onError) {
                         return new Promise(
                             async (rs, rj) => {
@@ -1226,13 +1231,13 @@ module.exports = (
                                     let p = path.join(BdApi.Plugins.folder, this.getName() + '.translation.json')
                                     let url = 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.translation.json' + '?ref=main'
                                     await this.requestGhFile(url,
-                                        (text) => {
-                                            fs.writeFileSync(p, text)
+                                        (text_new) => {
+                                            let text_old = fs.readFileSync(p)
+                                            fs.writeFileSync(p, text_new)
+                                            rs(text_new == text_old)
                                         },
                                         onError
                                     )
-                                    this.closeSettings()
-                                    rs()
                                 } catch (err) {
                                     rj(err)
                                 }
@@ -1326,7 +1331,7 @@ module.exports = (
                         /**
                          * @type {locale}
                          */
-                        let locale = AnimationsPlugin.modules.LocaleGetter.locale;
+                        let locale = FindedModules.LocaleGetter.locale;
 
                         let t = this.stringsGet(locale)
                         let d = AnimationsPlugin.strings
@@ -1421,7 +1426,7 @@ module.exports = (
                                         },
                                         id: button.id ?? '',
                                         'data-link': button.link,
-                                        class: `animButton ${AnimationsPlugin.modules.Button} ${AnimationsPlugin.modules.ButtonSizeSmall} ${button.disabled ? 'disabled' : ''} ${(['filled', 'inverted', 'underline']).includes(button.fill) ? button.fill : 'filled'} ${button.color ?? 'blurple'} ${button.class ?? ''}`,
+                                        class: `animButton ${FindedModules.Button} ${FindedModules.ButtonSizeSmall} ${button.disabled ? 'disabled' : ''} ${(['filled', 'inverted', 'underline']).includes(button.fill) ? button.fill : 'filled'} ${button.color ?? 'blurple'} ${button.class ?? ''}`,
                                         onClick: (e) => {
                                             if (e.currentTarget.classList.contains('disabled')) return
                                             if (typeof button.onclick == 'function') button.onclick(e, this)
@@ -1434,7 +1439,7 @@ module.exports = (
                                                 style: {
                                                     'max-width': 'none'
                                                 },
-                                                class: `${AnimationsPlugin.modules.ButtonText} ${AnimationsPlugin.modules.ButtonContents}`,
+                                                class: `${FindedModules.ButtonText} ${FindedModules.ButtonContents}`,
                                             },
                                                 button.label
                                             ),
@@ -1493,7 +1498,7 @@ module.exports = (
                                             value: input.value ?? '',
                                             type: (['text', 'password', 'email', 'number', 'integer']).includes(input.type) ? (input.type == 'integer' ? 'number' : input.type) : 'text',
                                             id: input.id ?? '',
-                                            class: `animInput ${AnimationsPlugin.modules.InputDefault} ${input.disabled ? 'disabled' : ''} ${input.class ?? ''}`,
+                                            class: `animInput ${FindedModules.InputDefault} ${input.disabled ? 'disabled' : ''} ${input.class ?? ''}`,
                                             onClick: input.onclick ?? null,
                                             onChange: (e) => {
                                                 var value = e.currentTarget.value
@@ -1637,7 +1642,7 @@ module.exports = (
                                                 spellcheck: 'false',
                                                 type: textarea?.type ?? 'text',
                                                 placeholder: textarea?.placeholder ?? '',
-                                                class: `animTextarea ${textarea?.disabled ? 'disabled' : ''} ${textarea?.invalid ? 'invalid' : ''} ${textarea?.class ?? ''} ${AnimationsPlugin.modules.InputDefault} ${AnimationsPlugin.modules.TextArea} ${AnimationsPlugin.modules.ScrollbarDefault}`,
+                                                class: `animTextarea ${textarea?.disabled ? 'disabled' : ''} ${textarea?.invalid ? 'invalid' : ''} ${textarea?.class ?? ''} ${FindedModules.InputDefault} ${FindedModules.TextArea} ${FindedModules.ScrollbarDefault}`,
                                                 onChange: (e) => {
                                                     textarea.onchange?.(e)
                                                     options.onchange?.(e)
@@ -1729,7 +1734,7 @@ module.exports = (
 
                                         return React.createElement('div', {
                                             'pdata': this.template.value + ',' + options.class,
-                                            class: `animPreview ${AnimationsPlugin.modules.CodeRedemptionRedirect} ${AnimationsPlugin.modules.Card} ${this.enabled ? 'enabled' : ''}`,
+                                            class: `animPreview ${FindedModules.CodeRedemptionRedirect} ${FindedModules.Card} ${this.enabled ? 'enabled' : ''}`,
                                             onClick: (e) => {
                                                 onclick({ value: this.template.value, page: this.page });
 
@@ -1787,7 +1792,7 @@ module.exports = (
                                 render() {
                                     return React.createElement('div',
                                         {
-                                            class: `animPageCircleButton ${AnimationsPlugin.modules.RoundButton} ${this.enabled ? 'enabled' : ''}`,
+                                            class: `animPageCircleButton ${FindedModules.RoundButton} ${this.enabled ? 'enabled' : ''}`,
                                             'data-page': this.index,
                                             onClick: (e) => {
                                                 var selectorNodes = e.currentTarget.closest(this.closest).querySelectorAll(this.selector);
@@ -1822,7 +1827,7 @@ module.exports = (
                                 render() {
                                     return React.createElement('div',
                                         {
-                                            class: `animPageCircleButton ${AnimationsPlugin.modules.CodeRedemptionRedirect} ${AnimationsPlugin.modules.Card} ${this.enabled ? 'enabled' : ''}`,
+                                            class: `animPageCircleButton ${FindedModules.CodeRedemptionRedirect} ${FindedModules.Card} ${this.enabled ? 'enabled' : ''}`,
                                             onClick: (e) => {
                                                 this.onclick?.(e)
                                             }
@@ -2062,7 +2067,7 @@ module.exports = (
                                 render() {
                                     return React.createElement('div',
                                         {
-                                            class: `animPreviewActionButton ${AnimationsPlugin.modules.CodeRedemptionRedirect} ${AnimationsPlugin.modules.Card} ${this.isEditing ? 'editing' : 'selecting'}`,
+                                            class: `animPreviewActionButton ${FindedModules.CodeRedemptionRedirect} ${FindedModules.Card} ${this.isEditing ? 'editing' : 'selecting'}`,
                                             onClick: this.onclick
                                         },
 
@@ -2558,12 +2563,20 @@ module.exports = (
                                                         svgs: [SvgTemps.downloadArrow, SvgTemps.Other.web],
                                                         onclick: async (e, c) => {
                                                             c.setState({label: '...'})
+
                                                             this.stringsLoad(
                                                                 (status, reason) => {
                                                                     c.setState({ svgs: [SvgTemps.warn], color: 'red', label: trn.view.update_err_unknown })
                                                                 }
                                                             ).then(
-                                                                () => c.setState({ svgs: [SvgTemps.downloadArrow, SvgTemps.Other.web], color: 'blurple', label: trn.view.upd_translation })
+                                                                async (eq) => {
+                                                                    if (eq) c.setState({ svgs: [SvgTemps.downloadArrow, SvgTemps.Other.web], color: 'grey', label: trn.view.update_latest, disabled: true });
+                                                                    else {
+                                                                        c.setState({ svgs: [SvgTemps.downloadArrow, SvgTemps.Other.web], color: 'green', label: trn.view.resetting, disabled: true });
+                                                                        await this.wait(1000)
+                                                                        this.closeSettings()
+                                                                    }
+                                                                }
                                                             )
                                                         }
                                                     },
@@ -3741,6 +3754,7 @@ module.exports = (
 
                                                                                         this.settings.lists.selectors = '';
                                                                                         PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                        this.resetAnimations()
                                                                                     }
                                                                                 },
                                                                                 {
@@ -3765,20 +3779,20 @@ module.exports = (
                                                                         value: this.settings.lists.selectors ? this.settings.lists.selectors : AnimationsPlugin.selectorsLists.join(',\n\n')
                                                                     }
                                                                 ],
-                                                            },
-                                                            (e) => {
-                                                                var textarea = e.currentTarget;
-                                                                var value = textarea.value;
-
-                                                                if (value == '' || this.isValidSelector(value)) {
-                                                                    this.settings.lists.selectors = (value == AnimationsPlugin.selectorsLists ? '' : value)
-                                                                    PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                    this.resetAnimations()
-                                                                    textarea.style.color = ''
-                                                                } else {
-                                                                    textarea.style.color = Textcolors.red
+                                                                onchange: (e) => {
+                                                                    var textarea = e.currentTarget;
+                                                                    var value = textarea.value;
+        
+                                                                    if (value == '' || this.isValidSelector(value)) {
+                                                                        this.settings.lists.selectors = (value == AnimationsPlugin.selectorsLists ? '' : value)
+                                                                        PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                        this.resetAnimations()
+                                                                        textarea.style.color = ''
+                                                                    } else {
+                                                                        textarea.style.color = Textcolors.red
+                                                                    }
                                                                 }
-                                                            }
+                                                            },
                                                         ).render
                                                     ).render,
 
@@ -3799,8 +3813,9 @@ module.exports = (
                                                                                         textarea.value = AnimationsPlugin.selectorsButtons.join(',\n\n')
                                                                                         textarea.style.color = '';
 
-                                                                                        this.settings.lists.selectors = '';
+                                                                                        this.settings.buttons.selectors = '';
                                                                                         PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                        this.resetAnimations()
                                                                                     }
                                                                                 },
                                                                                 {
@@ -3825,20 +3840,20 @@ module.exports = (
                                                                         value: this.settings.buttons.selectors ? this.settings.buttons.selectors : AnimationsPlugin.selectorsButtons.join(',\n\n')
                                                                     }
                                                                 ],
-                                                            },
-                                                            (e) => {
-                                                                var textarea = e.currentTarget;
-                                                                var value = textarea.value;
-
-                                                                if (value == '' || this.isValidSelector(value)) {
-                                                                    this.settings.buttons.selectors = (value == AnimationsPlugin.selectorsButtons ? '' : value)
-                                                                    PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                    this.resetAnimations()
-                                                                    textarea.style.color = ''
-                                                                } else {
-                                                                    textarea.style.color = Textcolors.red
+                                                                onchange: (e) => {
+                                                                    var textarea = e.currentTarget;
+                                                                    var value = textarea.value;
+    
+                                                                    if (value == '' || this.isValidSelector(value)) {
+                                                                        this.settings.buttons.selectors = (value == AnimationsPlugin.selectorsButtons ? '' : value)
+                                                                        PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                        this.resetAnimations()
+                                                                        textarea.style.color = ''
+                                                                    } else {
+                                                                        textarea.style.color = Textcolors.red
+                                                                    }
                                                                 }
-                                                            }
+                                                            },
                                                         ).render
                                                     ).render,
 
@@ -3859,8 +3874,9 @@ module.exports = (
                                                                                         textarea.value = AnimationsPlugin.selectorsPopouts.join(',\n\n')
                                                                                         textarea.style.color = '';
 
-                                                                                        this.settings.lists.selectors = '';
+                                                                                        this.settings.popouts.selectors = '';
                                                                                         PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                        this.resetAnimations()
                                                                                     }
                                                                                 },
                                                                                 {
@@ -3886,19 +3902,19 @@ module.exports = (
                                                                         value: this.settings.popouts.selectors ? this.settings.popouts.selectors : AnimationsPlugin.selectorsPopouts.join(',\n\n')
                                                                     }
                                                                 ],
-                                                            },
-                                                            (e) => {
-                                                                var textarea = e.currentTarget;
-                                                                var value = textarea.value;
-
-                                                                if (value == '' || this.isValidSelector(value)) {
-                                                                    this.settings.popouts.selectors = (value == AnimationsPlugin.selectorsPopouts ? '' : value)
-                                                                    PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                    this.resetAnimations()
-                                                                    textarea.style.color = ''
-                                                                } else {
-                                                                    textarea.style.color = Textcolors.red
-                                                                }
+                                                                onchange: (e) => {
+                                                                    var textarea = e.currentTarget;
+                                                                    var value = textarea.value;
+    
+                                                                    if (value == '' || this.isValidSelector(value)) {
+                                                                        this.settings.popouts.selectors = (value == AnimationsPlugin.selectorsPopouts ? '' : value)
+                                                                        PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                        this.resetAnimations()
+                                                                        textarea.style.color = ''
+                                                                    } else {
+                                                                        textarea.style.color = Textcolors.red
+                                                                    }
+                                                                },
                                                             },
                                                         ).render
                                                     ).render,
@@ -3915,7 +3931,7 @@ module.exports = (
                     patchAll() {
                         Patcher.after(
                             this.getName(),
-                            AnimationsPlugin.modules.MessageDefault.default,
+                            FindedModules.MessageDefault.default,
                             "type",
                             (obj, [props], ret) => {
                                 let foundNode = Utilities.findInTree(ret, node => node?.type == "li")
