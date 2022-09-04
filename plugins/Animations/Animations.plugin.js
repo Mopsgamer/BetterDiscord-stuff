@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.3.7.1
+ * @version 1.3.7.2
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @invite PWtAHjBXtG
@@ -23,15 +23,15 @@ module.exports = (
                         github_username: 'Mopsgamer',
                     }
                 ],
-                version: '1.3.7.1',
+                version: '1.3.7.2',
                 description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
                 github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
                 github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
             },
             changelog: [
                 //{ "title": "New Stuff", "items": ["Added timing function setting."] },
-                { "title": "Improvements", "type": "improved", "items": ["The Upd. transl. button is now more informative."] },
-                { "title": "Fixes", "type": "fixed", "items": ["Fixed broken selectors."] }
+                { "title": "Improvements", "type": "improved", "items": ["Sending message animation settings."] },
+                //{ "title": "Fixes", "type": "fixed", "items": ["Fixed broken selectors."] }
             ],
             main: 'index.js',
         };
@@ -59,11 +59,12 @@ module.exports = (
         } : (([Plugin, Api]) => {
 
                 const plugin = (Plugin, Api) => {
-                const { DiscordModules, DiscordAPI, Utilities, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules, Logger, Patcher, Settings, Tooltip, ReactComponents, ContextMenu } = Api
-                const { React, ReactDOM } = BdApi
+                const { DiscordModules, DiscordAPI, Utilities, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules, Logger, Settings, Tooltip, ReactComponents, ContextMenu } = Api
+                const { React, ReactDOM, Patcher } = BdApi
 
                 /**
                 * @typedef { 'da' | 'de' | 'en-GB' | 'en-US' | 'es-ES' | 'fr' | 'hr' | 'it' | 'lt' | 'hu' | 'nl' | 'no' | 'pl' | 'pt-BR' | 'ro' | 'fi' | 'sv-SE' | 'vi' | 'tr' | 'cs' | 'el' | 'bg' | 'ru' | 'uk' | 'hi' | 'th' | 'zh-CN' | 'ja' | 'zh-TW' | 'ko' } locale
+                * @typedef { 'onsent' | 'disabled' } sendingPerformance
                 */
 
                 let FindedModules = (() => {
@@ -191,6 +192,27 @@ module.exports = (
                                 limit: 30,
                                 name: 'brick-down',
                                 page: 0,
+                                sending: {
+                                    custom: {
+                                        enabled: false,
+                                        frames: [{
+                                            anim: '',
+                                            start: ''
+                                        }, {
+                                            anim: '',
+                                            start: ''
+                                        }, {
+                                            anim: '',
+                                            start: ''
+                                        }],
+                                        page: 0
+                                    },
+                        
+                                    /**@type {sendingPerformance}*/
+                                    enabled: 'onsent',
+                                    name: 'brick-up',
+                                    page: 0
+                                },
                                 timing: 'linear'
                             },
                             popouts: {
@@ -3277,264 +3299,348 @@ module.exports = (
                                             {
                                                 name: trn.view.messages,
                                                 content: [
-                                                    Field(null, null,
-                                                        ElementsPanel(
-                                                            [
-                                                                {
-                                                                    elements: [
-                                                                        {
-                                                                            component: 'button',
-                                                                            svgs: [this.settings.messages.enabled ? SvgTemps.checked : SvgTemps.unchecked],
-                                                                            color: this.settings.messages.enabled ? 'green' : 'red',
-                                                                            label: trn.view.messages,
-                                                                            id: 'messages-switch-button',
-                                                                            onclick: async (e) => {
-
-                                                                                let button = e.currentTarget
-
-                                                                                button.getElementsByTagName('span')[0].innerText = '...'
-
-                                                                                this.settings.messages.enabled = !this.settings.messages.enabled;
-                                                                                if (!this.settings.messages.enabled) {
-                                                                                    button.classList.remove('green')
-                                                                                    button.classList.add('red')
-                                                                                    button.querySelector('path').setAttribute('d', SvgTemps.unchecked.paths)
-                                                                                } else {
-                                                                                    button.classList.remove('red')
-                                                                                    button.classList.add('green')
-                                                                                    button.querySelector('path').setAttribute('d', SvgTemps.checked.paths)
-                                                                                }
-                                                                                await this.resetAnimations();
-                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                button.getElementsByTagName('span')[0].innerText = trn.view.messages;
-                                                                            }
-                                                                        },
-                                                                        {
-                                                                            component: 'button',
-                                                                            color: 'blurple',
-                                                                            label: trn.view.reset_messages,
-                                                                            id: 'animations-reset-messages',
-                                                                            svgs: [SvgTemps.Other.circleArrow],
-                                                                            onclick: async (e) => {
-
-                                                                                let button = e.currentTarget;
-                                                                                button.getElementsByTagName('span')[0].innerText = trn.view.resetting;
-                                                                                await this.wait(500);
-
-                                                                                this.settings.messages = this.defaultSettings.messages
-                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
-                                                                                this.resetAnimations();
-                                                                                this.closeSettings();
-                                                                            },
-                                                                        }
-                                                                    ],
-                                                                    options: {
-                                                                        widthAll: '100%',
-                                                                        align: 'space-between'
-                                                                    }
-                                                                }
-                                                            ]
-                                                        ).render
-                                                    ).render,
-
-                                                    Field(trn.stng.name, trn.stng.name_note_messages,
-                                                        PreviewsPanel(
-                                                            [
-                                                                { label: trn.name.in, value: 'in' },
-                                                                { label: trn.name.out, value: 'out' },
-                                                                { label: trn.name.circle, value: 'circle' },
-                                                                { label: trn.name.polygon, value: 'polygon' },
-                                                                { label: trn.name.opacity, value: 'opacity' },
-                                                                { label: trn.name.slime, value: 'slime' },
-                                                                { label: trn.name.brick_right, value: 'brick-right' },
-                                                                { label: trn.name.brick_left, value: 'brick-left' },
-                                                                { label: trn.name.brick_up, value: 'brick-up' },
-                                                                { label: trn.name.brick_down, value: 'brick-down' },
-                                                                { label: trn.name.slide_right, value: 'slide-right' },
-                                                                { label: trn.name.slide_left, value: 'slide-left' },
-                                                                { label: trn.name.slide_up, value: 'slide-up' },
-                                                                { label: trn.name.slide_down, value: 'slide-down' },
-                                                                { label: trn.name.slide_up_right, value: 'slide-up-right' },
-                                                                { label: trn.name.slide_up_left, value: 'slide-up-left' },
-                                                                { label: trn.name.slide_down_right, value: 'slide-down-right' },
-                                                                { label: trn.name.slide_down_left, value: 'slide-down-left' },
-                                                                { label: trn.name.skew_right, value: 'skew-right' },
-                                                                { label: trn.name.skew_left, value: 'skew-left' },
-                                                                { label: trn.name.wide_skew_right, value: 'wide-skew-right' },
-                                                                { label: trn.name.wide_skew_left, value: 'wide-skew-left' },
-                                                            ],
+                                                    ElementsPanel(
+                                                        [
                                                             {
-                                                                type: 'messages-name',
-                                                                class: 'messages',
-                                                                custom: {
-                                                                    data: this.settings.messages.custom,
+                                                                elements: [
+                                                                    {
+                                                                        component: 'button',
+                                                                        svgs: [this.settings.messages.enabled ? SvgTemps.checked : SvgTemps.unchecked],
+                                                                        color: this.settings.messages.enabled ? 'green' : 'red',
+                                                                        label: trn.view.messages,
+                                                                        id: 'messages-switch-button',
+                                                                        onclick: async (e) => {
+
+                                                                            let button = e.currentTarget
+
+                                                                            button.getElementsByTagName('span')[0].innerText = '...'
+
+                                                                            this.settings.messages.enabled = !this.settings.messages.enabled;
+                                                                            if (!this.settings.messages.enabled) {
+                                                                                button.classList.remove('green')
+                                                                                button.classList.add('red')
+                                                                                button.querySelector('path').setAttribute('d', SvgTemps.unchecked.paths)
+                                                                            } else {
+                                                                                button.classList.remove('red')
+                                                                                button.classList.add('green')
+                                                                                button.querySelector('path').setAttribute('d', SvgTemps.checked.paths)
+                                                                            }
+                                                                            await this.resetAnimations();
+                                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                            button.getElementsByTagName('span')[0].innerText = trn.view.messages;
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        component: 'button',
+                                                                        color: 'blurple',
+                                                                        label: trn.view.reset_messages,
+                                                                        id: 'animations-reset-messages',
+                                                                        svgs: [SvgTemps.Other.circleArrow],
+                                                                        onclick: async (e) => {
+
+                                                                            let button = e.currentTarget;
+                                                                            button.getElementsByTagName('span')[0].innerText = trn.view.resetting;
+                                                                            await this.wait(500);
+
+                                                                            this.settings.messages = this.defaultSettings.messages
+                                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                            this.settings = PluginUtilities.loadSettings(this.getName(), this.defaultSettings);
+                                                                            this.resetAnimations();
+                                                                            this.closeSettings();
+                                                                        },
+                                                                    }
+                                                                ],
+                                                                options: {
+                                                                    widthAll: '100%',
+                                                                    align: 'space-between'
                                                                 }
-                                                            },
-                                                            this.settings.messages.name,
-                                                            (e) => {
-                                                                this.settings.messages.name = e.value;
-                                                                this.settings.messages.page = e.page;
-                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                this.resetAnimations()
                                                             }
-                                                        ).render
+                                                        ]
                                                     ).render,
-
-                                                    Field(trn.stng.timing, trn.stng.timing_note_messages,
-                                                        ElementsPanel(
-                                                            [
-                                                                {
-                                                                    elements: [
+                                                    TabsPanel([
+                                                        {
+                                                            name: 'Sended',
+                                                            content: [
+            
+                                                                Field(trn.stng.name, trn.stng.name_note_messages,
+                                                                    PreviewsPanel(
+                                                                        [
+                                                                            { label: trn.name.in, value: 'in' },
+                                                                            { label: trn.name.out, value: 'out' },
+                                                                            { label: trn.name.circle, value: 'circle' },
+                                                                            { label: trn.name.polygon, value: 'polygon' },
+                                                                            { label: trn.name.opacity, value: 'opacity' },
+                                                                            { label: trn.name.slime, value: 'slime' },
+                                                                            { label: trn.name.brick_right, value: 'brick-right' },
+                                                                            { label: trn.name.brick_left, value: 'brick-left' },
+                                                                            { label: trn.name.brick_up, value: 'brick-up' },
+                                                                            { label: trn.name.brick_down, value: 'brick-down' },
+                                                                            { label: trn.name.slide_right, value: 'slide-right' },
+                                                                            { label: trn.name.slide_left, value: 'slide-left' },
+                                                                            { label: trn.name.slide_up, value: 'slide-up' },
+                                                                            { label: trn.name.slide_down, value: 'slide-down' },
+                                                                            { label: trn.name.slide_up_right, value: 'slide-up-right' },
+                                                                            { label: trn.name.slide_up_left, value: 'slide-up-left' },
+                                                                            { label: trn.name.slide_down_right, value: 'slide-down-right' },
+                                                                            { label: trn.name.slide_down_left, value: 'slide-down-left' },
+                                                                            { label: trn.name.skew_right, value: 'skew-right' },
+                                                                            { label: trn.name.skew_left, value: 'skew-left' },
+                                                                            { label: trn.name.wide_skew_right, value: 'wide-skew-right' },
+                                                                            { label: trn.name.wide_skew_left, value: 'wide-skew-left' },
+                                                                        ],
                                                                         {
-                                                                            component: 'input',
-                                                                            value: this.settings.messages.timing,
-                                                                            max: 0.35,
-                                                                            step: 0.01,
-                                                                            type: 'string',
-                                                                            onchange: (e, v) => {
-                                                                                this.settings.messages.timing = v;
-                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                this.resetAnimations()
+                                                                            type: 'messages-name',
+                                                                            class: 'messages',
+                                                                            custom: {
+                                                                                data: this.settings.messages.custom,
                                                                             }
                                                                         },
-                                                                        {
-                                                                            component: 'svg',
-                                                                            id: 'help-timing-messages',
-                                                                            width: '25px',
-                                                                            height: '50px',
-                                                                            ...SvgTemps.Other.help
-                                                                        },
-                                                                        {
-                                                                            component: 'button',
-                                                                            padding: '6px',
-                                                                            svgs: [{ ...SvgTemps.Other.circleArrow, width: '22px', height: '22px' }],
-                                                                            onclick: (e) => {
-                                                                                var button = e.currentTarget;
-                                                                                var input = button.closest('.elementsContainer').querySelector('input');
-
-                                                                                input.value = this.defaultSettings.messages.timing;
-                                                                                this.settings.messages.timing = this.defaultSettings.messages.timing;
-                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                this.resetAnimations()
-                                                                            }
+                                                                        this.settings.messages.name,
+                                                                        (e) => {
+                                                                            this.settings.messages.name = e.value;
+                                                                            this.settings.messages.page = e.page;
+                                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                            this.resetAnimations()
                                                                         }
-                                                                    ]
-                                                                },
+                                                                    ).render
+                                                                ).render,
+            
+                                                                Field(trn.stng.timing, trn.stng.timing_note_messages,
+                                                                    ElementsPanel(
+                                                                        [
+                                                                            {
+                                                                                elements: [
+                                                                                    {
+                                                                                        component: 'input',
+                                                                                        value: this.settings.messages.timing,
+                                                                                        max: 0.35,
+                                                                                        step: 0.01,
+                                                                                        type: 'string',
+                                                                                        onchange: (e, v) => {
+                                                                                            this.settings.messages.timing = v;
+                                                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                            this.resetAnimations()
+                                                                                        }
+                                                                                    },
+                                                                                    {
+                                                                                        component: 'svg',
+                                                                                        id: 'help-timing-messages',
+                                                                                        width: '25px',
+                                                                                        height: '50px',
+                                                                                        ...SvgTemps.Other.help
+                                                                                    },
+                                                                                    {
+                                                                                        component: 'button',
+                                                                                        padding: '6px',
+                                                                                        svgs: [{ ...SvgTemps.Other.circleArrow, width: '22px', height: '22px' }],
+                                                                                        onclick: (e) => {
+                                                                                            var button = e.currentTarget;
+                                                                                            var input = button.closest('.elementsContainer').querySelector('input');
+            
+                                                                                            input.value = this.defaultSettings.messages.timing;
+                                                                                            this.settings.messages.timing = this.defaultSettings.messages.timing;
+                                                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                            this.resetAnimations()
+                                                                                        }
+                                                                                    }
+                                                                                ]
+                                                                            },
+                                                                        ]
+                                                                    ).render
+                                                                ).render,
+            
+                                                                Field(trn.stng.delay, trn.stng.delay_note_messages,
+                                                                    ElementsPanel(
+                                                                        [
+                                                                            {
+                                                                                elements: [
+                                                                                    {
+                                                                                        component: 'input',
+                                                                                        value: this.settings.messages.delay,
+                                                                                        max: 0.5,
+                                                                                        step: 0.01,
+                                                                                        type: 'number',
+                                                                                        onchange: (e, v) => {
+                                                                                            this.settings.messages.delay = v;
+                                                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                            this.resetAnimations()
+                                                                                        }
+                                                                                    },
+                                                                                    {
+                                                                                        component: 'button',
+                                                                                        padding: '6px',
+                                                                                        svgs: [{ ...SvgTemps.Other.circleArrow, width: '22px', height: '22px' }],
+                                                                                        onclick: (e) => {
+                                                                                            var button = e.currentTarget;
+                                                                                            var input = button.closest('.elementsContainer').querySelector('input');
+            
+                                                                                            input.value = this.defaultSettings.messages.delay;
+                                                                                            this.settings.messages.delay = this.defaultSettings.messages.delay;
+                                                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                            this.resetAnimations()
+                                                                                        }
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    ).render
+                                                                ).render,
+            
+                                                                Field(trn.stng.limit, trn.stng.limit_note_messages,
+                                                                    ElementsPanel(
+                                                                        [
+                                                                            {
+                                                                                elements: [
+                                                                                    {
+                                                                                        component: 'input',
+                                                                                        value: this.settings.messages.limit,
+                                                                                        max: 100,
+                                                                                        step: 1,
+                                                                                        type: 'integer',
+                                                                                        onchange: (e, v) => {
+                                                                                            this.settings.messages.limit = v;
+                                                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                            this.resetAnimations()
+                                                                                        }
+                                                                                    },
+                                                                                    {
+                                                                                        component: 'button',
+                                                                                        padding: '6px',
+                                                                                        svgs: [{ ...SvgTemps.Other.circleArrow, width: '22px', height: '22px' }],
+                                                                                        onclick: (e) => {
+                                                                                            var button = e.currentTarget;
+                                                                                            var input = button.closest('.elementsContainer').querySelector('input');
+            
+                                                                                            input.value = this.defaultSettings.messages.limit;
+                                                                                            this.settings.messages.limit = this.defaultSettings.messages.limit;
+                                                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                            this.resetAnimations()
+                                                                                        }
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    ).render
+                                                                ).render,
+            
+                                                                Field(trn.stng.duration, trn.stng.duration_note_messages,
+                                                                    ElementsPanel(
+                                                                        [
+                                                                            {
+                                                                                elements: [
+                                                                                    {
+                                                                                        component: 'input',
+                                                                                        value: this.settings.messages.duration,
+                                                                                        max: 3,
+                                                                                        step: 0.01,
+                                                                                        type: 'number',
+                                                                                        onchange: (e, v) => {
+                                                                                            this.settings.messages.duration = v;
+                                                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                            this.resetAnimations()
+                                                                                        }
+                                                                                    },
+                                                                                    {
+                                                                                        component: 'button',
+                                                                                        padding: '6px',
+                                                                                        svgs: [{ ...SvgTemps.Other.circleArrow, width: '22px', height: '22px' }],
+                                                                                        onclick: (e) => {
+                                                                                            var button = e.currentTarget;
+                                                                                            var input = button.closest('.elementsContainer').querySelector('input');
+            
+                                                                                            input.value = this.defaultSettings.messages.duration;
+                                                                                            this.settings.messages.duration = this.defaultSettings.messages.duration;
+                                                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                            this.resetAnimations()
+                                                                                        }
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    ).render
+                                                                ).render,
                                                             ]
-                                                        ).render
-                                                    ).render,
+                                                        },
+                                                        {
+                                                            name: 'Sending',
+                                                            content: [
+                                                                Field('Type', 'Sending message animation.',
+                                                                    ElementsPanel(
+                                                                        [
+                                                                            {
+                                                                                elements: [
+                                                                                    {
+                                                                                        component: 'button',
+                                                                                        label: this.settings.messages.sending.enabled == 'disabled' ? 'Disabled' : 'On Sent',
+                                                                                        color: this.settings.messages.sending.enabled == 'disabled' ? 'red' : 'green',
+                                                                                        onclick: (e, c) => {
+                                                                                            if (this.settings.messages.sending.enabled == 'disabled') {
+                                                                                                this.settings.messages.sending.enabled = 'onsent'
+                                                                                            }
+                                                                                            else {
+                                                                                                this.settings.messages.sending.enabled = 'disabled'
+                                                                                            }
 
-                                                    Field(trn.stng.delay, trn.stng.delay_note_messages,
-                                                        ElementsPanel(
-                                                            [
-                                                                {
-                                                                    elements: [
+                                                                                            c.setState({
+                                                                                                color: this.settings.messages.sending.enabled == 'disabled' ? 'red' : 'green',
+                                                                                                label: this.settings.messages.sending.enabled == 'disabled' ? 'Disabled' : 'On Sent'
+                                                                                            })
+
+                                                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                                            this.resetAnimations()
+                                                                                        }
+                                                                                    }
+                                                                                ]
+                                                                            }
+                                                                        ]
+                                                                    ).render
+                                                                ).render,
+
+                                                                Field(trn.stng.name, trn.stng.name_note_messages,
+                                                                    PreviewsPanel(
+                                                                        [
+                                                                            { label: trn.name.in, value: 'in' },
+                                                                            { label: trn.name.out, value: 'out' },
+                                                                            { label: trn.name.circle, value: 'circle' },
+                                                                            { label: trn.name.polygon, value: 'polygon' },
+                                                                            { label: trn.name.opacity, value: 'opacity' },
+                                                                            { label: trn.name.slime, value: 'slime' },
+                                                                            { label: trn.name.brick_right, value: 'brick-right' },
+                                                                            { label: trn.name.brick_left, value: 'brick-left' },
+                                                                            { label: trn.name.brick_up, value: 'brick-up' },
+                                                                            { label: trn.name.brick_down, value: 'brick-down' },
+                                                                            { label: trn.name.slide_right, value: 'slide-right' },
+                                                                            { label: trn.name.slide_left, value: 'slide-left' },
+                                                                            { label: trn.name.slide_up, value: 'slide-up' },
+                                                                            { label: trn.name.slide_down, value: 'slide-down' },
+                                                                            { label: trn.name.slide_up_right, value: 'slide-up-right' },
+                                                                            { label: trn.name.slide_up_left, value: 'slide-up-left' },
+                                                                            { label: trn.name.slide_down_right, value: 'slide-down-right' },
+                                                                            { label: trn.name.slide_down_left, value: 'slide-down-left' },
+                                                                            { label: trn.name.skew_right, value: 'skew-right' },
+                                                                            { label: trn.name.skew_left, value: 'skew-left' },
+                                                                            { label: trn.name.wide_skew_right, value: 'wide-skew-right' },
+                                                                            { label: trn.name.wide_skew_left, value: 'wide-skew-left' },
+                                                                        ],
                                                                         {
-                                                                            component: 'input',
-                                                                            value: this.settings.messages.delay,
-                                                                            max: 0.5,
-                                                                            step: 0.01,
-                                                                            type: 'number',
-                                                                            onchange: (e, v) => {
-                                                                                this.settings.messages.delay = v;
-                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                this.resetAnimations()
+                                                                            type: 'messages-name',
+                                                                            class: 'messages',
+                                                                            custom: {
+                                                                                data: this.settings.messages.sending.custom,
                                                                             }
                                                                         },
-                                                                        {
-                                                                            component: 'button',
-                                                                            padding: '6px',
-                                                                            svgs: [{ ...SvgTemps.Other.circleArrow, width: '22px', height: '22px' }],
-                                                                            onclick: (e) => {
-                                                                                var button = e.currentTarget;
-                                                                                var input = button.closest('.elementsContainer').querySelector('input');
-
-                                                                                input.value = this.defaultSettings.messages.delay;
-                                                                                this.settings.messages.delay = this.defaultSettings.messages.delay;
-                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                this.resetAnimations()
-                                                                            }
+                                                                        this.settings.messages.name,
+                                                                        (e) => {
+                                                                            this.settings.messages.sending.name = e.value;
+                                                                            this.settings.messages.sending.page = e.page;
+                                                                            PluginUtilities.saveSettings(this.getName(), this.settings);
+                                                                            this.resetAnimations()
                                                                         }
-                                                                    ]
-                                                                }
+                                                                    ).render
+                                                                ).render
                                                             ]
-                                                        ).render
-                                                    ).render,
-
-                                                    Field(trn.stng.limit, trn.stng.limit_note_messages,
-                                                        ElementsPanel(
-                                                            [
-                                                                {
-                                                                    elements: [
-                                                                        {
-                                                                            component: 'input',
-                                                                            value: this.settings.messages.limit,
-                                                                            max: 100,
-                                                                            step: 1,
-                                                                            type: 'integer',
-                                                                            onchange: (e, v) => {
-                                                                                this.settings.messages.limit = v;
-                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                this.resetAnimations()
-                                                                            }
-                                                                        },
-                                                                        {
-                                                                            component: 'button',
-                                                                            padding: '6px',
-                                                                            svgs: [{ ...SvgTemps.Other.circleArrow, width: '22px', height: '22px' }],
-                                                                            onclick: (e) => {
-                                                                                var button = e.currentTarget;
-                                                                                var input = button.closest('.elementsContainer').querySelector('input');
-
-                                                                                input.value = this.defaultSettings.messages.limit;
-                                                                                this.settings.messages.limit = this.defaultSettings.messages.limit;
-                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                this.resetAnimations()
-                                                                            }
-                                                                        }
-                                                                    ]
-                                                                }
-                                                            ]
-                                                        ).render
-                                                    ).render,
-
-                                                    Field(trn.stng.duration, trn.stng.duration_note_messages,
-                                                        ElementsPanel(
-                                                            [
-                                                                {
-                                                                    elements: [
-                                                                        {
-                                                                            component: 'input',
-                                                                            value: this.settings.messages.duration,
-                                                                            max: 3,
-                                                                            step: 0.01,
-                                                                            type: 'number',
-                                                                            onchange: (e, v) => {
-                                                                                this.settings.messages.duration = v;
-                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                this.resetAnimations()
-                                                                            }
-                                                                        },
-                                                                        {
-                                                                            component: 'button',
-                                                                            padding: '6px',
-                                                                            svgs: [{ ...SvgTemps.Other.circleArrow, width: '22px', height: '22px' }],
-                                                                            onclick: (e) => {
-                                                                                var button = e.currentTarget;
-                                                                                var input = button.closest('.elementsContainer').querySelector('input');
-
-                                                                                input.value = this.defaultSettings.messages.duration;
-                                                                                this.settings.messages.duration = this.defaultSettings.messages.duration;
-                                                                                PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                this.resetAnimations()
-                                                                            }
-                                                                        }
-                                                                    ]
-                                                                }
-                                                            ]
-                                                        ).render
-                                                    ).render,
+                                                        }
+                                                    ]).render
                                                 ]
                                             },
                                             {
@@ -3934,16 +4040,33 @@ module.exports = (
                             FindedModules.MessageDefault.default,
                             "type",
                             (obj, [props], ret) => {
-                                let foundNode = Utilities.findInTree(ret, node => node?.type == "li")
-                                if(foundNode) {
-                                    foundNode.props.style = {
-                                        "animation-name": this.settings.messages.custom.enabled ? this.settings.messages.custom.frames[this.settings.messages.custom.page] : this.settings.messages.name,
-                                        "animation-duration": this.settings.messages.duration,
-                                        "animation-timing-function": this.settings.messages.timing
+                                let li = Utilities.findInTree(ret, node => node?.type == "li")
+                                let div = li.props.children
+                                let state = div.props.childrenAccessories.props.message.state
+                                /**@type {sendingPerformance}*/
+                                const perf = this.settings.messages.sending.enabled
+
+                                if (perf == 'onsent') {
+                                    if(state == "SENT")
+                                    div.props.style = {
+                                        "animation-name": this.settings.messages.sending.name,
+                                    }
+                                    else /*if(state == "SENDING")*/
+                                    div.props.style = {
+                                        "animation": 'none',
+                                        "transform": "scale(1)",
+                                        opacity: 1
+                                    }
+                                }
+                                else {
+                                    div.props.style = {
+                                        "animation": 'none',
+                                        "transform": "scale(1)",
+                                        opacity: 1
                                     }
                                 }
                             }
-                        );
+                        )
                     }
 
                     start() {
