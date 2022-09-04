@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.3.7.2
+ * @version 1.3.8
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @invite PWtAHjBXtG
@@ -23,15 +23,15 @@ module.exports = (
                         github_username: 'Mopsgamer',
                     }
                 ],
-                version: '1.3.7.2',
+                version: '1.3.8',
                 description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
                 github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
                 github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
             },
             changelog: [
-                //{ "title": "New Stuff", "items": ["Added timing function setting."] },
-                { "title": "Improvements", "type": "improved", "items": ["Sending message animation settings."] },
-                //{ "title": "Fixes", "type": "fixed", "items": ["Fixed broken selectors."] }
+                { "title": "New Stuff", "items": ["Sending message animation settings."] },
+                //{ "title": "Improvements", "type": "improved", "items": [""] },
+                { "title": "Fixes", "type": "fixed", "items": ["Related fixes."] }
             ],
             main: 'index.js',
         };
@@ -296,6 +296,8 @@ module.exports = (
                             "from_last": "From last"
                         },
                         "stng": {
+                            "behavior": "Behavior",
+                            "behavior_note_messages_sending": "Animation behavior for the message to be sent.",
                             "delay": "Delay",
                             "delay_note_buttons": "Delay before appearing for each button in seconds.",
                             "delay_note_lists": "Delay before appearing for each list item in seconds.",
@@ -313,6 +315,7 @@ module.exports = (
                             "name_note_buttons": "Animation of the buttons.",
                             "name_note_lists": "Animation of the lists items.",
                             "name_note_messages": "Animation of the messages.",
+                            "name_note_messages_sending": "Animation of the message to be sent.",
                             "name_note_popouts": "Animation of the popouts.",
                             "sequence": "Sequence",
                             "sequence_note_buttons": "The sequence in which the buttons are built.",
@@ -321,10 +324,12 @@ module.exports = (
                             "timing_note_buttons": "Defines the change in animation playback speed for buttons.",
                             "timing_note_lists": "Defines the change in animation playback speed for lists.",
                             "timing_note_messages": "Defines the change in animation playback speed for messages.",
-                            "timing_note_popouts": "Defines the change in animation playback speed for popouts.",
+                            "timing_note_popouts": "Defines the change in animation playback speed for popouts."
                         },
                         "view": {
                             "advanced": "Advanced",
+                            "behaivor_animate_on_sent": "Animate on sent",
+                            "behavior_do_not_animate": "Do not animate",
                             "buttons": "Buttons",
                             "changelog": "Changelog",
                             "link_cd": "Help translate",
@@ -333,6 +338,8 @@ module.exports = (
                             "links_dc_server": "Server",
                             "lists": "Lists",
                             "messages": "Messages",
+                            "messages_received": "Received",
+                            "messages_sending": "Sending",
                             "popouts": "Popouts",
                             "rebuild_animations": "Rebuild animations",
                             "reset_all_settings": "Reset all",
@@ -1170,6 +1177,10 @@ module.exports = (
                     ${this.settings.messages.custom.page >= 0 ? this.settings.messages.custom.frames[this.settings.messages.custom.page]?.anim : ''}
                 }
 
+                @keyframes custom-messages+sending {
+                    ${this.settings.messages.sending.custom.page >= 0 ? this.settings.messages.sending.custom.frames[this.settings.messages.sending.custom.page]?.anim : ''}
+                }
+
                 @keyframes custom-popouts {
                     ${this.settings.popouts.custom.page >= 0 ? this.settings.popouts.custom.frames[this.settings.popouts.custom.page]?.anim : ''}
                 }
@@ -1355,10 +1366,15 @@ module.exports = (
                          */
                         let locale = FindedModules.LocaleGetter.locale;
 
-                        let t = this.stringsGet(locale)
-                        let d = AnimationsPlugin.strings
                         /**@type {AnimationsPlugin.strings}*/
-                        const trn = Object.assign(d, t)
+                        let trn = this.stringsGet(locale)
+                        let src = AnimationsPlugin.strings
+                        for(let key in src) {
+                            if(!trn[key]) trn[key] = src[key]
+                            else for(let sub in src[key]) {
+                                if(!trn[key][sub]) trn[key][sub] = src[key][sub]
+                            }
+                        }
 
                         /**
                          * Returns object - `class`, `render`.
@@ -2236,7 +2252,7 @@ module.exports = (
                                     React.createElement('div',
                                         {
                                             'data-index': index,
-                                            class: `animTab ${tabTemp.disabled ? 'disabled' : ''}`,
+                                            class: `animTab ${tabTemp.active ? 'selected' : ''} ${tabTemp.disabled ? 'disabled' : ''}`,
                                             onClick: (e) => {
                                                 if (tabTemp.disabled) return;
                                                 var tab = e.currentTarget;
@@ -2265,7 +2281,7 @@ module.exports = (
                                     React.createElement('div',
                                         {
                                             'data-index': index,
-                                            class: `animContent`
+                                            class: `animContent ${tabTemp.active ? 'show' : ''}`
                                         },
                                         Array.isArray(tabTemp.content) ? tabTemp.content : []
                                     )
@@ -2502,7 +2518,7 @@ module.exports = (
                             }
                         }
 
-                        if(1) setTimeout(function createTooltips() {
+                        setTimeout(function createTooltips() {
                             let mymodal = [...document.getElementsByClassName('bd-addon-modal')].find(modal => modal.querySelector('h4').innerText == 'ANIMATIONS SETTINGS')
                             mymodal.querySelectorAll('.animButton').forEach(
                                 btn => {
@@ -2519,11 +2535,19 @@ module.exports = (
                                     }
                                 }
                             )
-                            mymodal.querySelectorAll('.animPreview').forEach(
-                                btn => {
-                                    let label = btn.querySelector('.animPreviewLabel')
-                                    if (label.offsetHeight < label.scrollHeight) {
-                                        Tooltip.create(btn, label.innerText, {preventFlip: true, side: 'bottom'})
+                            mymodal.querySelectorAll('.animPreviewsPanel.vertical .animPreview').forEach(
+                                prev => {
+                                    let labelv = prev.querySelector('.animPreviewLabel')
+                                    if (labelv.offsetHeight < labelv.scrollHeight) {
+                                        Tooltip.create(prev, labelv.innerText, {preventFlip: true, side: 'bottom'})
+                                    }
+                                }
+                            )
+                            mymodal.querySelectorAll('.animPreviewsPanel.horizontal .animPreview').forEach(
+                                prev => {
+                                    let labelh = prev.querySelector('.animPreviewLabel')
+                                    if (labelh.offsetWidth < labelh.scrollWidth) {
+                                        Tooltip.create(prev, labelv.innerText, {preventFlip: true, side: 'bottom'})
                                     }
                                 }
                             )
@@ -3359,7 +3383,7 @@ module.exports = (
                                                     ).render,
                                                     TabsPanel([
                                                         {
-                                                            name: 'Sended',
+                                                            name: trn.view.messages_received,
                                                             content: [
             
                                                                 Field(trn.stng.name, trn.stng.name_note_messages,
@@ -3562,16 +3586,16 @@ module.exports = (
                                                             ]
                                                         },
                                                         {
-                                                            name: 'Sending',
+                                                            name: trn.view.messages_sending,
                                                             content: [
-                                                                Field('Type', 'Sending message animation.',
+                                                                Field(trn.stng.behavior, trn.stng.behavior_note_messages_sending,
                                                                     ElementsPanel(
                                                                         [
                                                                             {
                                                                                 elements: [
                                                                                     {
                                                                                         component: 'button',
-                                                                                        label: this.settings.messages.sending.enabled == 'disabled' ? 'Disabled' : 'On Sent',
+                                                                                        label: this.settings.messages.sending.enabled == 'disabled' ? trn.view.behavior_do_not_animate : trn.view.behaivor_animate_on_sent,
                                                                                         color: this.settings.messages.sending.enabled == 'disabled' ? 'red' : 'green',
                                                                                         onclick: (e, c) => {
                                                                                             if (this.settings.messages.sending.enabled == 'disabled') {
@@ -3583,11 +3607,10 @@ module.exports = (
 
                                                                                             c.setState({
                                                                                                 color: this.settings.messages.sending.enabled == 'disabled' ? 'red' : 'green',
-                                                                                                label: this.settings.messages.sending.enabled == 'disabled' ? 'Disabled' : 'On Sent'
+                                                                                                label: this.settings.messages.sending.enabled == 'disabled' ? trn.view.behavior_do_not_animate : trn.view.behaivor_animate_on_sent
                                                                                             })
 
                                                                                             PluginUtilities.saveSettings(this.getName(), this.settings);
-                                                                                            this.resetAnimations()
                                                                                         }
                                                                                     }
                                                                                 ]
@@ -4046,10 +4069,17 @@ module.exports = (
                                 /**@type {sendingPerformance}*/
                                 const perf = this.settings.messages.sending.enabled
 
+                                
+                                if(this.settings.messages.enabled)
                                 if (perf == 'onsent') {
                                     if(state == "SENT")
                                     div.props.style = {
-                                        "animation-name": this.settings.messages.sending.name,
+                                        "animation-name": this.settings.messages.sending.custom.enabled &&
+                                        (this.settings.messages.sending.custom.page >= 0 ?
+                                            this.settings.messages.sending.custom.frames[this.settings.messages.sending.custom.page].anim.trim() != '' &&
+                                            this.isValidKeyframe(this.settings.messages.sending.custom.frames[this.settings.messages.sending.custom.page].anim)
+                                            : 0)
+                                        ? 'custom-messages-sending' : this.settings.messages.sending.name,
                                     }
                                     else /*if(state == "SENDING")*/
                                     div.props.style = {
