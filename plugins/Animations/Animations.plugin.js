@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.3.9
+ * @version 1.3.9.1
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @invite PWtAHjBXtG
@@ -23,7 +23,7 @@ module.exports = (
                         github_username: 'Mopsgamer',
                     }
                 ],
-                version: '1.3.9',
+                version: '1.3.9.1',
                 description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
                 github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
                 github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
@@ -110,6 +110,8 @@ module.exports = (
 
                     constructor() {
                         super();
+
+                        this.patchedMessagesIds = []
 
                         this.defaultFrames = {
                             clear: {
@@ -3755,23 +3757,30 @@ module.exports = (
                             (obj, [props], ret) => {
                                 let li = Utilities.findInTree(ret, node => node?.type == "li")
                                 let div = li.props.children
-                                let state = div.props.childrenAccessories.props.message.state
+
+                                let info = div.props.childrenAccessories.props.message
+                                let state = info.state
+                                let id = info.id
                                 /**@type {sendingPerformance}*/
                                 const perf = this.settings.messages.sending.enabled
 
+                                if(!this.patchedMessagesIds.includes(id)) this.patchedMessagesIds.push(id)
                                 
                                 if(this.settings.messages.enabled)
                                 if (perf == 'onsent') {
-                                    if(state == "SENT")
-                                    div.props.style = {
-                                        "animation-name": this.settings.messages.sending.custom.enabled &&
-                                        (this.settings.messages.sending.custom.page >= 0 ?
-                                            this.settings.messages.sending.custom.frames[this.settings.messages.sending.custom.page].anim.trim() != '' &&
-                                            this.isValidKeyframe(this.settings.messages.sending.custom.frames[this.settings.messages.sending.custom.page].anim)
-                                            : 0)
-                                        ? 'custom-messages-sending' : this.settings.messages.sending.name,
+                                    if (state != "SENDING") {
+                                        let tstamp = info.timestamp._d
+                                        if (Date.now() - tstamp < 1000)
+                                        div.props.style = {
+                                            "animation-name": this.settings.messages.sending.custom.enabled &&
+                                            (this.settings.messages.sending.custom.page >= 0 ?
+                                                this.settings.messages.sending.custom.frames[this.settings.messages.sending.custom.page].anim.trim() != '' &&
+                                                this.isValidKeyframe(this.settings.messages.sending.custom.frames[this.settings.messages.sending.custom.page].anim)
+                                                : 0)
+                                            ? 'custom-messages-sending' : this.settings.messages.sending.name,
+                                        }
                                     }
-                                    else /*if(state == "SENDING")*/
+                                    else
                                     div.props.style = {
                                         "animation": 'none',
                                         "transform": "scale(1)",
@@ -3787,6 +3796,21 @@ module.exports = (
                                 }
                             }
                         )
+                    }
+
+                    unpatchAll() {
+
+                        Patcher.unpatchAll(this.getName())
+
+                        this.patchedMessagesIds.forEach(
+                            id => {
+                                let patchedElem = document.getElementById(`chat-messages-${id}`)?.firstChild
+                                console.log(patchedElem)
+                                if(!patchedElem) return;
+                                patchedElem.style = {}
+                            }
+                        )
+
                     }
 
                     start() {
@@ -4289,7 +4313,7 @@ module.exports = (
 
                     stop() {
 
-                        Patcher.unpatchAll(this.getName())
+                        this.unpatchAll()
 
                         clearInterval(this.animateInterval)
 
