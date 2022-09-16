@@ -1327,18 +1327,31 @@ module.exports = meta => {
                                 if (!trn[key][sub]) trn[key][sub] = src[key][sub]
                         }
 
-                        class ElementSvg extends React.Component {
+                        /**
+                         * @typedef {object} SvgState
+                         * @property {string} [id='']
+                         * @property {string} [class='']
+                         * @property {string} [color='#fff']
+                         * @property {'right' | 'left'} [align]
+                         * @property {string} [width='16px']
+                         * @property {string} [height='16px']
+                         * @property {string} [viewBox='0 0 24 24']
+                         * @property {string[]} [paths=[]]
+                         */
 
-                            constructor(props) {
-                                super(props)
+                        class Svg extends React.Component {
+
+                            constructor(/**@type {SvgState}*/svg) {
+                                super(svg)
+                                /**@type {SvgState}*/
                                 this.state = {
                                     paths: [],
                                     color: '#fff',
                                     width: '16px',
                                     height: '16px',
-                                    align: false,
+                                    align: undefined,
                                     viewBox: '0 0 24 24',
-                                    ...props
+                                    ...svg
                                 }
                             }
 
@@ -1364,26 +1377,26 @@ module.exports = meta => {
                             }
                         }
 
-                        class ElementButton extends React.Component {
+                        /**
+                         * @typedef {object} ButtonState
+                         * @property {string} [width='fit-content']
+                         * @property {string} [height='fit-content']
+                         * @property {string} [padding='8px']
+                         * @property {string} [margin='8px']
+                         * @property {string} [id='']
+                         * @property {string} [class='']
+                         * @property {boolean} [disabled=false]
+                         * @property {string} [link=null]
+                         * @property { 'filled' | 'inverted' | 'underline'} [fill='filled'] ` filled ` | ` inverted ` | ` underline `
+                         * @property { 'blurple' | 'grey' | 'green' | 'red' } [color='blurple'] ` blurple ` | ` grey ` | ` green ` | ` red `
+                         * @property { (e:MouseEvent)=>void } [onclick=null]
+                         */
 
-                            /**
-                             * 
-                             * @param {object} button
-                             * @param {string} [button.width='fit-content']
-                             * @param {string} [button.height='fit-content']
-                             * @param {string} [button.padding='8px']
-                             * @param {string} [button.margin='8px']
-                             * @param {string} [button.id='']
-                             * @param {string} [button.class='']
-                             * @param {boolean} [button.disabled=false]
-                             * @param {string} [button.link=null]
-                             * @param { 'filled' | 'inverted' | 'underline'} [button.fill='filled'] ` filled ` | ` inverted ` | ` underline `
-                             * @param { 'blurple' | 'grey' | 'green' | 'red' } [button.color='blurple'] ` blurple ` | ` grey ` | ` green ` | ` red `
-                             * @param {(e:MouseEvent)=>void} [button.onclick=null]
-                             */
+                        class Button extends React.Component {
 
-                            constructor(button) {
+                            constructor(/**@type {ButtonState}*/button) {
                                 super(button)
+                                /**@type {ButtonState}*/
                                 this.state = button
                             }
 
@@ -1411,7 +1424,7 @@ module.exports = meta => {
                                     }
                                 },
                                     [
-                                        Array.isArray(button.svgs) ? button.svgs.map((svgTemp) => React.createElement(ElementSvg, svgTemp)) : null,
+                                        Array.isArray(button.svgs) ? button.svgs.map((svgTemp) => React.createElement(Svg, svgTemp)) : null,
                                         React.createElement('span', {
                                             style: {
                                                 'max-width': 'none'
@@ -1420,7 +1433,7 @@ module.exports = meta => {
                                         },
                                             button.label
                                         ),
-                                        typeof button.link == 'string' ? React.createElement(ElementSvg, {
+                                        typeof button.link == 'string' ? React.createElement(Svg, {
                                             ...SvgTemps.linkArrow,
                                             align: 'right'
                                         }) : null
@@ -1430,28 +1443,30 @@ module.exports = meta => {
                         }
 
                         /**
-                         * 
-                         * @param {object} input
-                         * @param {string} [input.width='100%']
-                         * @param {string} [input.height='fit-content']
-                         * @param {string} [input.padding='8px']
-                         * @param {string} [input.margin='8px']
-                         * @param {string} [input.id='']
-                         * @param {string} [input.class='']
-                         * @param {boolean} [input.disabled=false]
-                         * @param {string} [input.placeholder='']
-                         * @param {number | ''} [input.maxlength='']
-                         * @param {number | ''} [input.size='']
-                         * @param {number | ''} [input.step=0.01]
-                         * @param {string} [input.value='']
-                         * @param {string | 'filled' | 'inverted' | 'underline'} [input.type='filled'] ` filled ` | ` inverted ` | ` underline `
-                         * @param {(e:MouseEvent)=>void} [button.onclick=null]
+                         * @typedef {object} InputState
+                         * @property {string} [width='100%']
+                         * @property {string} [height='fit-content']
+                         * @property {string} [padding='8px']
+                         * @property {string} [margin='8px']
+                         * @property {string} [id='']
+                         * @property {string} [class='']
+                         * @property {boolean} [disabled=false]
+                         * @property {string} [placeholder='']
+                         * @property {number | ''} [maxlength='']
+                         * @property {number | ''} [max='']
+                         * @property {number | ''} [min='']
+                         * @property {number | ''} [size='']
+                         * @property {number | ''} [step=0.01]
+                         * @property {string} [value='']
+                         * @property {string | 'filled' | 'inverted' | 'underline'} [type='filled'] ` filled ` | ` inverted ` | ` underline `
+                         * @property {(e:MouseEvent)=>void} [onclick=null]
                          */
 
-                        class ElementInput extends React.Component {
+                        class Input extends React.Component {
 
-                            constructor(input) {
+                            constructor(/**@type {InputState}*/input) {
                                 super(input)
+                                /**@type {InputState}*/input
                                 this.state = input
                             }
 
@@ -1499,15 +1514,27 @@ module.exports = meta => {
                                 )
                             }
                         }
+                        
+                        /**
+                         * @typedef { {component: 'divider'} } ElementTempDivider
+                         * @typedef { {component: 'svg'} & SvgState } ElementTempSvg
+                         * @typedef { {component: 'button'} & ButtonState } ElementTempButton
+                         * @typedef { {component: 'input'} & InputState } ElementTempInput
+                         * @typedef { ElementTempDivider | ElementTempSvg | ElementTempButton | ElementTempInput } ElementTemp
+                         */
+
+                        /**
+                         * @typedef {ElementsPanelOptions} 
+                         * @property {string} [widthAll] The width of each button, if the template does not specify a different width.
+                         * @property {string} [heightAll] The height of each button, if the template does not specify a different height.
+                         * @property {string} [align="flex-start"] `justify-content` css value for each button container.
+                         * @property {boolean} [nosidemargin=true] Zeroing the left and right margins for the first and last button respectively.
+                         */
 
                         /**
                          * Returns object - `class`, `render`.
-                         * @param {Array<{elements: Array<ElementButtonTemp>, options: object}>} containersTemp Array with button container templates.
-                         * @param {object} options Panel optinons.
-                         * @param {string} [options.widthAll] The width of each button, if the template does not specify a different width.
-                         * @param {string} [options.heightAll] The height of each button, if the template does not specify a different height.
-                         * @param {string} [options.align="flex-start"] `justify-content` css value for each button container.
-                         * @param {boolean} [options.nosidemargin=true] Zeroing the left and right margins for the first and last button respectively.
+                         * @param {{elements: ElementTemp[]}[]} containersTemp Array with button container templates.
+                         * @param {ElementsPanelOptions} options Panel optinons.
                          */
 
                         var ElementsPanel = (containersTemp = [], options = {}) => {
@@ -1543,7 +1570,7 @@ module.exports = meta => {
 
                                                         case 'svg':
                                                             return (
-                                                                React.createElement(ElementSvg, {
+                                                                React.createElement(Svg, {
                                                                     ...elementTemp
                                                                 })
                                                             )
@@ -1551,7 +1578,7 @@ module.exports = meta => {
 
                                                         case 'button':
                                                             return (
-                                                                React.createElement(ElementButton, {
+                                                                React.createElement(Button, {
                                                                     width: options.widthAll ?? containerTemp.options?.widthAll,
                                                                     height: options.heightAll ?? containerTemp.options?.heightAll,
                                                                     margin: options.marginAll ?? containerTemp.options?.marginAll,
@@ -1563,7 +1590,7 @@ module.exports = meta => {
 
                                                         case 'input':
                                                             return (
-                                                                React.createElement(ElementInput, {
+                                                                React.createElement(Input, {
                                                                     width: options.widthAll ?? containerTemp.options?.widthAll,
                                                                     height: options.heightAll ?? containerTemp.options?.heightAll,
                                                                     margin: options.marginAll ?? containerTemp.options?.marginAll,
@@ -1589,20 +1616,32 @@ module.exports = meta => {
                         }
 
                         /**
+                         * @typedef {object} TextareaOptions
+                         * @property {string} [class='']
+                         * @property {string} [width='100%']
+                         * @property {string} [height='270px']
+                         * @property {string} [placeholder='']
+                         * @property {bool} [disabled=false]
+                         * @property {bool} [invalid=false]
+                         * @property {(e:InputEvent)=>void} [onchange]
+                         * @property {(e:MouseEvent)=>void} [onclick]
+                         */
+
+                        /**
                          * Returns object - `class`, `render`.
                          * @param {object} options TextareasPanel options.
                          * @param {string} [options.margin]
                          * @param {string} [options.padding]
                          * @param {string} [options.class]
                          * @param {object} [options.elementsPanel] ElementsPanel.
-                         * @param {Array<object>} [options.elementsPanel.containersTemp] Array with element container templates.
+                         * @param {{elements: Array<ElementTemp>}[]} [options.elementsPanel.containersTemp] Array with element container templates.
                          * @param {object} [options.elementsPanel.options] ElementsPanel options.
                          * @param {string} [options.elementsPanel.options.widthAll] The width of each element, if the template does not specify a different width.
                          * @param {string} [options.elementsPanel.options.heightAll] The height of each element, if the template does not specify a different height.
                          * @param {string} [options.elementsPanel.options.marginAll] The margin of each element, if the template does not specify a different height.
                          * @param {string} [options.elementsPanel.options.paddingAll] The padding of each element, if the template does not specify a different height.
                          * @param {string} [options.elementsPanel.options.align="inline-flex"] `justify-content` css value for each element container. Default - `flex-start`.
-                         * @param {Array<object>} [options.textareas] Textareas temps.
+                         * @param {TextareaOptions[]} [options.textareas] Textareas temps.
                          * @param {(e:InputEvent)=>void} [options.onchange] The event at each change of any of the textareas.
                          * @param {(e:MouseEvent)=>void} [options.onclick] The event at each click of any point.
                          */
@@ -2183,7 +2222,7 @@ module.exports = meta => {
                         }
 
                         /**
-                         * any
+                         * Returns object - `class`, `render`.
                          */
 
                         var TabsPanel = (tabsTemp = [], options = {}) => {
@@ -2275,7 +2314,10 @@ module.exports = meta => {
                         }
 
                         /**
-                         * SettingsField.
+                         * 
+                         * @param {string} title
+                         * @param {string} note
+                         * @param {string} content
                          */
 
                         var Field = (title, note, content) => {
