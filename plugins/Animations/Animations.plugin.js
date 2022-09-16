@@ -1372,7 +1372,11 @@ module.exports = meta => {
                                             'margin-right': '4px'
                                         }
                                     },
-                                    this.state.paths.map(path => React.createElement('path', { d: path }))
+                                    this.state.paths.map(path => {
+                                        if (typeof path == 'string') return React.createElement('path', { d: path })
+                                        else if (typeof path == 'object') return React.createElement(path?.tag ?? 'path', path)
+                                        else return null
+                                    })
                                 )
                             }
                         }
@@ -1696,7 +1700,7 @@ module.exports = meta => {
 
                         /**
                          * Returns object - `class`, `render`.
-                         * @param {Array<object>} previewsTemp Array with previews templates.
+                         * @param {Array<{label: string, value: string}>} previewsTemp Array with previews templates.
                          * @param {object} options Panel optinons.
                          * @param {boolean} horizontal Preview positioning.
                          * @param {string} [options.type] `*class*-name`, `*class*-sequence`, ...
@@ -2222,7 +2226,20 @@ module.exports = meta => {
                         }
 
                         /**
+                         * @typedef { object | ElementTempDivider } TabTemp
+                         * @property {bool} disabled
+                         * @property {string} name
+                         * @property {(string, React.Component)[]} content
+                         */
+
+                        /**
                          * Returns object - `class`, `render`.
+                         * @param {TabTemp[]} [tabsTemp=[]]
+                         * @param {object} [options={}]
+                         * @param {number} [options.active='']
+                         * @param {string} [options.class='']
+                         * @param {string} [options.margin=null]
+                         * @param {string} [options.padding=null]
                          */
 
                         var TabsPanel = (tabsTemp = [], options = {}) => {
@@ -2242,7 +2259,7 @@ module.exports = meta => {
                                     React.createElement('div',
                                         {
                                             'data-index': index,
-                                            class: `animTab ${tabTemp.active ? 'selected' : ''} ${tabTemp.disabled ? 'disabled' : ''}`,
+                                            class: `animTab ${options?.active == index ? 'selected' : ''} ${tabTemp.disabled ? 'disabled' : ''}`,
                                             onClick: (e) => {
                                                 if (tabTemp.disabled) return;
                                                 var tab = e.currentTarget;
@@ -2271,7 +2288,7 @@ module.exports = meta => {
                                     React.createElement('div',
                                         {
                                             'data-index': index,
-                                            class: `animContent ${tabTemp.active ? 'show' : ''}`
+                                            class: `animContent ${options?.active == index ? 'show' : ''}`
                                         },
                                         Array.isArray(tabTemp.content) ? tabTemp.content : []
                                     )
@@ -2314,7 +2331,7 @@ module.exports = meta => {
                         }
 
                         /**
-                         * 
+                         * Field.
                          * @param {string} title
                          * @param {string} note
                          * @param {string} content
