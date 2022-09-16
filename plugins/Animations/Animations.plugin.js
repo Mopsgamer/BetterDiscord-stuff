@@ -1,6 +1,6 @@
 /**
  * @name Animations
- * @version 1.3.9.2
+ * @version 1.3.10
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
  * @author Mops
  * @invite PWtAHjBXtG
@@ -11,54 +11,54 @@
  * @updateUrl https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/Animations/Animations.plugin.js
  */
 
-module.exports = (
-    () => {
-        const config = {
-            info: {
-                name: 'Animations',
-                authors: [
-                    {
-                        name: 'Mops',
-                        discord_id: '538010208023347200',
-                        github_username: 'Mopsgamer',
-                    }
-                ],
-                version: '1.3.9.2',
-                description: 'This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.',
-                github: 'https://github.com/Mopsgamer/Animations/blob/main/Animations.plugin.js',
-                github_raw: 'https://raw.githubusercontent.com/Mopsgamer/Animations/main/Animations.plugin.js',
-            },
-            changelog: [
-                { "title": "New Stuff", "items": ["Popouts has been removed, check out BetterAnimations. This plugin will focus on lists."] },
-                //{ "title": "Improvements", "type": "improved", "items": [""] },
-                { "title": "Fixes", "type": "fixed", "items": ["Translation import fix. The settings are now available."] }
-            ],
-            main: 'index.js',
-        };
+module.exports = meta => {
 
-        return !global.ZeresPluginLibrary ? class {
-            constructor() { this._config = config; }
-            getName() { return config.info.name; }
-            getAuthor() { return config.info.authors.map(a => a.name).join(', '); }
-            getDescription() { return config.info.description; }
-            getVersion() { return config.info.version; }
-            load() {
-                BdApi.showConfirmationModal('Library Missing', `The library plugin needed for ${config.info.name} is missing. Please click Download Now to install it.`, {
-                    confirmText: 'Download Now',
-                    cancelText: 'Cancel',
-                    onConfirm: () => {
-                        require('request').get('https://rauenzi.github.io/BDPluginLibrary/release/0PluginLibrary.plugin.js', async (error, response, body) => {
-                            if (error) return require('electron').shell.openExternal('https://betterdiscord.net/ghdl?url=https://raw.githubusercontent.com/rauenzi/BDPluginLibrary/master/release/0PluginLibrary.plugin.js');
-                            await new Promise(r => require('fs').writeFile(require('path').join(BdApi.Plugins.folder, '0PluginLibrary.plugin.js'), body, r));
-                        });
-                    }
-                });
-            }
-            start() { }
-            stop() { }
-        } : (([Plugin, Api]) => {
+    const config = {
+        changelog: [
+            //{ "items": [""], "title": "New Stuff" },
+            { "items": ["Settings interface has been improved."], "title": "Improvements", "type": "improved" },
+            { "items": ["Fixed the second message animation.", "Fixed error handling for translation update button."], "title": "Fixes", "type": "fixed" }
+        ],
+        info: {
+            authors: [{
+                discord_id: meta.authorId,
+                github_username: 'Mopsgamer',
+                name: meta.author
+            }],
+            description: meta.description,
+            github: meta.website,
+            github_raw: meta.source,
+            invite: meta.invite,
+            name: meta.name,
+            version: meta.version
+        },
+        main: 'index.js'
+    }
 
-                const plugin = (Plugin, Api) => {
+    return !global.ZeresPluginLibrary ? {
+        constructor() { this._config = config; },
+        getName() { return config.info.name; },
+        getAuthor() { return config.info.authors.map(a => a.name).join(', '); },
+        getDescription() { return config.info.description; },
+        getVersion() { return config.info.version; },
+        load() {
+            BdApi.showConfirmationModal('Library Missing', `The library plugin needed for ${config.info.name} is missing. Please click Download Now to install it.`, {
+                confirmText: 'Download Now',
+                cancelText: 'Cancel',
+                onConfirm: () => {
+                    require('request').get('https://rauenzi.github.io/BDPluginLibrary/release/0PluginLibrary.plugin.js', async (error, response, body) => {
+                        if (error) return require('electron').shell.openExternal('https://betterdiscord.net/ghdl?url=https://raw.githubusercontent.com/rauenzi/BDPluginLibrary/master/release/0PluginLibrary.plugin.js');
+                        await new Promise(r => require('fs').writeFile(require('path').join(BdApi.Plugins.folder, '0PluginLibrary.plugin.js'), body, r));
+                    });
+                }
+            });
+        },
+        start() { },
+        stop() { }
+    } : (
+        ([Plugin, Api]) => {
+
+            const plugin = (Plugin, Api) => {
                 const { DiscordModules, DiscordAPI, Utilities, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules, Logger, Settings, Tooltip, ReactComponents, ContextMenu } = Api
                 const { React, ReactDOM, Patcher } = BdApi
 
@@ -106,7 +106,7 @@ module.exports = (
                     }
                 })()
 
-                return class AnimationsPlugin extends Plugin {
+                class AnimationsPlugin extends Plugin {
 
                     constructor() {
                         super();
@@ -209,7 +209,7 @@ module.exports = (
                                         }],
                                         page: 0
                                     },
-                        
+
                                     /**@type {sendingPerformance}*/
                                     enabled: 'onsent',
                                     name: 'brick-up',
@@ -336,7 +336,7 @@ module.exports = (
                             "update_searching": "Searching for updates..."
                         }
                     }
-                    
+
                     static easings = [
                         'linear',
                         'ease-in',
@@ -1153,7 +1153,7 @@ module.exports = (
                         return new Promise((rs, rj) => setTimeout(rs, ms))
                     }
 
-                    requestGhFile(ghApiUrl, onResponse, onError) {
+                    requestGhFile(ghApiUrl) {
                         return new Promise(
                             (rs, rj) => {
                                 const request = new XMLHttpRequest();
@@ -1166,21 +1166,19 @@ module.exports = (
                                     let resp = request?.responseText
                                     var responseCode = (resp ? JSON.parse(resp) : undefined);
                                     if (!responseCode) {
-                                        if (typeof onError == 'function') onError(request.status, request.statusText)
-                                        rj(request.status)
+                                        rj(request.status, request.statusText)
                                         return
                                     }
 
                                     var decoded = this.fromBinary(responseCode.content);
 
-                                    if (typeof onResponse == 'function') onResponse(decoded)
                                     rs(decoded)
                                     return
                                 }
                             }
                         )
                     }
-                    
+
                     /**
                      * Reads file
                      * @param {locale} [key]
@@ -1202,7 +1200,7 @@ module.exports = (
                     /**
                      * @returns ` new == old `
                      */
-                    stringsLoad(onError) {
+                    stringsLoad() {
                         return new Promise(
                             async (rs, rj) => {
                                 try {
@@ -1210,8 +1208,8 @@ module.exports = (
                                     let path = require('path')
                                     let p = path.join(BdApi.Plugins.folder, this.getName() + '.translation.json')
                                     let url = 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/plugins/Animations/Animations.translation.json' + '?ref=main'
-                                    await this.requestGhFile(url,
-                                        (text_new) => {
+                                    this.requestGhFile(url).then(
+                                        async (text_new) => {
                                             let text_old = ''
                                             try {
                                                 text_old = fs.readFileSync(p)
@@ -1220,11 +1218,11 @@ module.exports = (
                                             }
                                             fs.writeFileSync(p, text_new)
                                             rs(text_new == text_old)
-                                        },
-                                        onError
-                                    )
+                                        }
+                                    ).catch(rj)
                                 } catch (err) {
-                                    rj(err)
+                                    rj()
+                                    Logger.err(err)
                                 }
                             }
                         )
@@ -1321,12 +1319,185 @@ module.exports = (
                         /**@type {AnimationsPlugin.strings}*/
                         let trn = this.stringsGet(locale);
                         let src = AnimationsPlugin.strings
-                        if(trn == null) {
+                        if (trn == null) {
                             trn = src
                         } else for (let key in src) {
-                            if(!trn[key]) trn[key] = src[key]
+                            if (!trn[key]) trn[key] = src[key]
                             else for (let sub in src[key])
                                 if (!trn[key][sub]) trn[key][sub] = src[key][sub]
+                        }
+
+                        class ElementSvg extends React.Component {
+
+                            constructor(props) {
+                                super(props)
+                                this.state = {
+                                    paths: [],
+                                    color: '#fff',
+                                    width: '16px',
+                                    height: '16px',
+                                    align: false,
+                                    viewBox: '0 0 24 24',
+                                    ...props
+                                }
+                            }
+
+                            render() {
+
+                                return React.createElement('svg',
+                                    {
+                                        viewBox: this.state.viewBox,
+                                        fill: this.state.color,
+                                        id: this.state.id ?? '',
+                                        class: this.state.class ?? '',
+                                        style: {
+                                            width: this.state.width,
+                                            height: this.state.height,
+                                            position: (['right', 'left']).includes(this.state.align) ? 'absolute' : 'relative',
+                                            right: (this.state.align == 'right') ? '12px' : 'none',
+                                            left: (this.state.align == 'left') ? '12px' : 'none',
+                                            'margin-right': '4px'
+                                        }
+                                    },
+                                    this.state.paths.map(path => React.createElement('path', { d: path }))
+                                )
+                            }
+                        }
+
+                        class ElementButton extends React.Component {
+
+                            /**
+                             * 
+                             * @param {object} button
+                             * @param {string} [button.width='fit-content']
+                             * @param {string} [button.height='fit-content']
+                             * @param {string} [button.padding='8px']
+                             * @param {string} [button.margin='8px']
+                             * @param {string} [button.id='']
+                             * @param {string} [button.class='']
+                             * @param {boolean} [button.disabled=false]
+                             * @param {string} [button.link=null]
+                             * @param { 'filled' | 'inverted' | 'underline'} [button.fill='filled'] ` filled ` | ` inverted ` | ` underline `
+                             * @param { 'blurple' | 'grey' | 'green' | 'red' } [button.color='blurple'] ` blurple ` | ` grey ` | ` green ` | ` red `
+                             * @param {(e:MouseEvent)=>void} [button.onclick=null]
+                             */
+
+                            constructor(button) {
+                                super(button)
+                                this.state = button
+                            }
+
+                            render() {
+
+                                var button = this.state;
+                                return React.createElement('button', {
+                                    style: {
+                                        display: 'inline-flex',
+                                        'align-items': 'center',
+                                        'justify-content': 'center',
+                                        width: button.width ?? 'fit-content',
+                                        height: button.height ?? 'fit-content',
+                                        padding: button.padding ?? '8px',
+                                        margin: button.margin ?? '8px',
+                                        'transition': 'background-color .17s ease, color .17s ease, opacity 250ms ease',
+                                    },
+                                    id: button.id ?? '',
+                                    'data-link': button.link,
+                                    class: `animButton ${FindedModules.Button} ${FindedModules.ButtonSizeSmall} ${button.disabled ? 'disabled' : ''} ${(['filled', 'inverted', 'underline']).includes(button.fill) ? button.fill : 'filled'} ${button.color ?? 'blurple'} ${button.class ?? ''}`,
+                                    onClick: (e) => {
+                                        if (e.currentTarget.classList.contains('disabled')) return
+                                        if (typeof button.onclick == 'function') button.onclick(e, this)
+                                        if (typeof button.link == 'string') window.open(button.link)
+                                    }
+                                },
+                                    [
+                                        Array.isArray(button.svgs) ? button.svgs.map((svgTemp) => React.createElement(ElementSvg, svgTemp)) : null,
+                                        React.createElement('span', {
+                                            style: {
+                                                'max-width': 'none'
+                                            },
+                                            class: `${FindedModules.ButtonText} ${FindedModules.ButtonContents}`,
+                                        },
+                                            button.label
+                                        ),
+                                        typeof button.link == 'string' ? React.createElement(ElementSvg, {
+                                            ...SvgTemps.linkArrow,
+                                            align: 'right'
+                                        }) : null
+                                    ]
+                                )
+                            }
+                        }
+
+                        /**
+                         * 
+                         * @param {object} input
+                         * @param {string} [input.width='100%']
+                         * @param {string} [input.height='fit-content']
+                         * @param {string} [input.padding='8px']
+                         * @param {string} [input.margin='8px']
+                         * @param {string} [input.id='']
+                         * @param {string} [input.class='']
+                         * @param {boolean} [input.disabled=false]
+                         * @param {string} [input.placeholder='']
+                         * @param {number | ''} [input.maxlength='']
+                         * @param {number | ''} [input.size='']
+                         * @param {number | ''} [input.step=0.01]
+                         * @param {string} [input.value='']
+                         * @param {string | 'filled' | 'inverted' | 'underline'} [input.type='filled'] ` filled ` | ` inverted ` | ` underline `
+                         * @param {(e:MouseEvent)=>void} [button.onclick=null]
+                         */
+
+                        class ElementInput extends React.Component {
+
+                            constructor(input) {
+                                super(input)
+                                this.state = input
+                            }
+
+                            render() {
+                                var input = this.state;
+                                return React.createElement('input',
+                                    {
+                                        style: {
+                                            display: 'inline-block',
+                                            width: input.width ?? '100%',
+                                            height: input.height ?? 'fit-content',
+                                            padding: input.padding ?? '8px',
+                                            margin: input.margin ?? '8px',
+                                        },
+                                        placeholder: input.placeholder ?? '',
+                                        maxlength: input.maxlength ?? '',
+                                        max: input.max ?? '',
+                                        min: input.min ?? '0',
+                                        size: input.size ?? '',
+                                        step: input.step ?? 0.01,
+                                        value: input.value ?? '',
+                                        type: (['text', 'password', 'email', 'number', 'integer']).includes(input.type) ? (input.type == 'integer' ? 'number' : input.type) : 'text',
+                                        id: input.id ?? '',
+                                        class: `animInput ${FindedModules.InputDefault} ${input.disabled ? 'disabled' : ''} ${input.class ?? ''}`,
+                                        onClick: input.onclick ?? null,
+                                        onChange: (e) => {
+                                            var value = e.currentTarget.value
+                                            var valueNum = e.currentTarget.valueAsNumber
+
+                                            if ((['number', 'integer']).includes(input.type) && !(/(\d*,)/).test(value) && value != '') {
+                                                valueNum = (valueNum <= (input.max ?? Infinity) ? valueNum : input.max)
+                                                valueNum = (valueNum >= (input.min ?? 0) ? valueNum : input.min ?? 0)
+                                                valueNum = (input.type == 'integer' ? Math.floor(valueNum) : valueNum)
+                                            }
+                                            var newValue = String(value)
+
+                                            this.setState({
+                                                ...input,
+                                                value: newValue
+                                            })
+
+                                            input?.onchange(e, value)
+                                        }
+                                    }
+                                )
+                            }
                         }
 
                         /**
@@ -1340,179 +1511,6 @@ module.exports = (
                          */
 
                         var ElementsPanel = (containersTemp = [], options = {}) => {
-
-                            class ElementSvg extends React.Component {
-
-                                constructor(props) {
-                                    super(props)
-                                    this.state = {
-                                        paths: [],
-                                        color: '#fff',
-                                        width: '16px',
-                                        height: '16px',
-                                        align: false,
-                                        viewBox: '0 0 24 24',
-                                        ...props
-                                    }
-                                }
-
-                                render() {
-
-                                    return React.createElement('svg',
-                                        {
-                                            viewBox: this.state.viewBox,
-                                            fill: this.state.color,
-                                            id: this.state.id ?? '',
-                                            class: this.state.class ?? '',
-                                            style: {
-                                                width: this.state.width,
-                                                height: this.state.height,
-                                                position: (['right', 'left']).includes(this.state.align) ? 'absolute' : 'relative',
-                                                right: (this.state.align == 'right') ? '12px' : 'none',
-                                                left: (this.state.align == 'left') ? '12px' : 'none',
-                                                'margin-right': '4px'
-                                            }
-                                        },
-                                        this.state.paths.map(path => React.createElement('path', { d: path }))
-                                    )
-                                }
-                            }
-
-                            class ElementButton extends React.Component {
-
-                                /**
-                                 * 
-                                 * @param {object} button
-                                 * @param {string} [button.width='fit-content']
-                                 * @param {string} [button.height='fit-content']
-                                 * @param {string} [button.padding='8px']
-                                 * @param {string} [button.margin='8px']
-                                 * @param {string} [button.id='']
-                                 * @param {string} [button.class='']
-                                 * @param {boolean} [button.disabled=false]
-                                 * @param {string} [button.link=null]
-                                 * @param { 'filled' | 'inverted' | 'underline'} [button.fill='filled'] ` filled ` | ` inverted ` | ` underline `
-                                 * @param { 'blurple' | 'grey' | 'green' | 'red' } [button.color='blurple'] ` blurple ` | ` grey ` | ` green ` | ` red `
-                                 * @param {(e:MouseEvent)=>void} [button.onclick=null]
-                                 */
-
-                                constructor(button) {
-                                    super(button)
-                                    this.state = button
-                                }
-
-                                render() {
-
-                                    var button = this.state;
-                                    return React.createElement('button', {
-                                        style: {
-                                            display: 'inline-flex',
-                                            'align-items': 'center',
-                                            'justify-content': 'center',
-                                            width: button.width ?? 'fit-content',
-                                            height: button.height ?? 'fit-content',
-                                            padding: button.padding ?? '8px',
-                                            margin: button.margin ?? '8px',
-                                            'transition': 'background-color .17s ease, color .17s ease, opacity 250ms ease',
-                                        },
-                                        id: button.id ?? '',
-                                        'data-link': button.link,
-                                        class: `animButton ${FindedModules.Button} ${FindedModules.ButtonSizeSmall} ${button.disabled ? 'disabled' : ''} ${(['filled', 'inverted', 'underline']).includes(button.fill) ? button.fill : 'filled'} ${button.color ?? 'blurple'} ${button.class ?? ''}`,
-                                        onClick: (e) => {
-                                            if (e.currentTarget.classList.contains('disabled')) return
-                                            if (typeof button.onclick == 'function') button.onclick(e, this)
-                                            if (typeof button.link == 'string') window.open(button.link)
-                                        }
-                                    },
-                                        [
-                                            Array.isArray(button.svgs) ? button.svgs.map((svgTemp) => React.createElement(ElementSvg, svgTemp)) : null,
-                                            React.createElement('span', {
-                                                style: {
-                                                    'max-width': 'none'
-                                                },
-                                                class: `${FindedModules.ButtonText} ${FindedModules.ButtonContents}`,
-                                            },
-                                                button.label
-                                            ),
-                                            typeof button.link == 'string' ? React.createElement(ElementSvg, {
-                                                ...SvgTemps.linkArrow,
-                                                align: 'right'
-                                            }) : null
-                                        ]
-                                    )
-                                }
-                            }
-
-                            /**
-                             * 
-                             * @param {object} input
-                             * @param {string} [input.width='100%']
-                             * @param {string} [input.height='fit-content']
-                             * @param {string} [input.padding='8px']
-                             * @param {string} [input.margin='8px']
-                             * @param {string} [input.id='']
-                             * @param {string} [input.class='']
-                             * @param {boolean} [input.disabled=false]
-                             * @param {string} [input.placeholder='']
-                             * @param {number | ''} [input.maxlength='']
-                             * @param {number | ''} [input.size='']
-                             * @param {number | ''} [input.step=0.01]
-                             * @param {string} [input.value='']
-                             * @param {string | 'filled' | 'inverted' | 'underline'} [input.type='filled'] ` filled ` | ` inverted ` | ` underline `
-                             * @param {(e:MouseEvent)=>void} [button.onclick=null]
-                             */
-
-                            class ElementInput extends React.Component {
-
-                                constructor(input) {
-                                    super(input)
-                                    this.state = input
-                                }
-
-                                render() {
-                                    var input = this.state;
-                                    return React.createElement('input',
-                                        {
-                                            style: {
-                                                display: 'inline-block',
-                                                width: input.width ?? '100%',
-                                                height: input.height ?? 'fit-content',
-                                                padding: input.padding ?? '8px',
-                                                margin: input.margin ?? '8px',
-                                            },
-                                            placeholder: input.placeholder ?? '',
-                                            maxlength: input.maxlength ?? '',
-                                            max: input.max ?? '',
-                                            min: input.min ?? '0',
-                                            size: input.size ?? '',
-                                            step: input.step ?? 0.01,
-                                            value: input.value ?? '',
-                                            type: (['text', 'password', 'email', 'number', 'integer']).includes(input.type) ? (input.type == 'integer' ? 'number' : input.type) : 'text',
-                                            id: input.id ?? '',
-                                            class: `animInput ${FindedModules.InputDefault} ${input.disabled ? 'disabled' : ''} ${input.class ?? ''}`,
-                                            onClick: input.onclick ?? null,
-                                            onChange: (e) => {
-                                                var value = e.currentTarget.value
-                                                var valueNum = e.currentTarget.valueAsNumber
-
-                                                if ((['number', 'integer']).includes(input.type) && !(/(\d*,)/).test(value) && value != '') {
-                                                    valueNum = (valueNum <= (input.max ?? Infinity) ? valueNum : input.max)
-                                                    valueNum = (valueNum >= (input.min ?? 0) ? valueNum : input.min ?? 0)
-                                                    valueNum = (input.type == 'integer' ? Math.floor(valueNum) : valueNum)
-                                                }
-                                                var newValue = String(value)
-
-                                                this.setState({
-                                                    ...input,
-                                                    value: newValue
-                                                })
-
-                                                input?.onchange(e, value)
-                                            }
-                                        }
-                                    )
-                                }
-                            }
 
                             var result = React.createElement('div', {
                                 style: {
@@ -2304,10 +2302,10 @@ module.exports = (
                         }
 
                         let Textcolors = {
-                            red: '#ed4245',
+                            gray: '#36393f',
                             green: '#3ba55d',
-                            yellow: '#faa81a',
-                            gray: '#36393f'
+                            red: '#ed4245',
+                            yellow: '#faa81a'
                         }
 
                         let SvgTemps = {
@@ -2362,6 +2360,10 @@ module.exports = (
                                 }
                             },
                             Other: {
+                                translation: {
+                                    paths: ['M25.74 30.15l-5.08-5.02.06-.06c3.48-3.88 5.96-8.34 7.42-13.06h5.86v-4.01h-14v-4h-4v4h-14v3.98h22.34c-1.35 3.86-3.46 7.52-6.34 10.72-1.86-2.07-3.4-4.32-4.62-6.7h-4c1.46 3.26 3.46 6.34 5.96 9.12l-10.17 10.05 2.83 2.83 10-10 6.22 6.22 1.52-4.07zm11.26-10.15h-4l-9 24h4l2.25-6h9.5l2.25 6h4l-9-24zm-5.25 14l3.25-8.67 3.25 8.67h-6.5z'],
+                                    viewBox: '0 0 48 48'
+                                },
                                 changelogArrow: {
                                     paths: ['M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z'],
                                     viewBox: '0 0 24 24'
@@ -2471,15 +2473,16 @@ module.exports = (
                             }
                         }
 
-                        setTimeout(function createTooltips() {
+                        setTimeout(() => {
                             let mymodal = [...document.getElementsByClassName('bd-addon-modal')].find(modal => modal.querySelector('h4').innerText == 'ANIMATIONS SETTINGS')
+
                             mymodal.querySelectorAll('.animButton').forEach(
                                 btn => {
                                     let span = btn.querySelector('span')
                                     if (span.offsetWidth < span.scrollWidth) {
-                                        Tooltip.create(btn, span.innerText, {preventFlip: true, side: 'bottom'})
+                                        Tooltip.create(btn, span.innerText, { preventFlip: true, side: 'bottom' })
                                     }
-                                    else if(btn.getAttribute('data-link')) {
+                                    else if (btn.getAttribute('data-link')) {
                                         let svgs = Array.from(btn.querySelectorAll('svg'))
                                         let svg = svgs[svgs.length - 1]
                                         let tt = new Tooltip(btn, btn.getAttribute('data-link'), { preventFlip: true, side: 'top', disabled: true })
@@ -2492,7 +2495,7 @@ module.exports = (
                                 prev => {
                                     let labelv = prev.querySelector('.animPreviewLabel')
                                     if (labelv.offsetHeight < labelv.scrollHeight) {
-                                        Tooltip.create(prev, labelv.innerText, {preventFlip: true, side: 'bottom'})
+                                        Tooltip.create(prev, labelv.innerText, { preventFlip: true, side: 'bottom' })
                                     }
                                 }
                             )
@@ -2500,7 +2503,7 @@ module.exports = (
                                 prev => {
                                     let labelh = prev.querySelector('.animPreviewLabel')
                                     if (labelh.offsetWidth < labelh.scrollWidth) {
-                                        Tooltip.create(prev, labelv.innerText, {preventFlip: true, side: 'bottom'})
+                                        Tooltip.create(prev, labelv.innerText, { preventFlip: true, side: 'bottom' })
                                     }
                                 }
                             )
@@ -2559,22 +2562,23 @@ module.exports = (
                                                         label: trn.view.upd_translation,
                                                         color: 'blurple',
                                                         id: 'animations-update-translation',
-                                                        svgs: [SvgTemps.downloadArrow, SvgTemps.Other.web],
+                                                        svgs: [SvgTemps.Other.translation],
                                                         onclick: async (e, c) => {
-                                                            c.setState({label: '...'})
+                                                            c.setState({ svgs: [SvgTemps.Other.translation, SvgTemps.downloadArrow], disabled: true, label: trn.view.update_searching })
 
-                                                            this.stringsLoad(
-                                                                (status, reason) => {
-                                                                    c.setState({ svgs: [SvgTemps.warn], color: 'red', label: trn.view.update_err_unknown })
-                                                                }
-                                                            ).then(
+                                                            this.stringsLoad()
+                                                            .then(
                                                                 async (eq) => {
-                                                                    if (eq) c.setState({ svgs: [SvgTemps.downloadArrow, SvgTemps.Other.web], color: 'grey', label: trn.view.update_latest, disabled: true });
+                                                                    if (eq) c.setState({ svgs: [SvgTemps.Other.translation], color: 'grey', label: trn.view.update_latest});
                                                                     else {
-                                                                        c.setState({ svgs: [SvgTemps.downloadArrow, SvgTemps.Other.web], color: 'green', label: trn.view.resetting, disabled: true });
+                                                                        c.setState({ svgs: [SvgTemps.Other.translation], color: 'green', label: trn.view.resetting});
                                                                         await this.wait(1000)
                                                                         this.closeSettings()
                                                                     }
+                                                                }
+                                                            ).catch(
+                                                                async (status, text) => {
+                                                                    c.setState({ svgs: [SvgTemps.warn], color: 'red', label: `${trn.view.update_err_unknown} - ${status}` })
                                                                 }
                                                             )
                                                         }
@@ -2589,7 +2593,7 @@ module.exports = (
                                                         onclick: async (e, c) => {
                                                             let button = e.currentTarget;
 
-                                                            c.setState({color: 'blurple', label: trn.view.update_searching})
+                                                            c.setState({ color: 'blurple', disabled: true, label: trn.view.update_searching })
 
                                                             const request = new XMLHttpRequest();
                                                             request.open("GET", 'https://api.github.com/repos/Mopsgamer/BetterDiscord-codes/contents/Animations.plugin.js' + '?ref=Animations');
@@ -2598,15 +2602,16 @@ module.exports = (
                                                             request.timeout = 15000;
                                                             request.timeout
                                                             request.ontimeout = function (e) {
-                                                                c.setState({color: 'red', label: trn.view.update_err_timeout})
+                                                                c.setState({ color: 'red', disabled: false, label: trn.view.update_err_timeout })
                                                             };
                                                             request.onerror = function (e) {
-                                                                c.setState({ svgs: [SvgTemps.warn], color: 'red', label: trn.view.update_err_unknown })
+                                                                c.setState({ svgs: [SvgTemps.warn], color: 'red', disabled: false, label: trn.view.update_err_unknown })
                                                             };
 
                                                             request.onreadystatechange = (e) => {
                                                                 if (e.currentTarget.readyState != 4) return
 
+                                                                c.setState({disabled: false});
                                                                 var responseCode = JSON.parse(request?.responseText ?? undefined);
                                                                 if (!request.responseText) {
                                                                     c.setState({ svgs: [SvgTemps.warn], color: 'red', label: trn.view.update_err_unknown + '(try again later)' })
@@ -2650,14 +2655,16 @@ module.exports = (
 
                                                                 switch (newerVersion(GitHubVersion, this.getVersion())) {
                                                                     case GitHubVersion:
-                                                                        c.setState({color: 'green', label: trn.view.update_older})
+                                                                        c.setState({ color: 'green', label: trn.view.update_older })
                                                                         button.addEventListener('click',
                                                                             () => {
                                                                                 BdApi.showConfirmationModal(trn.pop.will_updated,
                                                                                     [
+                                                                                        trn.pop.you_can_say_no,
+                                                                                        '', '',
                                                                                         React.createElement(
-                                                                                            'span', { style: { color: Textcolors.green, 'text-transform': 'uppercase' } },
-                                                                                            trn.pop.you_can_say_no
+                                                                                            'span', { style: { color: 'var(--header-primary)', 'text-transform': 'uppercase' } },
+                                                                                            this.getVersion() + " → " + GitHubVersion
                                                                                         )
                                                                                     ],
                                                                                     {
@@ -2672,14 +2679,16 @@ module.exports = (
                                                                         )
                                                                         break;
                                                                     case this.getVersion():
-                                                                        c.setState({color: 'grey', label: trn.view.update_newer})
+                                                                        c.setState({ color: 'grey', label: trn.view.update_newer })
                                                                         button.addEventListener('click',
                                                                             () => {
                                                                                 BdApi.showConfirmationModal(trn.pop.will_downdated,
                                                                                     [
+                                                                                        trn.pop.you_can_say_no,
+                                                                                        '', '',
                                                                                         React.createElement(
-                                                                                            'span', { style: { color: Textcolors.red, 'text-transform': 'uppercase' } },
-                                                                                            trn.pop.you_can_say_no
+                                                                                            'span', { style: { color: 'var(--header-primary)', 'text-transform': 'uppercase' } },
+                                                                                            this.getVersion() + " → " + GitHubVersion
                                                                                         )
                                                                                     ],
                                                                                     {
@@ -2694,14 +2703,16 @@ module.exports = (
                                                                         )
                                                                         break;
                                                                     case false:
-                                                                        c.setState({color: 'grey', label: trn.view.update_latest})
+                                                                        c.setState({ color: 'grey', label: trn.view.update_latest })
                                                                         button.addEventListener('click',
                                                                             () => {
                                                                                 BdApi.showConfirmationModal(trn.pop.will_restored,
                                                                                     [
+                                                                                        trn.pop.you_can_say_no,
+                                                                                        '', '',
                                                                                         React.createElement(
-                                                                                            'span', { style: { color: Textcolors.yellow, 'text-transform': 'uppercase' } },
-                                                                                            trn.pop.you_can_say_no
+                                                                                            'span', { style: { color: 'var(--header-primary)', 'text-transform': 'uppercase' } },
+                                                                                            this.getVersion() + " → " + GitHubVersion
                                                                                         )
                                                                                     ],
                                                                                     {
@@ -2754,10 +2765,10 @@ module.exports = (
                                                     {
                                                         component: 'button',
                                                         label: trn.view.links_dc_server,
-                                                        color: 'grey',
+                                                        color: 'blurple',
                                                         id: 'animations-server',
                                                         svgs: [SvgTemps.Logos.discord],
-                                                        link: 'discord://discord.com/invite/PWtAHjBXtG',
+                                                        link: 'discord://discord.com/invite/' + config.info.invite,
                                                         onclick: () => { this.closeSettings() }
                                                     },
                                                     {
@@ -2765,7 +2776,7 @@ module.exports = (
                                                         label: trn.view.link_cd,
                                                         color: 'grey',
                                                         id: 'animations-crowdin',
-                                                        svgs: [SvgTemps.Other.web],
+                                                        svgs: [SvgTemps.Other.translation],
                                                         link: 'https://crwd.in/bdp-animations'
                                                     },
 
@@ -3338,7 +3349,7 @@ module.exports = (
                                                         {
                                                             name: trn.view.messages_received,
                                                             content: [
-            
+
                                                                 Field(trn.stng.name, trn.stng.name_note_messages,
                                                                     PreviewsPanel(
                                                                         [
@@ -3381,7 +3392,7 @@ module.exports = (
                                                                         }
                                                                     ).render
                                                                 ).render,
-            
+
                                                                 Field(trn.stng.timing, trn.stng.timing_note_messages,
                                                                     ElementsPanel(
                                                                         [
@@ -3413,7 +3424,7 @@ module.exports = (
                                                                                         onclick: (e) => {
                                                                                             var button = e.currentTarget;
                                                                                             var input = button.closest('.elementsContainer').querySelector('input');
-            
+
                                                                                             input.value = this.defaultSettings.messages.timing;
                                                                                             this.settings.messages.timing = this.defaultSettings.messages.timing;
                                                                                             PluginUtilities.saveSettings(this.getName(), this.settings);
@@ -3425,7 +3436,7 @@ module.exports = (
                                                                         ]
                                                                     ).render
                                                                 ).render,
-            
+
                                                                 Field(trn.stng.delay, trn.stng.delay_note_messages,
                                                                     ElementsPanel(
                                                                         [
@@ -3450,7 +3461,7 @@ module.exports = (
                                                                                         onclick: (e) => {
                                                                                             var button = e.currentTarget;
                                                                                             var input = button.closest('.elementsContainer').querySelector('input');
-            
+
                                                                                             input.value = this.defaultSettings.messages.delay;
                                                                                             this.settings.messages.delay = this.defaultSettings.messages.delay;
                                                                                             PluginUtilities.saveSettings(this.getName(), this.settings);
@@ -3462,7 +3473,7 @@ module.exports = (
                                                                         ]
                                                                     ).render
                                                                 ).render,
-            
+
                                                                 Field(trn.stng.limit, trn.stng.limit_note_messages,
                                                                     ElementsPanel(
                                                                         [
@@ -3487,7 +3498,7 @@ module.exports = (
                                                                                         onclick: (e) => {
                                                                                             var button = e.currentTarget;
                                                                                             var input = button.closest('.elementsContainer').querySelector('input');
-            
+
                                                                                             input.value = this.defaultSettings.messages.limit;
                                                                                             this.settings.messages.limit = this.defaultSettings.messages.limit;
                                                                                             PluginUtilities.saveSettings(this.getName(), this.settings);
@@ -3499,7 +3510,7 @@ module.exports = (
                                                                         ]
                                                                     ).render
                                                                 ).render,
-            
+
                                                                 Field(trn.stng.duration, trn.stng.duration_note_messages,
                                                                     ElementsPanel(
                                                                         [
@@ -3524,7 +3535,7 @@ module.exports = (
                                                                                         onclick: (e) => {
                                                                                             var button = e.currentTarget;
                                                                                             var input = button.closest('.elementsContainer').querySelector('input');
-            
+
                                                                                             input.value = this.defaultSettings.messages.duration;
                                                                                             this.settings.messages.duration = this.defaultSettings.messages.duration;
                                                                                             PluginUtilities.saveSettings(this.getName(), this.settings);
@@ -3670,7 +3681,7 @@ module.exports = (
                                                                 onchange: (e) => {
                                                                     var textarea = e.currentTarget;
                                                                     var value = textarea.value;
-        
+
                                                                     if (value == '' || this.isValidSelector(value)) {
                                                                         this.settings.lists.selectors = (value == AnimationsPlugin.selectorsLists ? '' : value)
                                                                         PluginUtilities.saveSettings(this.getName(), this.settings);
@@ -3731,7 +3742,7 @@ module.exports = (
                                                                 onchange: (e) => {
                                                                     var textarea = e.currentTarget;
                                                                     var value = textarea.value;
-    
+
                                                                     if (value == '' || this.isValidSelector(value)) {
                                                                         this.settings.buttons.selectors = (value == AnimationsPlugin.selectorsButtons ? '' : value)
                                                                         PluginUtilities.saveSettings(this.getName(), this.settings);
@@ -3755,6 +3766,9 @@ module.exports = (
                     }
 
                     patchAll() {
+
+                        let style_main = document.head.querySelector('#' + this.getName() + '-main')
+
                         Patcher.after(
                             this.getName(),
                             FindedModules.MessageDefault.default,
@@ -3769,36 +3783,50 @@ module.exports = (
                                 /**@type {sendingPerformance}*/
                                 const perf = this.settings.messages.sending.enabled
 
-                                if(!this.patchedMessagesIds.includes(id)) this.patchedMessagesIds.push(id)
-                                
-                                if(this.settings.messages.enabled)
-                                if (perf == 'onsent') {
-                                    if (state != "SENDING") {
-                                        let tstamp = info.timestamp._d
-                                        if (Date.now() - tstamp < 1000)
-                                        div.props.style = {
-                                            "animation-name": this.settings.messages.sending.custom.enabled &&
-                                            (this.settings.messages.sending.custom.page >= 0 ?
-                                                this.settings.messages.sending.custom.frames[this.settings.messages.sending.custom.page].anim.trim() != '' &&
-                                                this.isValidKeyframe(this.settings.messages.sending.custom.frames[this.settings.messages.sending.custom.page].anim)
-                                                : 0)
-                                            ? 'custom-messages-sending' : this.settings.messages.sending.name,
+                                if (this.settings.messages.enabled)
+                                    if (perf == 'onsent') {
+                                        if (state != "SENDING") {
+                                            let tstamp = info.timestamp._d
+                                            if (Date.now() - tstamp < 1000) {
+                                                div.props.style = {
+                                                    "animation-name": this.settings.messages.sending.custom.enabled &&
+                                                        (this.settings.messages.sending.custom.page >= 0 ?
+                                                            this.settings.messages.sending.custom.frames[this.settings.messages.sending.custom.page].anim.trim() != '' &&
+                                                            this.isValidKeyframe(this.settings.messages.sending.custom.frames[this.settings.messages.sending.custom.page].anim)
+                                                            : 0)
+                                                        ? 'custom-messages-sending' : this.settings.messages.sending.name,
+                                                }
+
+                                                if(!this.patchedMessagesIds.includes(id))
+                                                    setTimeout(
+                                                        () => {
+                                                            style_main.innerText +=
+                                                            /*css*/`
+                                                            li#chat-messages-${id} > div {
+                                                                animation-name: ${this.settings.messages.name};
+                                                                transform: scale(1);
+                                                                opacity: 1;
+                                                            }`
+                                                        }, this.settings.messages.duration
+                                                    )
+                                            }
                                         }
+                                        else
+                                            div.props.style = {
+                                                "animation": 'none',
+                                                "transform": "scale(1)",
+                                                opacity: 1
+                                            }
                                     }
-                                    else
-                                    div.props.style = {
-                                        "animation": 'none',
-                                        "transform": "scale(1)",
-                                        opacity: 1
-                                    }
-                                }
-                                else {
-                                    div.props.style = {
-                                        "animation": 'none',
-                                        "transform": "scale(1)",
-                                        opacity: 1
-                                    }
-                                }
+                                    else {
+                                        div.props.style = {
+                                            "animation": 'none',
+                                            "transform": "scale(1)",
+                                            opacity: 1
+                                        }
+                                    };
+                                    
+                                if (!this.patchedMessagesIds.includes(id)) this.patchedMessagesIds.push(id)
                             }
                         )
                     }
@@ -3810,8 +3838,7 @@ module.exports = (
                         this.patchedMessagesIds.forEach(
                             id => {
                                 let patchedElem = document.getElementById(`chat-messages-${id}`)?.firstChild
-                                console.log(patchedElem)
-                                if(!patchedElem) return;
+                                if (!patchedElem) return;
                                 patchedElem.style = {}
                             }
                         )
@@ -4293,7 +4320,7 @@ module.exports = (
                             this.resetAnimations()
                         }, 100);
 
-                        this.animateServers()
+                        //this.animateServers()
 
                         // on themes switch
                         this.observer = new MutationObserver(
@@ -4334,8 +4361,10 @@ module.exports = (
                         this.animateMembers()
                     }
                 }
+
+                return new AnimationsPlugin
             };
             return plugin(Plugin, Api);
-        })(global.ZeresPluginLibrary.buildPlugin(config));
-    }
-)();
+        }
+    )(global.ZeresPluginLibrary.buildPlugin(config));
+}
