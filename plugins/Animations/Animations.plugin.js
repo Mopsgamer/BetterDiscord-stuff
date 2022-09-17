@@ -59,8 +59,9 @@ module.exports = meta => {
         ([Plugin, Api]) => {
 
             const plugin = (Plugin, Api) => {
-                const { DiscordModules, DiscordAPI, Utilities, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules, Logger, Settings, Tooltip, ReactComponents, ContextMenu } = Api
+                let BdApi = window.BdApi;
                 const { React, ReactDOM, Patcher } = BdApi
+                const { DiscordModules, DiscordAPI, Utilities, PluginUtilities, PluginUpdater, DOMTools, Modals, WebpackModules, Logger, Settings, Tooltip, ReactComponents, ContextMenu } = Api
 
                 /**
                 * @typedef { 'da' | 'de' | 'en-GB' | 'en-US' | 'es-ES' | 'fr' | 'hr' | 'it' | 'lt' | 'hu' | 'nl' | 'no' | 'pl' | 'pt-BR' | 'ro' | 'fi' | 'sv-SE' | 'vi' | 'tr' | 'cs' | 'el' | 'bg' | 'ru' | 'uk' | 'hi' | 'th' | 'zh-CN' | 'ja' | 'zh-TW' | 'ko' } locale
@@ -2637,7 +2638,7 @@ module.exports = meta => {
                                                                 }
                                                             ).catch(
                                                                 async (status, text) => {
-                                                                    c.setState({ svgs: [SvgTemps.warn], color: 'red', label: `${trn.view.update_err_unknown} - ${status}` })
+                                                                    c.setState({ svgs: [SvgTemps.warn], color: 'red', label: `${trn.view.update_err_unknown} [${status}]` })
                                                                 }
                                                             )
                                                         }
