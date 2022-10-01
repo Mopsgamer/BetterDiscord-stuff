@@ -1,6 +1,5 @@
 name: Bug report form
 description: Create a report to help me improve
-title: ""
 labels: ["bug"]
 assignees:
   - Mopsgamer
@@ -15,7 +14,6 @@ body:
       label: What is broken?
       description: Also tell me about the errors in the developer's console.
       placeholder: Answer here.
-      value: ""
     validations:
       required: true
   - type: input
@@ -31,7 +29,6 @@ body:
     attributes:
       label: Client
       description: What version of the discord client do you use?
-      value: Stable
       options:
         - Stable
         - PTB
