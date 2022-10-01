@@ -1,4 +1,4 @@
-name: Bug report form
+name: Bug report
 description: Create a report to help me improve
 labels: ["bug"]
 assignees:
@@ -16,12 +16,24 @@ body:
       placeholder: Answer here.
     validations:
       required: true
-  - type: input
-    id: version
+  - type: dropdown
+    id: discord-client
     attributes:
-      label: Plugin version
-      description: Which version of the plugin are you using?
-      placeholder: 1.0.0 or something
+      label: Client
+      description: What version of the discord client do you use?
+      options:
+        - Stable
+        - PTB
+        - Canary
+    validations:
+      required: true
+  - type: dropdown
+    id: discord-client
+    attributes:
+      label: Plugin
+      description: Which plugin are we talking about?
+      options:
+        - Animations
     validations:
       required: true
   - type: dropdown
