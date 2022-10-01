@@ -1,6 +1,6 @@
 ---
 name: Translation request
-about: Describe this issue template's purpose here.
+about: Describe your concerns about localization.
 title: ''
 labels: translation
 assignees: ''
