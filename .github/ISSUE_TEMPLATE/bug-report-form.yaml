@@ -1,0 +1,40 @@
+name: Bug report form
+description: Create a report to help me improve
+title: ""
+labels: ["bug"]
+assignees:
+  - Mopsgamer
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What is broken?
+      description: Also tell me about the errors in the developer's console.
+      placeholder: Answer here.
+      value: ""
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Plugin version
+      description: Which version of the plugin are you using?
+      placeholder: 1.0.0 or something
+    validations:
+      required: true
+  - type: dropdown
+    id: discord-client
+    attributes:
+      label: Client
+      description: What version of the discord client do you use?
+      value: Stable
+      options:
+        - Stable
+        - PTB
+        - Canary
+    validations:
+      required: true
