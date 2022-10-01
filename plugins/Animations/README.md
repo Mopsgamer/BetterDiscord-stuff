@@ -11,7 +11,9 @@ The Animations has a translation. If you don't see your language, I suggest you 
 
 The plugin has a button built into the settings to update translations. You can <ins>download the latest translation [here](https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.translation.json)</ins> (click then ctrl+s).
 
-## Screenshots
+## Preview
 <img width="100%" alt="Fullscreen" src="https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/images/preview.gif">
 
+## Screenshots
 <img width="100%" alt="Settings" src="https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/images/settings.png">
+<img width="100%" alt="Settings" src="https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/images/full.png">
