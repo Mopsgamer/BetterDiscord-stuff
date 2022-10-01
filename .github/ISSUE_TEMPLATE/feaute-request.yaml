@@ -1,0 +1,27 @@
+name: Feature request
+description: Suggest an idea
+labels: ["enhancement"]
+assignees:
+  - Mopsgamer
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this feature request!
+  - type: textarea
+    id: what-suggest
+    attributes:
+      label: What do you want to see in the plugin?
+      description: You can also attach concept art or something.
+      placeholder: Answer here.
+    validations:
+      required: true
+  - type: dropdown
+    id: discord-client
+    attributes:
+      label: Plugin
+      description: Which plugin are we talking about?
+      options:
+        - Animations
+    validations:
+      required: true
