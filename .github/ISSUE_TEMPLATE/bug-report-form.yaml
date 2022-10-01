@@ -17,17 +17,6 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: discord-client
-    attributes:
-      label: Client
-      description: What version of the discord client do you use?
-      options:
-        - Stable
-        - PTB
-        - Canary
-    validations:
-      required: true
-  - type: dropdown
     id: plugin
     attributes:
       label: Plugin
