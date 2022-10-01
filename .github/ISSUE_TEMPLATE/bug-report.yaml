@@ -25,6 +25,14 @@ body:
         - Animations
     validations:
       required: true
+  - type: input
+    id: version
+    attributes:
+      label: Plugin version
+      description: What version of the plugin do you use?
+      placeholder: 1.0.0 or something
+    validations:
+      required: true
   - type: dropdown
     id: discord-client
     attributes:
