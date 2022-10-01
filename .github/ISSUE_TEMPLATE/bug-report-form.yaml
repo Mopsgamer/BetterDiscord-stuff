@@ -28,7 +28,7 @@ body:
     validations:
       required: true
   - type: dropdown
-    id: discord-client
+    id: plugin
     attributes:
       label: Plugin
       description: Which plugin are we talking about?
