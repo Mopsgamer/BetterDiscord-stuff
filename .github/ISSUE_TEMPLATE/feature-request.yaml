@@ -23,5 +23,6 @@ body:
       description: Which plugin are we talking about?
       options:
         - Animations
+        - TrustList
     validations:
       required: true
