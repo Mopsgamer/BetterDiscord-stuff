@@ -221,7 +221,7 @@
                             require('request').get('https://api.betterdiscord.app/v1/store/addons',
                                 (error, r, body) => {
                                     if (error) {
-                                        console.log('TrustList error: failed to fetch.')
+                                        console.error('TrustList error: failed to fetch.')
                                         this.setState({ label: 'Failed to fecth trust list (Click to check again)', color: Button.Colors.RED, disabled: false })
                                     }
                                     if (error) return;
