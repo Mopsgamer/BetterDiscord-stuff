@@ -104,110 +104,119 @@
                     PluginThis.resplitPlugins();
                     if(!UntrustedPlugins?.length ) return [];
                     else return UntrustedPlugins.map(
-                        uplug => React.createElement(
-                            'div',
-                            { class: 'bd-addon-card' },
-                            [
-                                React.createElement(
-                                    'div',
-                                    { class: 'bd-addon-header' },
-                                    [
-                                        React.createElement(
-                                            'svg', { class: 'bd-icon', viewBox: '0 0 24 24', style: { fill: Object.keys(UntrustedPluginsKnown).some(name => uplug.name.includes(name)) ? 'var(--button-danger-background)' : 'var(--header-primary)', width: '18px', height: '18px' } },
-                                            React.createElement('path', { d: 'M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z' })
-                                        ),
-                                        React.createElement(
-                                            'div', { class: 'bd-title' },
-                                            [
-                                                React.createElement(
-                                                    'div', { class: 'bd-name' },
-                                                    uplug.name
-                                                ),
-                                                React.createElement(
-                                                    'div', { class: 'bd-meta' },
-                                                    [
-                                                        React.createElement(
-                                                            'span', { class: 'bd-version' },
-                                                            'v' + uplug.version
-                                                        ),
-                                                        'by ',
-                                                        React.createElement(
-                                                            'a', { class: 'bd-link bd-link-website', href: uplug.authorLink, target: '_blank', rel: 'noopener noreferrer' },
-                                                            uplug.author
-                                                        )
-                                                    ]
-                                                )
-                                            ]
-                                        ),
-                                        React.createElement(
-                                            'div', { class: 'bd-controls' },
-                                            [
-                                                React.createElement(
-                                                    'button',
-                                                    {
-                                                        class: 'bd-button bd-addon-button',
-                                                        onClick: async (e) => {
-                                                            let card = document.getElementById(`${uplug.name}-card`)
-                                                            if(!card) return;
-                                                            PluginThis.closeSettings()
-                                                            await PluginThis.wait(500)
-                                                            card.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                                                            card.animate(
-                                                                [
-                                                                    {},
-                                                                    { transform: 'scale(1.1)', },
-                                                                    {}
-                                                                ],
-                                                                {
-                                                                    duration: 500,
-                                                                    easing: 'linear'
-                                                                }
-                                                            )
-                                                        }
-                                                    },
-                                                    'Show'
-                                                )
-                                            ]
-                                        )
-                                    ]
-                                ),
-                                React.createElement(
-                                    'div',
-                                    { class: 'bd-description-wrap' },
+                        uplug => {
+                            let knownName = Object.keys(UntrustedPluginsKnown).find(name => uplug.name.includes(name))
+                            return React.createElement(
+                                'div',
+                                { class: 'bd-addon-card' },
+                                [
                                     React.createElement(
                                         'div',
-                                        { class: 'bd-description' },
+                                        { class: 'bd-addon-header' },
                                         [
-                                            Markdown.markdownToReact(
-                                                '• **Not listed** in the [official BetterDiscord plugin list](https://betterdiscord.app/plugins).'
+                                            React.createElement(
+                                                'svg', { class: 'bd-icon', viewBox: '0 0 24 24', style: { fill: knownName ? 'var(--button-danger-background)' : 'var(--header-primary)', width: '18px', height: '18px' } },
+                                                React.createElement('path', { d: 'M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z' })
                                             ),
-                                            ...(UntrustedPluginsKnown[Object.keys(UntrustedPluginsKnown).find(name => uplug.name.includes(name))] ?? []).map(text => Markdown.markdownToReact(text))
+                                            React.createElement(
+                                                'div', { class: 'bd-title' },
+                                                [
+                                                    React.createElement(
+                                                        'div', { class: 'bd-name' },
+                                                        uplug.name
+                                                    ),
+                                                    React.createElement(
+                                                        'div', { class: 'bd-meta' },
+                                                        [
+                                                            React.createElement(
+                                                                'span', { class: 'bd-version' },
+                                                                'v' + uplug.version
+                                                            ),
+                                                            'by ',
+                                                            React.createElement(
+                                                                'a', { class: 'bd-link bd-link-website', href: uplug.authorLink, target: '_blank', rel: 'noopener noreferrer' },
+                                                                uplug.author
+                                                            )
+                                                        ]
+                                                    )
+                                                ]
+                                            ),
+                                            knownName?React.createElement(
+                                                'div', { style: { color: 'var(--text-danger)', 'margin-right': '5px' } },
+                                                'Recommended deletion'
+                                            ):null,
+                                            React.createElement(
+                                                'div', { class: 'bd-controls' },
+                                                [
+                                                    React.createElement(
+                                                        'button',
+                                                        {
+                                                            class: 'bd-button bd-addon-button',
+                                                            onClick: async (e) => {
+                                                                let card = document.getElementById(`${uplug.name}-card`)
+                                                                if (!card) return;
+                                                                PluginThis.closeSettings()
+                                                                await PluginThis.wait(500)
+                                                                card.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                                                                card.animate(
+                                                                    [
+                                                                        {},
+                                                                        { transform: 'scale(1.1)', },
+                                                                        {}
+                                                                    ],
+                                                                    {
+                                                                        duration: 500,
+                                                                        easing: 'linear'
+                                                                    }
+                                                                )
+                                                            }
+                                                        },
+                                                        'Show'
+                                                    )
+                                                ]
+                                            )
                                         ]
+                                    ),
+                                    React.createElement(
+                                        'div',
+                                        { class: 'bd-description-wrap' },
+                                        React.createElement(
+                                            'div',
+                                            { class: 'bd-description' },
+                                            [
+                                                Markdown.markdownToReact(
+                                                    '• **Not listed** in the [official BetterDiscord plugin list](https://betterdiscord.app/plugins) [' + CheckDate.toLocaleString() + '].'
+                                                ),
+                                                ...(UntrustedPluginsKnown[knownName] ?? []).map(text => Markdown.markdownToReact(text))
+                                            ]
+                                        )
                                     )
-                                )
-                            ]
-                        )
+                                ]
+                            )
+                        }
                     )
                 }
                 render() {
                     let list = this.buildList()
                     return React.createElement(
-                            'div',
-                            {
-                                id: 'untrusted-plugins-container',
-                                class: 'bd-addon-list',
-                                style: { "margin-top": "10px" }
-                            },
-                            list.length?[
+                        'div',
+                        {
+                            id: 'untrusted-plugins-container',
+                            class: 'bd-addon-list',
+                            style: { "margin-top": "10px" }
+                        },
+                        TrustedPlugins ?
+                            list.length ? [
                                 React.createElement('div', { class: `bd-settings-title`, style: { 'margin-bottom': '8px' } },
-                                    'Untrusted plugins (' + UntrustedPlugins.length + '/' + AllPlugins.length + ')'
-                                ),
-                                React.createElement('div', { class: `bd-description` },
-                                    'List as of ' + CheckDate.toLocaleString()
+                                    'Untrusted plugins detected - ' + UntrustedPlugins.length
                                 ),
                                 list
-                            ]:list
-                        )
+                            ] : [
+                                React.createElement('div', { class: `bd-settings-title`, style: { 'margin-bottom': '8px' } },
+                                    'No untrusted plugins have been found'
+                                )
+                            ] : []
+                    )
                 }
             }
 
@@ -216,7 +225,7 @@
                     super(state)
                     this.state = state
                 }
-                render() {                    
+                render() {
                     return React.createElement(Button, {
                         color: this.state?.color ?? Button.Colors.BRAND,
                         disabled: this.state?.disabled ?? false,
@@ -235,26 +244,19 @@
                                     PluginThis.resplitPlugins()
                                     CheckDate = new Date()
                                     Listen.LIST.forceUpdate()
-                                    this.setState({ disabled: false })
-                                    if (UntrustedPlugins.length > 0) this.setState({ label: 'Untrusted plugins detected (Click to check again)', color: Button.Colors.RED })
-                                    else this.setState({ label: 'All plugins are trusted (Click to check again)', color: Button.Colors.GREEN })
+                                    this.setState({ label: 'Fetch trust plugins list again', disabled: false })
                                 }
                             )
-    
                         }
                     }, this.state?.label ?? this.props?.children ?? '')
                 }
             }
-
-            let button;
-            if (UntrustedPlugins == void 0) button = React.createElement(CheckButton, null, 'Check for untrusted')
-            else
-                if (UntrustedPlugins.length > 0) button = React.createElement(CheckButton, { color: Button.Colors.RED }, 'Untrusted plugins detected (Click to check again)')
-                else button = React.createElement(CheckButton, { color: Button.Colors.GREEN }, 'All plugins are trusted (Click to check again)')
     
             return [
-                button,
-                React.createElement(UntrustedPluginsList, {as: 'LIST'})
+                UntrustedPlugins == void 0
+                    ? React.createElement(CheckButton, null, 'Check for untrusted')
+                    : React.createElement(CheckButton, null, 'Fetch trust plugins list again'),
+                React.createElement(UntrustedPluginsList, { as: 'LIST' })
             ]
         }
     }
