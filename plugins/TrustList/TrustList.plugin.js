@@ -42,12 +42,12 @@
     /**@type {Date}*/
     let CheckDate;
     let UntrustedPluginsKnown = {
-        'XenoLib': ['Is used by MessageLogger.'],
-        'MessageLogger': ['**Violates the 3-rd & 4-th condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
-        'AnimatedStatus': ['**Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
-        'Animated_Status': ['**Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
-        'PremiumScreenShare': ['**Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
-        'HiddenChannels': ['**Violates the 4-th condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'XenoLib': ['• Is used by MessageLogger.'],
+        'MessageLogger': ['• **Violates the 3-rd & 4-th condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'AnimatedStatus': ['• **Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'Animated_Status': ['• **Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'PremiumScreenShare': ['• **Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'HiddenChannels': ['• **Violates the 4-th condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
     }
 
     let FindedModules = {
@@ -175,7 +175,7 @@
                                             Markdown.markdownToReact(
                                                 '• **Not listed** in the [official BetterDiscord plugin list](https://betterdiscord.app/plugins).'
                                             ),
-                                            ...(UntrustedPluginsKnown[Object.keys(UntrustedPluginsKnown).find(name => uplug.name.includes(name))].map(text => Markdown.markdownToReact(text)) ?? [])
+                                            ...(UntrustedPluginsKnown[Object.keys(UntrustedPluginsKnown).find(name => uplug.name.includes(name))] ?? []).map(text => Markdown.markdownToReact(text))
                                         ]
                                     )
                                 )
