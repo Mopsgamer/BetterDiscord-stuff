@@ -8,14 +8,6 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
-  - type: textarea
-    id: what-happened
-    attributes:
-      label: What is broken?
-      description: Also tell me about the errors in the developer's console.
-      placeholder: Answer here.
-    validations:
-      required: true
   - type: dropdown
     id: plugin
     attributes:
@@ -34,14 +26,30 @@ body:
       placeholder: 1.0.0 or something
     validations:
       required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What is broken?
+      description: Also tell me about the errors in the developer's console.
+      placeholder: Answer here.
+    validations:
+      required: true
   - type: dropdown
     id: discord-client
     attributes:
       label: Client
-      description: What version of the discord client do you use?
+      description: What Discord client do you use?
       options:
         - Stable
         - PTB
         - Canary
     validations:
-      required: true
+      required: false
+  - type: checkboxes
+    id: more
+    attributes:
+      label: More details
+      description: Choose the appropriate items.
+      options:
+        - label: I am familiar with JavaScript. I can fix this.
+          required: false

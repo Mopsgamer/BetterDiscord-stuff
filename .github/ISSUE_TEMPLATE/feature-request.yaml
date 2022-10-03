@@ -8,14 +8,6 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this feature request!
-  - type: textarea
-    id: what-suggest
-    attributes:
-      label: What do you want to see in the plugin?
-      description: You can also attach concept art or something.
-      placeholder: Answer here.
-    validations:
-      required: true
   - type: dropdown
     id: plugin
     attributes:
@@ -26,3 +18,19 @@ body:
         - TrustList
     validations:
       required: true
+  - type: textarea
+    id: what-suggest
+    attributes:
+      label: What do you want to see in the plugin?
+      description: You can also attach concept art or something.
+      placeholder: Answer here.
+    validations:
+      required: true
+  - type: checkboxes
+    id: more
+    attributes:
+      label: More details
+      description: Choose the appropriate items.
+      options:
+        - label: I am familiar with JavaScript. I can develop this.
+          required: false
