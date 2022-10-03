@@ -31,13 +31,11 @@
      * @property {number} modified
      * @property {Plugin} exports
      */
-    /**
-    * @type {BDPluginData[]}
-    */
-    let UntrustedPlugins
-    /**
-    * @type {BDPluginData[]}
-    */
+    /** @type {BDPluginData[]}*/
+    let UntrustedPlugins;
+    /** @type {BDPluginData[]}*/
+    let TrustedPlugins;
+    /** @type {BDPluginData[]}*/
     let AllPlugins;
     /**@type {Date}*/
     let CheckDate;
@@ -74,6 +72,12 @@
         closeSettings() {
             document.querySelector('.bd-addon-modal-footer > .bd-button')?.click?.()
         }
+
+        resplitPlugins() {
+            if(!TrustedPlugins) return;
+            AllPlugins = BdApi.Plugins.getAll()
+            UntrustedPlugins = AllPlugins.filter(uplug => !TrustedPlugins.some(tplug => tplug.name == uplug.name))
+        }
     
         getSettingsPanel = () => {
             let PluginThis = this
@@ -97,6 +101,7 @@
                     this.state = state
                 }
                 buildList() {
+                    PluginThis.resplitPlugins();
                     if(!UntrustedPlugins?.length ) return [];
                     else return UntrustedPlugins.map(
                         uplug => React.createElement(
@@ -142,8 +147,9 @@
                                                     {
                                                         class: 'bd-button bd-addon-button',
                                                         onClick: async (e) => {
-                                                            PluginThis.closeSettings()
                                                             let card = document.getElementById(`${uplug.name}-card`)
+                                                            if(!card) return;
+                                                            PluginThis.closeSettings()
                                                             await PluginThis.wait(500)
                                                             card.scrollIntoView({ behavior: 'smooth', block: 'center' })
                                                             card.animate(
@@ -225,10 +231,8 @@
                                     }
                                     if (error) return;
                                     this.setState({ label: 'Processing plugins...', disabled: true })
-                                    let TrustedPlugins = JSON.parse(body)
-                                    AllPlugins = BdApi.Plugins.getAll()
-    
-                                    UntrustedPlugins = AllPlugins.filter(uplug => !TrustedPlugins.some(tplug => tplug.name == uplug.name))
+                                    TrustedPlugins = JSON.parse(body)
+                                    PluginThis.resplitPlugins()
                                     CheckDate = new Date()
                                     Listen.LIST.forceUpdate()
                                     this.setState({ disabled: false })
