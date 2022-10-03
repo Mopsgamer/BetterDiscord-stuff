@@ -18,6 +18,7 @@
      * @typedef {object} BDPluginData
      * @property {string} author
      * @property {string} authorId
+     * @property {string} authorLink
      * @property {string} name
      * @property {string} id
      * @property {string} slug
@@ -41,12 +42,12 @@
     /**@type {Date}*/
     let CheckDate;
     let UntrustedPluginsKnown = {
-        'XenoLib': 'Is used by MessageLogger.',
-        'MessageLogger': '**Violates the 3-rd & 4-th condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).',
-        'AnimatedStatus': '**Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).',
-        'Animated_Status': '**Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).',
-        'Nitro': '**Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).',
-        'HiddenChannels': '**Violates the 4-th condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).',
+        'XenoLib': ['Is used by MessageLogger.'],
+        'MessageLogger': ['**Violates the 3-rd & 4-th condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'AnimatedStatus': ['**Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'Animated_Status': ['**Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'PremiumScreenShare': ['**Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'HiddenChannels': ['**Violates the 4-th condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
     }
 
     let FindedModules = {
@@ -126,7 +127,7 @@
                                                         ),
                                                         'by ',
                                                         React.createElement(
-                                                            'a', { class: 'bd-link bd-link-website', target: '_blank' },
+                                                            'a', { class: 'bd-link bd-link-website', href: uplug.authorLink, target: '_blank', rel: 'noopener noreferrer' },
                                                             uplug.author
                                                         )
                                                     ]
@@ -172,11 +173,9 @@
                                         { class: 'bd-description' },
                                         [
                                             Markdown.markdownToReact(
-                                                '**Not listed** in the [official BetterDiscord plugin list](https://betterdiscord.app/plugins).'
+                                                '• **Not listed** in the [official BetterDiscord plugin list](https://betterdiscord.app/plugins).'
                                             ),
-                                            Markdown.markdownToReact(
-                                                (UntrustedPluginsKnown[Object.keys(UntrustedPluginsKnown).find(name => uplug.name.includes(name))] ?? '')
-                                            )
+                                            ...(UntrustedPluginsKnown[Object.keys(UntrustedPluginsKnown).find(name => uplug.name.includes(name))].map(text => Markdown.markdownToReact(text)) ?? [])
                                         ]
                                     )
                                 )
