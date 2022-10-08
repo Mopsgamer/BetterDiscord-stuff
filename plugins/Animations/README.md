@@ -6,10 +6,12 @@ You can <ins>download the latest version [here](https://raw.githubusercontent.co
 
 The plugin has a built-in button to update to the latest version. The version received by this button may not yet have been checked by BetterDiscord, and may have serious bugs. However, may fix these bugs.
 
-## Translation
-The Animations has a translation. If you don't see your language, I suggest you [translate it](https://ru.crowdin.com/project/bdp-animations).
+## Translation [![Crowdin](https://badges.crowdin.net/bdp-animations/localized.svg)](https://crowdin.com/project/bdp-animations)
+The Animations has a translation. If you don't see your language, I suggest you [translate it](https://crowdin.com/project/bdp-animations).
 
 The plugin has a button built into the settings to update translations. You can <ins>download the latest translation [here](https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.translation.json)</ins> (click then ctrl+s).
+
+To get English back, simply delete the Animation.translation.json file from your plugins folder.
 
 ## Preview
 <img width="100%" alt="Fullscreen" src="https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/images/preview.gif">
