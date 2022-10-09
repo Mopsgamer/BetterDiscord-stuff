@@ -22,40 +22,51 @@
      * @property {string} authorLink
      * @property {string} name
      * @property {string} filename
+     * @property {function | undefined} exports
+     * @property {object | undefined} instance
+     * @property {string} description
      * @property {string} version
      * @property {string} source
      * @property {string} website
      * @property {number} size
+     * @property {undefined | true} partial
      */
+
+    let Listen = {}
+
+    // CACHE
+
+    /** Variable to track plugin list changes.
+     * @type {BDPluginData[] | undefined}*/
+    let CachePlugins;
     /** @type {BDPluginData[] | undefined}*/
     let UntrustedPlugins;
     /** @type {BDPluginData[] | undefined}*/
     let TrustedPlugins;
-    /** @type {BDPluginData[] | undefined}*/
-    let CompiledPlugins;
-    /** @type {BDPluginData[] | undefined}*/
-    let UncompiledPlugins;
     
     /**@type {Date}*/
     let CheckDate;
 
     /*Settings*/
     // They will be saved until the plugin is recompiled
-    let IncludeUncompiledInUntrusted = true
+    let UncompiledInUntrusted = true
     /*Settings end*/
 
     let UntrustedPluginsKnown = {
-        'XenoLib': ['• Is used by MessageLogger.'],
-        'MessageLogger': ['• **Violates the 3-rd & 4-th condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
-        'AnimatedStatus': ['• **Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
-        'Animated_Status': ['• **Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
-        'PremiumScreenShare': ['• **Violates the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
-        'HiddenChannels': ['• **Violates the 4-th condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'XenoLib': [' •  Is used by MessageLogger.']
+    }
+
+    let UntrustedPluginsDanger = {
+        'MessageLogger': [' •  **Violate the 3-rd & 4-th condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'AnimatedStatus': [' •  **Violate the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'Animated_Status': [' •  **Violate the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'PremiumScreenShare': [' •  **Violate the 3-rd condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
+        'HiddenChannels': [' •  **Violate the 4-th condition** of [Security & Privacy](https://docs.betterdiscord.app/plugins/introduction/guidelines#security--privacy).'],
     }
 
     let FindedModules = {
         //components
-        Button: Webpack.getModule(Webpack.Filters.byProps('BorderColors')),
+        Button: Webpack.getModule(Webpack.Filters.byProps('Looks', 'Colors')),
         SwitchRow: Webpack.getModule(m => m.toString().includes("helpdeskArticleId")),
         Markdown: Webpack.getModule(Webpack.Filters.byProps("parseBlock", "parseInline", "defaultOutput")),
 
@@ -64,13 +75,22 @@
         Title: Webpack.getModule(Webpack.Filters.byProps('title', 'subtitle')),
     }
 
+    // CACHE end
+
+    let CachePluginsUpdater
+
     class Plugin {
 
         start() {
-            
+            // update list if `Plugins.getAll()` changed
+            CachePluginsUpdater = setInterval(() => {
+                if (CachePlugins?.length == Plugins?.getAll?.()?.length) return;
+                if (Listen?.LIST) Listen.LIST.forceUpdate();
+            }, 200)
         }
     
         stop() {
+            clearInterval(CachePluginsUpdater);
             this.closeSettings()
         }
 
@@ -82,75 +102,14 @@
             document.querySelector('.bd-addon-modal-footer > .bd-button')?.click?.()
         }
 
-        extractMeta(fileContent, filename) {
-            const firstLine = fileContent.split("\n")[0];
-            const hasOldMeta = firstLine.includes("//META") && firstLine.includes("*//");
-            if (hasOldMeta) return this.parseOldMeta(fileContent, filename);
-            const hasNewMeta = firstLine.includes("/**");
-            if (hasNewMeta) return this.parseNewMeta(fileContent);
-            return {}
-        }
-    
-        parseOldMeta(fileContent) {
-            const meta = fileContent.split("\n")[0];
-            const metaData = meta.substring(meta.lastIndexOf("//META") + 6, meta.lastIndexOf("*//"));
-            try {
-                return JSON.parse(metaData);
-            } catch {
-                return {};
-            }
-        }
-    
-        parseNewMeta(fileContent) {
-            const block = fileContent.split("/**", 2)[1].split("*/", 1)[0];
-            const out = {};
-            let field = "";
-            let accum = "";
-            for (const line of block.split(/[^\S\r\n]*?\r?(?:\r\n|\n)[^\S\r\n]*?\*[^\S\r\n]?/)) {
-                if (line.length === 0) continue;
-                if (line.charAt(0) === "@" && line.charAt(1) !== " ") {
-                    out[field] = accum.trim();
-                    const l = line.indexOf(" ");
-                    field = line.substring(1, l);
-                    accum = line.substring(l + 1);
-                }
-                else {
-                    accum += " " + line.replace("\\n", "\n").replace(/^\\@/, "@");
-                }
-            }
-            out[field] = accum.trim();
-            delete out[""];
-            return out;
-        }
-
-        resplitPlugins() {
+        getPlugins() {
             if(!TrustedPlugins) return;
-            CompiledPlugins = Plugins.getAll()
-            ;{// UncompiledPlugins
-                let isFile = (path) => {
-                    try {
-                        if (fs?.accessSync && isFinite(fs?.constants?.F_OK))
-                            fs.accessSync(path, fs.constants.F_OK)
-                        else return true// bad filesystem - no matter file or dir
-                        return true
-                    } catch { return false }
-                }
-                UncompiledPlugins = fs.readdirSync(Plugins.folder)
-                .filter(
-                    // only .plugin.js files, no folders .plugin.js
-                    fname => fname.endsWith('.plugin.js') && isFile(path.join(Plugins.folder, fname))
-                )
-                .map(
-                    // plugin_file_name to BDPluginData
-                    pfname => ({ ...this.extractMeta(fs.readFileSync(path.join(Plugins.folder, pfname))), filename: pfname })
-                ).filter(
-                    // only if not stored in CompiledPlugins
-                    (/**@type {BDPluginData}*/bplug) => !CompiledPlugins.find(cplug => cplug.name == bplug.name)
-                )
-            };
-            UntrustedPlugins = CompiledPlugins
-            if (IncludeUncompiledInUntrusted) UntrustedPlugins = UntrustedPlugins.concat(UncompiledPlugins)
-            UntrustedPlugins = UntrustedPlugins.filter(uplug => !TrustedPlugins.some(tplug => tplug.name == uplug.name))
+            UntrustedPlugins = [];
+            CachePlugins = Plugins.getAll();
+            for (let/**@type {BDPluginData}*/ plug of CachePlugins) {
+                if (!UncompiledInUntrusted && plug?.partial) continue;
+                if (!TrustedPlugins.some(tplug => tplug.name == plug.name)) UntrustedPlugins.push(plug)
+            }
         }
     
         getSettingsPanel = () => {
@@ -158,7 +117,23 @@
 
             const { Button, Markdown, SwitchRow, Margin, Title } = FindedModules;
 
-            let Listen = {}
+            function olderVersion(v1, v2) {
+                var v1Dots = v1.match(/\./g).length
+                var v2Dots = v2.match(/\./g).length
+                const newParts = v1.split('.')
+                const oldParts = v2.split('.')
+
+                for (var i = 0; i < (v1Dots > v2Dots ? v1Dots : v2Dots) + 1; i++) {
+                    const a = parseInt(newParts[i]) || 0
+                    const b = parseInt(oldParts[i]) || 0
+                    if (a > b) return v2
+                    if (a < b) return v1
+                }
+                return v2
+            }
+
+            if (olderVersion(BdApi.version, '1.8.0') != '1.8.0') return ['Your BD version must be at least 1.8.0']
+
             class Listenable extends React.Component {
                 constructor(state) {
                     let as = state.as
@@ -174,12 +149,29 @@
                     this.state = state
                 }
                 buildList() {
-                    PluginThis.resplitPlugins()
+                    PluginThis.getPlugins()
                     if(!UntrustedPlugins?.length ) return [];
                     else return UntrustedPlugins.map(
                         uplug => {
-                            let knownName = Object.keys(UntrustedPluginsKnown).find(name => uplug.name.includes(name));
-                            let uncompiled = UncompiledPlugins ? UncompiledPlugins.some(bplug => bplug.name == uplug.name) : false;
+
+                            const dangerColors = {
+                                unknown: 'var(--header-primary)',
+                                known: 'var(--text-danger)',
+                                danger: 'var(--button-danger-background)',
+                            };
+                            let reasonsDanger = UntrustedPluginsDanger?.[Object.keys(UntrustedPluginsDanger).find(name => uplug.name.includes(name))];
+                            if(reasonsDanger) reasonsDanger = [...reasonsDanger] // reasonsDanger is not the original of UntrustedPluginsDanger[...]
+                            let reasonsDetected = [];
+                            if (uplug.name != meta.name && uplug?.instance) {
+                                let filecontent = fs.readFileSync(path.join(Plugins.folder, uplug.filename))
+                                if (/[^\w]getToken[^\w]/.test(filecontent)) reasonsDetected.push(' •  The plugin code probably has direct access to your token.')
+                            }
+                            (() => { let reasonsKnown = UntrustedPluginsKnown?.[Object.keys(UntrustedPluginsKnown).find(name => uplug.name.includes(name))]; if(reasonsKnown != null) reasonsDetected = reasonsDetected.concat(reasonsKnown) })()
+                            if (reasonsDanger) reasonsDanger.push(' •  **Discord can ban you for that.** (You have nothing to fear if you haven\'t used it)')
+
+                            const dangerColorCalc = reasonsDanger?.length ? dangerColors.danger : (reasonsDetected?.length ? dangerColors.known : dangerColors.unknown)
+
+                            let uncompiled = uplug.partial
                             return React.createElement(
                                 'div',
                                 { class: 'bd-addon-card' },
@@ -189,25 +181,22 @@
                                         { class: 'bd-addon-header' },
                                         [
                                             React.createElement(
-                                                'svg', {
-                                                class: 'bd-icon',
-                                                viewBox: '0 0 24 24',
-                                                style: {
-                                                    fill: knownName ? 'var(--button-danger-background)' : 'var(--header-primary)',
-                                                    width: '18px', height: '18px'
-                                                }
-                                            },
-                                                React.createElement('path', {
-                                                    d: uncompiled
-                                                        ? 'M 20.5 11 H 19 V 7 c 0 -1.1 -0.9 -2 -2 -2 L 15 9 L 17 10 L 12 15 L 14 11 L 11 10 L 13 5 h 0 V 3.5 C 13 2.12 11.88 1 10.5 1 S 8 2.12 8 3.5 V 5 H 4 c -1.1 0 -1.99 0.9 -1.99 2 v 3.8 H 3.5 c 1.49 0 2.7 1.21 2.7 2.7 s -1.21 2.7 -2.7 2.7 H 2 V 20 c 0 1.1 0.9 2 2 2 h 3.8 v -1.5 c 0 -1.49 1.21 -2.7 2.7 -2.7 c 1.49 0 2.7 1.21 2.7 2.7 V 22 H 17 c 1.1 0 2 -0.9 2 -2 v -4 h 1.5 c 1.38 0 2.5 -1.12 2.5 -2.5 S 21.88 11 20.5 11 z'
-                                                        : 'M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z'
-                                                })
+                                                'svg',
+                                                {
+                                                    class: 'bd-icon',
+                                                    viewBox: '0 0 24 24',
+                                                    style: {
+                                                        fill: dangerColorCalc,
+                                                        width: '18px', height: '18px'
+                                                    }
+                                                },
+                                                React.createElement('path', { d: 'M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z' })
                                             ),
                                             React.createElement(
                                                 'div', { class: 'bd-title' },
                                                 [
                                                     React.createElement(
-                                                        'div', { class: 'bd-name' },
+                                                        'div', { class: 'bd-name', style: { color: dangerColorCalc } },
                                                         uplug.name
                                                     ),
                                                     React.createElement(
@@ -226,59 +215,98 @@
                                                     )
                                                 ]
                                             ),
-                                            !uncompiled?null:React.createElement(
-                                                'div', { style: { color: 'var(--channels-default)', 'margin-right': '5px' } },
-                                                'Uncompiled'
-                                            ),
                                             React.createElement(
                                                 'div', { class: 'bd-controls' },
-                                                React.createElement(
-                                                    'button',
-                                                    {
-                                                        class: `bd-button bd-addon-button`,
-                                                        onClick: uncompiled
-                                                            ? (e) => {
+                                                [
+                                                    document.getElementById(`${uplug.name}-card`)
+                                                        ? React.createElement(
+                                                            'button',
+                                                            {
+                                                                class: `bd-button bd-addon-button`,
+                                                                onClick: async (e) => {
+                                                                    let card = document.getElementById(`${uplug.name}-card`)
+                                                                    if (!card) return;
+                                                                    PluginThis.closeSettings()
+                                                                    await PluginThis.wait(500)
+                                                                    card.scrollIntoView({ behavior: 'smooth', block: 'center' })
+                                                                    card.animate(
+                                                                        [
+                                                                            {},
+                                                                            { transform: 'scale(1.1)' },
+                                                                            {}
+                                                                        ],
+                                                                        {
+                                                                            duration: 500,
+                                                                            easing: 'linear'
+                                                                        }
+                                                                    )
+                                                                }
+                                                            },
+                                                            React.createElement(
+                                                                'svg',
+                                                                { style: { width: '20px', height: '20px' }, viewBox: '0 0 24 24' },
+                                                                [
+                                                                    React.createElement('path', { d: 'M12 5C5.648 5 1 12 1 12C1 12 5.648 19 12 19C18.352 19 23 12 23 12C23 12 18.352 5 12 5ZM12 16C9.791 16 8 14.21 8 12C8 9.79 9.791 8 12 8C14.209 8 16 9.79 16 12C16 14.21 14.209 16 12 16Z' }),
+                                                                    React.createElement('path', { d: 'M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z' })
+                                                                ]
+                                                            )
+                                                        ) : null,
+                                                    React.createElement(
+                                                        'button',
+                                                        {
+                                                            class: `bd-button bd-addon-button`,
+                                                            onClick: (e) => {
                                                                 electron.shell.showItemInFolder(path.join(Plugins.folder, uplug.filename))
-                                                            } : async (e) => {
-                                                                let card = document.getElementById(`${uplug.name}-card`)
-                                                                if (!card) return;
-                                                                PluginThis.closeSettings()
-                                                                await PluginThis.wait(500)
-                                                                card.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                                                                card.animate(
-                                                                    [
-                                                                        {},
-                                                                        { transform: 'scale(1.1)' },
-                                                                        {}
-                                                                    ],
-                                                                    {
-                                                                        duration: 500,
-                                                                        easing: 'linear'
-                                                                    }
-                                                                )
                                                             }
-                                                    },
-                                                    uncompiled?'SHOW IN FOLDER':'SHOW'
-                                                )
+                                                        },
+                                                        React.createElement(
+                                                            'svg',
+                                                            { style: { width: '20px', height: '20px' }, viewBox: '0 0 24 24' },
+                                                            [
+                                                                React.createElement('path', { d: 'M20 7H12L10.553 5.106C10.214 4.428 9.521 4 8.764 4H3C2.447 4 2 4.447 2 5V19C2 20.104 2.895 21 4 21H20C21.104 21 22 20.104 22 19V9C22 7.896 21.104 7 20 7Z' })
+                                                            ]
+                                                        )
+                                                    )
+                                                ]
                                             )
                                         ]
                                     ),
                                     React.createElement(
                                         'div',
                                         { class: 'bd-description-wrap' },
-                                        React.createElement(
-                                            'div',
-                                            { class: 'bd-description' },
-                                            [
-                                                Markdown.markdownToReact(
-                                                    '• Not listed in the [official BetterDiscord plugin list](https://betterdiscord.app/plugins) [' + CheckDate.toLocaleString() + '].'
-                                                ),
-                                                React.createElement(
-                                                    'div', {style: {color: 'var(--text-danger)'}},
-                                                    (UntrustedPluginsKnown[knownName] ?? []).map(text => Markdown.markdownToReact(text))
-                                                ),
-                                            ]
-                                        )
+                                        [
+                                            !uncompiled?null:React.createElement(
+                                                'div', { class: 'banner banner-danger' },
+                                                [
+                                                    React.createElement(
+                                                        'svg',
+                                                        { style: { width: '24px', height: '24px' }, class: 'bd-icon', viewBox: '0 0 24 24' },
+                                                        React.createElement('path', { d: 'M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z' })
+                                                    ),
+                                                    'An error was encountered while trying to load this plugin.'
+                                                ]
+                                            ),
+                                            React.createElement(
+                                                'div',
+                                                { class: 'bd-description' },
+                                                [
+                                                    React.createElement(
+                                                        'div', { style: {} },
+                                                        ([
+                                                            ' •  Not listed in the [official BetterDiscord plugin list](https://betterdiscord.app/plugins) [' + CheckDate.toLocaleString() + '].'
+                                                        ]).map(text => Markdown.markdownToReact(text))
+                                                    ),
+                                                    React.createElement(
+                                                        'div', { style: { color: dangerColors.known } },
+                                                        (reasonsDetected ?? []).map(text => Markdown.markdownToReact(text))
+                                                    ),
+                                                    React.createElement(
+                                                        'div', { style: { color: dangerColors.danger } },
+                                                        (reasonsDanger ?? []).map(text => Markdown.markdownToReact(text))
+                                                    ),
+                                                ]
+                                            )
+                                        ]
                                     )
                                 ]
                             )
@@ -287,25 +315,25 @@
                 }
                 render() {
                     let list = this.buildList()
-                    return React.createElement(
-                        'div',
-                        {
-                            id: 'untrusted-plugins-container',
-                            class: 'bd-addon-list',
-                            style: { "margin-top": "10px" }
-                        },
+                    return [
                         TrustedPlugins ?
-                            list.length ? [
+                            list.length ?
                                 React.createElement('div', { class: `bd-settings-title`, style: { 'margin-bottom': '8px' } },
                                     'Untrusted plugins detected - ' + UntrustedPlugins.length
-                                ),
-                                list
-                            ] : [
+                                ) :
                                 React.createElement('div', { class: `bd-settings-title`, style: { 'margin-bottom': '8px' } },
                                     'No untrusted plugins have been found'
-                                )
-                            ] : []
-                    )
+                                ) : [],
+                        React.createElement(
+                            'div',
+                            {
+                                id: 'untrusted-plugins-container',
+                                class: `bd-addon-list ${document.querySelector(`.bd-addon-views .bd-button.selected:nth-child(2)`) ? 'bd-grid-view' : ''}`,
+                                style: { "margin-top": "10px" }
+                            },
+                            TrustedPlugins && list.length ? list : []
+                        )
+                        ]
                 }
             }
 
@@ -366,14 +394,14 @@
                 React.createElement(
                     SettingSwitcher,
                     {
-                        value: IncludeUncompiledInUntrusted,
+                        value: UncompiledInUntrusted,
                         onSwitch: (pluginthis, compthis) => {
-                            IncludeUncompiledInUntrusted = !IncludeUncompiledInUntrusted
+                            UncompiledInUntrusted = !UncompiledInUntrusted
                             Listen.LIST.forceUpdate()
-                            return IncludeUncompiledInUntrusted
+                            return UncompiledInUntrusted
                         }
                     },
-                    'Include uncompiled plugins'
+                    'Uncompiled plugins'
                 ),
                 React.createElement(
                     'div', { class: `${Margin.marginBottom8}` },
