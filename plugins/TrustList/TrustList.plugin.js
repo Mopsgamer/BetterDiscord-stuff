@@ -13,7 +13,7 @@
 
  module.exports = (meta) => {
     let path = require('path'), fs = require('fs'), electron = require('electron')
-    const { Webpack, React, Plugins } = BdApi
+    const { Webpack, React, Plugins, injectCSS, clearCSS } = BdApi
 
     /**
      * @typedef {object} BDPluginData
@@ -82,6 +82,95 @@
     class Plugin {
 
         start() {
+
+            injectCSS(
+                meta.name,
+                `
+                .trustlist-addon-button svg {
+                    fill: white;
+                    margin: auto;
+                }
+                .trustlist-addon-button + .trustlist-addon-button {
+                    margin-left: 8px;
+                }
+                .trustlist-addon-button {
+                    display: inline-flex;
+                    padding: 4px 6px;
+                    border-radius: 3px;
+                    transition: background-color .17s ease,color .17s ease;
+                    background-color: var(--brand-experiment);
+                }
+                .trustlist-addon-button:hover {
+                    background-color: var(--brand-experiment-560);
+                }
+                .trustlist-addon-button:active {
+                    background-color: var(--brand-experiment-600);
+                }
+                .trustlist-text {
+                    color: var(--header-primary);
+                    margin: auto;
+                }
+                .trustlist-addon-card {
+                    display: flex;
+                    flex-direction: column;
+                    margin-bottom: 20px;
+                    border-radius: 5px;
+                    overflow: hidden;
+                    background: var(--background-secondary);
+                }
+                .trustlist-addon-header {
+                    color: var(--header-primary);
+                    background: var(--background-secondary-alt);
+                    padding: 16px;
+                    font-size: 14px;
+                    line-height: 20px;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    overflow: hidden;
+                }
+                .trustlist-icon {
+                    margin-right: 8px;
+                }
+                .trustlist-title, .trustlist-name, .trustlist-meta {
+                    display: inline;
+                    line-height: normal;
+                }
+                .trustlist-name::after, .trustlist-version::after {
+                    display: inline;
+                    content: " ";
+                }
+                .trustlist-title {
+                    flex: 1;
+                }
+                .trustlist-name {
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+                .trustlist-meta {
+                    color: var(--channels-default);
+                    font-weight: 500;
+                }
+                .trustlist-description-wrap {
+                    flex: 1;
+                    padding: 8px 16px 0 16px;
+                }
+                .trustlist-description {
+                    word-break: break-word;
+                    margin-bottom: 5px;
+                    padding: 5px 0;
+                    overflow-y: auto;
+                    max-height: 175px;
+                    font-size: 14px;
+                    line-height: 18px;
+                    -webkit-line-clamp: 3;
+                    color: var(--header-secondary);
+                }
+                `
+                )
+            
             // update list if `Plugins.getAll()` changed
             CachePluginsUpdater = setInterval(() => {
                 if (CachePlugins?.length == Plugins?.getAll?.()?.length) return;
@@ -90,6 +179,7 @@
         }
     
         stop() {
+            clearCSS(meta.name)
             clearInterval(CachePluginsUpdater);
             this.closeSettings()
         }
@@ -100,16 +190,6 @@
 
         closeSettings() {
             document.querySelector('.bd-addon-modal-footer > .bd-button')?.click?.()
-        }
-
-        getPlugins() {
-            if(!TrustedPlugins) return;
-            UntrustedPlugins = [];
-            CachePlugins = Plugins.getAll();
-            for (let/**@type {BDPluginData}*/ plug of CachePlugins) {
-                if (!UncompiledInUntrusted && plug?.partial) continue;
-                if (!TrustedPlugins.some(tplug => tplug.name == plug.name)) UntrustedPlugins.push(plug)
-            }
         }
     
         getSettingsPanel = () => {
@@ -132,8 +212,6 @@
                 return v2
             }
 
-            if (olderVersion(BdApi.version, '1.8.0') != '1.8.0') return ['Your BD version must be at least 1.8.0']
-
             class Listenable extends React.Component {
                 constructor(state) {
                     let as = state.as
@@ -149,15 +227,23 @@
                     this.state = state
                 }
                 buildList() {
-                    PluginThis.getPlugins()
+                    {
+                        if(!TrustedPlugins) return;
+                        UntrustedPlugins = [];
+                        CachePlugins = Plugins.getAll();
+                        for (let/**@type {BDPluginData}*/ plug of CachePlugins) {
+                            if (!UncompiledInUntrusted && plug?.partial) continue;
+                            if (!TrustedPlugins.some(tplug => tplug.name == plug.name)) UntrustedPlugins.push(plug)
+                        }
+                    }
                     if(!UntrustedPlugins?.length ) return [];
                     else return UntrustedPlugins.map(
                         uplug => {
 
                             const dangerColors = {
                                 unknown: 'var(--header-primary)',
-                                known: 'var(--text-danger)',
-                                danger: 'var(--button-danger-background)',
+                                known: 'var(--status-warning-background)',
+                                danger: 'var(--status-danger-background)',
                             };
                             let reasonsDanger = UntrustedPluginsDanger?.[Object.keys(UntrustedPluginsDanger).find(name => uplug.name.includes(name))];
                             if(reasonsDanger) reasonsDanger = [...reasonsDanger] // reasonsDanger is not the original of UntrustedPluginsDanger[...]
@@ -174,16 +260,16 @@
                             let uncompiled = uplug.partial
                             return React.createElement(
                                 'div',
-                                { class: 'bd-addon-card' },
+                                { class: 'trustlist-addon-card' },
                                 [
                                     React.createElement(
                                         'div',
-                                        { class: 'bd-addon-header' },
+                                        { class: 'trustlist-addon-header' },
                                         [
                                             React.createElement(
                                                 'svg',
                                                 {
-                                                    class: 'bd-icon',
+                                                    class: 'trustlist-icon',
                                                     viewBox: '0 0 24 24',
                                                     style: {
                                                         fill: dangerColorCalc,
@@ -193,22 +279,22 @@
                                                 React.createElement('path', { d: 'M20.5 11H19V7c0-1.1-.9-2-2-2h-4V3.5C13 2.12 11.88 1 10.5 1S8 2.12 8 3.5V5H4c-1.1 0-1.99.9-1.99 2v3.8H3.5c1.49 0 2.7 1.21 2.7 2.7s-1.21 2.7-2.7 2.7H2V20c0 1.1.9 2 2 2h3.8v-1.5c0-1.49 1.21-2.7 2.7-2.7 1.49 0 2.7 1.21 2.7 2.7V22H17c1.1 0 2-.9 2-2v-4h1.5c1.38 0 2.5-1.12 2.5-2.5S21.88 11 20.5 11z' })
                                             ),
                                             React.createElement(
-                                                'div', { class: 'bd-title' },
+                                                'div', { class: 'trustlist-title' },
                                                 [
                                                     React.createElement(
-                                                        'div', { class: 'bd-name', style: { color: dangerColorCalc } },
+                                                        'div', { class: 'trustlist-name', style: { color: dangerColorCalc } },
                                                         uplug.name
                                                     ),
                                                     React.createElement(
-                                                        'div', { class: 'bd-meta' },
+                                                        'div', { class: 'trustlist-meta' },
                                                         [
                                                             React.createElement(
-                                                                'span', { class: 'bd-version' },
+                                                                'span', { class: 'trustlist-version' },
                                                                 'v' + uplug.version
                                                             ),
                                                             'by ',
                                                             React.createElement(
-                                                                'a', { class: 'bd-link bd-link-website', href: uplug.authorLink, target: '_blank', rel: 'noopener noreferrer' },
+                                                                'a', { class: 'trustlist-link trustlist-link-website', href: uplug.authorLink, target: '_blank', rel: 'noopener noreferrer' },
                                                                 uplug.author
                                                             )
                                                         ]
@@ -216,30 +302,19 @@
                                                 ]
                                             ),
                                             React.createElement(
-                                                'div', { class: 'bd-controls' },
+                                                'div', { class: 'trustlist-controls' },
                                                 [
                                                     document.getElementById(`${uplug.name}-card`)
                                                         ? React.createElement(
                                                             'button',
                                                             {
-                                                                class: `bd-button bd-addon-button`,
+                                                                class: `trustlist-addon-button`,
                                                                 onClick: async (e) => {
                                                                     let card = document.getElementById(`${uplug.name}-card`)
                                                                     if (!card) return;
                                                                     PluginThis.closeSettings()
                                                                     await PluginThis.wait(500)
                                                                     card.scrollIntoView({ behavior: 'smooth', block: 'center' })
-                                                                    card.animate(
-                                                                        [
-                                                                            {},
-                                                                            { transform: 'scale(1.1)' },
-                                                                            {}
-                                                                        ],
-                                                                        {
-                                                                            duration: 500,
-                                                                            easing: 'linear'
-                                                                        }
-                                                                    )
                                                                 }
                                                             },
                                                             React.createElement(
@@ -254,7 +329,7 @@
                                                     React.createElement(
                                                         'button',
                                                         {
-                                                            class: `bd-button bd-addon-button`,
+                                                            class: `trustlist-addon-button`,
                                                             onClick: (e) => {
                                                                 electron.shell.showItemInFolder(path.join(Plugins.folder, uplug.filename))
                                                             }
@@ -273,22 +348,11 @@
                                     ),
                                     React.createElement(
                                         'div',
-                                        { class: 'bd-description-wrap' },
+                                        { class: 'trustlist-description-wrap' },
                                         [
-                                            !uncompiled?null:React.createElement(
-                                                'div', { class: 'banner banner-danger' },
-                                                [
-                                                    React.createElement(
-                                                        'svg',
-                                                        { style: { width: '24px', height: '24px' }, class: 'bd-icon', viewBox: '0 0 24 24' },
-                                                        React.createElement('path', { d: 'M11 15h2v2h-2zm0-8h2v6h-2zm.99-5C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z' })
-                                                    ),
-                                                    'An error was encountered while trying to load this plugin.'
-                                                ]
-                                            ),
                                             React.createElement(
                                                 'div',
-                                                { class: 'bd-description' },
+                                                { class: 'trustlist-description' },
                                                 [
                                                     React.createElement(
                                                         'div', { style: {} },
@@ -316,19 +380,11 @@
                 render() {
                     let list = this.buildList()
                     return [
-                        TrustedPlugins ?
-                            list.length ?
-                                React.createElement('div', { class: `bd-settings-title`, style: { 'margin-bottom': '8px' } },
-                                    'Untrusted plugins detected - ' + UntrustedPlugins.length
-                                ) :
-                                React.createElement('div', { class: `bd-settings-title`, style: { 'margin-bottom': '8px' } },
-                                    'No untrusted plugins have been found'
-                                ) : [],
                         React.createElement(
                             'div',
                             {
-                                id: 'untrusted-plugins-container',
-                                class: `bd-addon-list ${document.querySelector(`.bd-addon-views .bd-button.selected:nth-child(2)`) ? 'bd-grid-view' : ''}`,
+                                id: 'trustlist-plugins-container',
+                                class: `trustlist-addon-list`,
                                 style: { "margin-top": "10px" }
                             },
                             TrustedPlugins && list.length ? list : []
@@ -366,27 +422,42 @@
                     this.state = state
                 }
                 render() {
-                    return React.createElement(Button, {
-                        color: this.state?.color ?? Button.Colors.BRAND,
-                        disabled: this.state?.disabled ?? false,
-                        onClick: async () => {
-                            this.setState({ label: 'Fetching the trust list...', disabled: true })
-                            require('request').get('https://api.betterdiscord.app/v1/store/addons',
-                                (error, r, body) => {
-                                    if (error) {
-                                        console.error('TrustList error: failed to fetch.')
-                                        this.setState({ label: 'Failed to fecth trust list (Click to try again)', color: Button.Colors.RED, disabled: false })
-                                    }
-                                    if (error) return;
-                                    this.setState({ label: 'Processing plugins...', disabled: true })
-                                    TrustedPlugins = JSON.parse(body)
-                                    CheckDate = new Date()
-                                    Listen.LIST.forceUpdate()
-                                    this.setState({ label: 'Fetch the list again', disabled: false })
+                    return React.createElement('div',
+                        { style: { display: 'flex', flexDirection: 'row' } },
+                        [
+                            React.createElement(Button, {
+                                color: this.state?.color ?? Button.Colors.BRAND,
+                                disabled: this.state?.disabled ?? false,
+                                onClick: async () => {
+                                    this.setState({ label: 'Fetching the trust list...', disabled: true })
+                                    require('request').get('https://api.betterdiscord.app/v1/store/addons',
+                                        (error, r, body) => {
+                                            if (error) {
+                                                console.error('TrustList error: failed to fetch.')
+                                                this.setState({ label: 'Failed to fecth trust list (Click to try again)', color: Button.Colors.RED, disabled: false })
+                                            }
+                                            if (error) return;
+                                            this.setState({ label: 'Processing plugins...', disabled: true })
+                                            TrustedPlugins = JSON.parse(body)
+                                            CheckDate = new Date()
+                                            Listen.LIST.forceUpdate()
+                                            this.setState({ label: 'Fetch the list again', disabled: false })
+                                        }
+                                    )
                                 }
-                            )
-                        }
-                    }, this.state?.label ?? this.props?.children ?? '')
+                            },
+                                this.state?.label ?? this.props?.children ?? ''
+                            ),
+                            TrustedPlugins ?
+                                UntrustedPlugins.length ?
+                                    React.createElement('div', { class: `trustlist-text` },
+                                        'Untrusted plugins detected - ' + UntrustedPlugins.length
+                                    ) :
+                                    React.createElement('div', { class: `trustlist-text` },
+                                        'No untrusted plugins have been found'
+                                    ) : [],
+                        ]
+                    )
                 }
             }
     
