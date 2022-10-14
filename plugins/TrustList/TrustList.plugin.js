@@ -130,7 +130,14 @@
                     justify-content: space-between;
                     overflow: hidden;
                 }
+                .trustlist-controls {
+                    display: flex;
+                    align-items: center;
+                }
                 .trustlist-icon {
+                    margin-right: 8px;
+                }
+                .trustlist-asidelabel {
                     margin-right: 8px;
                 }
                 .trustlist-title, .trustlist-name, .trustlist-meta {
@@ -149,7 +156,7 @@
                     overflow: hidden;
                     text-overflow: ellipsis;
                 }
-                .trustlist-meta {
+                .trustlist-meta, .trustlist-asidelabel {
                     color: var(--channels-default);
                     font-weight: 500;
                 }
@@ -304,6 +311,10 @@
                                             React.createElement(
                                                 'div', { class: 'trustlist-controls' },
                                                 [
+                                                    !uncompiled?null:React.createElement(
+                                                        'span', { class: 'trustlist-asidelabel' },
+                                                        'Broken'
+                                                    ),
                                                     document.getElementById(`${uplug.name}-card`)
                                                         ? React.createElement(
                                                             'button',
