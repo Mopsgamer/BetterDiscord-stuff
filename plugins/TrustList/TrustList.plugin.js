@@ -1,7 +1,7 @@
 /**
  * @name TrustList
  * @version 1.0.0
- * @description Checks if you have untrusted BD plugins.
+ * @description Checks the list of your plugins against the list of plugins on the BD site.
  * @author Mops
  * @invite PWtAHjBXtG
  * @authorLink https://github.com/Mopsgamer/
@@ -31,15 +31,18 @@
      * @property {number} size
      * @property {undefined | true} partial
      */
+    /**
+     * @typedef {BDPluginData & {reasons: {normal: string[], warning: string[], danger: string[]}}} BDPluginDataReasons
+     */
 
     let Listen = {}
 
     // CACHE
 
     /** Variable to track plugin list changes.
-     * @type {BDPluginData[] | undefined}*/
+     * @type {BDPluginDataReasons[] | undefined}*/
     let CachePlugins;
-    /** @type {BDPluginData[] | undefined}*/
+    /** @type {BDPluginDataReasons[] | undefined}*/
     let UntrustedPlugins;
     /** @type {BDPluginData[] | undefined}*/
     let TrustedPlugins;
@@ -52,7 +55,7 @@
     let UncompiledInUntrusted = true
     /*Settings end*/
 
-    let UntrustedPluginsKnown = {
+    let UntrustedPluginsWarning = {
         'XenoLib': [' •  Is used by MessageLogger.']
     }
 
@@ -238,9 +241,21 @@
                         if(!TrustedPlugins) return;
                         UntrustedPlugins = [];
                         CachePlugins = Plugins.getAll();
-                        for (let/**@type {BDPluginData}*/ plug of CachePlugins) {
-                            if (!UncompiledInUntrusted && plug?.partial) continue;
-                            if (!TrustedPlugins.some(tplug => tplug.name == plug.name)) UntrustedPlugins.push(plug)
+                        for (let plug of CachePlugins) {
+                            plug.reasons = {
+                                normal: [],
+                                warning: [...(UntrustedPluginsWarning?.[Object.keys(UntrustedPluginsWarning).find(name => plug.name.includes(name))] ?? [])],
+                                danger: [...(UntrustedPluginsDanger?.[Object.keys(UntrustedPluginsDanger).find(name => plug.name.includes(name))] ?? [])],
+                            };
+                            if (!TrustedPlugins.some(tplug => tplug.name == plug.name)) {
+                                plug.reasons.warning.push(' •  Unlisted in the fetched list [' + CheckDate.toLocaleString() + '].')
+                            }
+                            if (plug.reasons.danger.length) {
+                                plug.reasons.danger.push(' •  **Discord can ban you for that.** (You have nothing to fear if you haven\'t used it)')
+                            }
+                            if(plug.reasons.normal.length || plug.reasons.warning.length || plug.reasons.danger.length) {
+                                UntrustedPlugins.push(plug)
+                            }
                         }
                     }
                     if(!UntrustedPlugins?.length ) return [];
@@ -248,21 +263,12 @@
                         uplug => {
 
                             const dangerColors = {
-                                unknown: 'var(--header-primary)',
-                                known: 'var(--status-warning-background)',
+                                normal: 'var(--header-primary)',
+                                warning: 'var(--status-warning-background)',
                                 danger: 'var(--status-danger-background)',
                             };
-                            let reasonsDanger = UntrustedPluginsDanger?.[Object.keys(UntrustedPluginsDanger).find(name => uplug.name.includes(name))];
-                            if(reasonsDanger) reasonsDanger = [...reasonsDanger] // reasonsDanger is not the original of UntrustedPluginsDanger[...]
-                            let reasonsDetected = [];
-                            if (uplug.name != meta.name && uplug?.instance) {
-                                let filecontent = fs.readFileSync(path.join(Plugins.folder, uplug.filename))
-                                if (/[^\w]getToken[^\w]/.test(filecontent)) reasonsDetected.push(' •  The plugin code probably has direct access to your token.')
-                            }
-                            (() => { let reasonsKnown = UntrustedPluginsKnown?.[Object.keys(UntrustedPluginsKnown).find(name => uplug.name.includes(name))]; if(reasonsKnown != null) reasonsDetected = reasonsDetected.concat(reasonsKnown) })()
-                            if (reasonsDanger) reasonsDanger.push(' •  **Discord can ban you for that.** (You have nothing to fear if you haven\'t used it)')
 
-                            const dangerColorCalc = reasonsDanger?.length ? dangerColors.danger : (reasonsDetected?.length ? dangerColors.known : dangerColors.unknown)
+                            const dangerColorCalc = uplug.reasons.danger?.length ? dangerColors.danger : (uplug.reasons.warning?.length ? dangerColors.warning : dangerColors.normal)
 
                             let uncompiled = uplug.partial
                             return React.createElement(
@@ -311,7 +317,7 @@
                                             React.createElement(
                                                 'div', { class: 'trustlist-controls' },
                                                 [
-                                                    !uncompiled?null:React.createElement(
+                                                    !uncompiled ? null : React.createElement(
                                                         'span', { class: 'trustlist-asidelabel' },
                                                         'Broken'
                                                     ),
@@ -325,6 +331,7 @@
                                                                     if (!card) return;
                                                                     PluginThis.closeSettings()
                                                                     await PluginThis.wait(500)
+                                                                    card.animate([{}, { transform: 'scale(1.2)' }, {}], { duration: 500 })
                                                                     card.scrollIntoView({ behavior: 'smooth', block: 'center' })
                                                                 }
                                                             },
@@ -367,17 +374,15 @@
                                                 [
                                                     React.createElement(
                                                         'div', { style: {} },
-                                                        ([
-                                                            ' •  Not listed in the [official BetterDiscord plugin list](https://betterdiscord.app/plugins) [' + CheckDate.toLocaleString() + '].'
-                                                        ]).map(text => Markdown.markdownToReact(text))
+                                                        (uplug.reasons.normal).map(text => Markdown.markdownToReact(text))
                                                     ),
                                                     React.createElement(
-                                                        'div', { style: { color: dangerColors.known } },
-                                                        (reasonsDetected ?? []).map(text => Markdown.markdownToReact(text))
+                                                        'div', { style: { color: dangerColors.warning } },
+                                                        (uplug.reasons.warning).map(text => Markdown.markdownToReact(text))
                                                     ),
                                                     React.createElement(
                                                         'div', { style: { color: dangerColors.danger } },
-                                                        (reasonsDanger ?? []).map(text => Markdown.markdownToReact(text))
+                                                        (uplug.reasons.danger).map(text => Markdown.markdownToReact(text))
                                                     ),
                                                 ]
                                             )
@@ -463,7 +468,8 @@
                                     }
                                     if (error) return;
                                     this.setState({ label: 'Processing plugins...', disabled: true })
-                                    TrustedPlugins = JSON.parse(body)
+                                    TrustedPlugins = JSON.parse(body).filter(addon => addon.type == 'plugin')
+                                    console.log(TrustedPlugins)
                                     CheckDate = new Date()
                                     Listen.LIST.forceUpdate()
                                     this.setState({ label: 'Fetch the list again', disabled: false })
@@ -488,6 +494,10 @@
                         }
                     },
                     'Uncompiled plugins'
+                ),
+                React.createElement(
+                    'div', { class: 'trustlist-text', style: { marginBottom: '20px' } },
+                    'This plugin cannot check plugin code. The results are generated from a list of names.'
                 ),
                 React.createElement(
                     'div', { class: `${Margin.marginBottom8}`, style: {display: 'flex', flexDirection: 'row'} },
