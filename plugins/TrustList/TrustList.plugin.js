@@ -379,6 +379,7 @@
                 }
                 render() {
                     let list = this.buildList()
+                    Listen.LABEL.forceUpdate()
                     return [
                         React.createElement(
                             'div',
@@ -390,6 +391,22 @@
                             TrustedPlugins && list.length ? list : []
                         )
                         ]
+                }
+            }
+
+            class LabelUntrusted extends Listenable {
+                constructor() {
+                    super({as: 'LABEL'})
+                }
+                render() {
+                    return TrustedPlugins ?
+                        UntrustedPlugins.length ?
+                            React.createElement('div', { class: `trustlist-text` },
+                                'Untrusted plugins detected - ' + UntrustedPlugins.length
+                            ) :
+                            React.createElement('div', { class: `trustlist-text` },
+                                'No untrusted plugins have been found'
+                            ) : []
                 }
             }
 
@@ -422,41 +439,28 @@
                     this.state = state
                 }
                 render() {
-                    return React.createElement('div',
-                        { style: { display: 'flex', flexDirection: 'row' } },
-                        [
-                            React.createElement(Button, {
-                                color: this.state?.color ?? Button.Colors.BRAND,
-                                disabled: this.state?.disabled ?? false,
-                                onClick: async () => {
-                                    this.setState({ label: 'Fetching the trust list...', disabled: true })
-                                    require('request').get('https://api.betterdiscord.app/v1/store/addons',
-                                        (error, r, body) => {
-                                            if (error) {
-                                                console.error('TrustList error: failed to fetch.')
-                                                this.setState({ label: 'Failed to fecth trust list (Click to try again)', color: Button.Colors.RED, disabled: false })
-                                            }
-                                            if (error) return;
-                                            this.setState({ label: 'Processing plugins...', disabled: true })
-                                            TrustedPlugins = JSON.parse(body)
-                                            CheckDate = new Date()
-                                            Listen.LIST.forceUpdate()
-                                            this.setState({ label: 'Fetch the list again', disabled: false })
-                                        }
-                                    )
+                    return React.createElement(Button, {
+                        color: this.state?.color ?? Button.Colors.BRAND,
+                        disabled: this.state?.disabled ?? false,
+                        onClick: async () => {
+                            this.setState({ label: 'Fetching the trust list...', disabled: true })
+                            require('request').get('https://api.betterdiscord.app/v1/store/addons',
+                                (error, r, body) => {
+                                    if (error) {
+                                        console.error('TrustList error: failed to fetch.')
+                                        this.setState({ label: 'Failed to fecth trust list (Click to try again)', color: Button.Colors.RED, disabled: false })
+                                    }
+                                    if (error) return;
+                                    this.setState({ label: 'Processing plugins...', disabled: true })
+                                    TrustedPlugins = JSON.parse(body)
+                                    CheckDate = new Date()
+                                    Listen.LIST.forceUpdate()
+                                    this.setState({ label: 'Fetch the list again', disabled: false })
                                 }
-                            },
-                                this.state?.label ?? this.props?.children ?? ''
-                            ),
-                            TrustedPlugins ?
-                                UntrustedPlugins.length ?
-                                    React.createElement('div', { class: `trustlist-text` },
-                                        'Untrusted plugins detected - ' + UntrustedPlugins.length
-                                    ) :
-                                    React.createElement('div', { class: `trustlist-text` },
-                                        'No untrusted plugins have been found'
-                                    ) : [],
-                        ]
+                            )
+                        }
+                    },
+                        this.state?.label ?? this.props?.children ?? ''
                     )
                 }
             }
@@ -475,10 +479,13 @@
                     'Uncompiled plugins'
                 ),
                 React.createElement(
-                    'div', { class: `${Margin.marginBottom8}` },
-                    UntrustedPlugins == void 0
-                        ? React.createElement(CheckButton, null, 'Check for untrusted')
-                        : React.createElement(CheckButton, null, 'Fetch the list again')
+                    'div', { class: `${Margin.marginBottom8}`, style: {display: 'flex', flexDirection: 'row'} },
+                    [
+                        UntrustedPlugins == void 0
+                            ? React.createElement(CheckButton, null, 'Check for untrusted')
+                            : React.createElement(CheckButton, null, 'Fetch the list again'),
+                        React.createElement(LabelUntrusted)
+                    ]
                 ),
                 React.createElement(UntrustedPluginsList, { as: 'LIST' }),
             ]
