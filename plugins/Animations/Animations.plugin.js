@@ -20,7 +20,7 @@ const config = {
         {
             type: 'removed',
             items: [
-                'The "Update" button and the "Server" button have been removed. Use the links from the plugin card.',
+                'The "Update" button and the "Server" button have been removed. Use the links from the plugin\'s card.',
                 'The plugin no longer needs Zlibrary.',
             ]
         },
@@ -66,17 +66,17 @@ const Logger = class Logger {
         console.error(`%c[${module}]%c ${message}\n\n%c`, "color: #3a71c1; font-weight: 700;", "color: red; font-weight: 700;", "color: red;", error);
     }
 
-    static error(module, ...message) { Logger._log(module, message, "error"); }
+    static error(module, ...message) { Logger.fastlogfn(module, message, "error"); }
 
-    static warning(module, ...message) { Logger._log(module, message, "warn"); }
+    static warning(module, ...message) { Logger.fastlogfn(module, message, "warn"); }
 
-    static info(module, ...message) { Logger._log(module, message, "info"); }
+    static info(module, ...message) { Logger.fastlogfn(module, message, "info"); }
 
-    static debug(module, ...message) { Logger._log(module, message, "debug"); }
+    static debug(module, ...message) { Logger.fastlogfn(module, message, "debug"); }
 
-    static log(module, ...message) { Logger._log(module, message); }
+    static log(module, ...message) { Logger.fastlogfn(module, message); }
 
-    static _log(module, message, type = "log") {
+    static fastlogfn(module, message, type = "log") {
         if (!Array.isArray(message)) message = [message];
         console[type](`%c[${config.info.name}]%c %c[${module}]%c`, "color: #3a71c1; font-weight: 700;", "", "color: #3a71c1; font-weight: 500;", "", ...message);
     }
@@ -85,6 +85,7 @@ const Logger = class Logger {
 
 /**
 * @typedef { 'da' | 'de' | 'en-GB' | 'en-US' | 'es-ES' | 'fr' | 'hr' | 'it' | 'lt' | 'hu' | 'nl' | 'no' | 'pl' | 'pt-BR' | 'ro' | 'fi' | 'sv-SE' | 'vi' | 'tr' | 'cs' | 'el' | 'bg' | 'ru' | 'uk' | 'hi' | 'th' | 'zh-CN' | 'ja' | 'zh-TW' | 'ko' } locale
+* @typedef { 'brick-down' | 'brick-left' | 'brick-right' | 'brick-up' | 'circle' | 'in' | 'opacity' | 'out' | 'polygon' | 'skew-left' | 'skew-right' | 'slide-down' | 'slide-left' | 'slide-right' | 'slide-up' | 'slime' | 'wide-skew-left' | 'wide-skew-right' } name
 * @typedef { 'onsent' | 'disabled' } sendingPerformance
 */
 
@@ -154,6 +155,7 @@ module.exports = class AnimationsPlugin {
                 delay: 0.1,
                 duration: 0.3,
                 enabled: true,
+                /**@type {name}*/
                 name: 'brick-left',
                 page: 0,
                 selectors: '',
@@ -178,6 +180,7 @@ module.exports = class AnimationsPlugin {
                 delay: 0.055,
                 duration: 0.3,
                 enabled: true,
+                /**@type {name}*/
                 name: 'brick-up',
                 page: 0,
                 selectors: '',
@@ -203,6 +206,7 @@ module.exports = class AnimationsPlugin {
                 duration: 0.3,
                 enabled: true,
                 limit: 30,
+                /**@type {name}*/
                 name: 'brick-down',
                 page: 0,
                 sending: {
@@ -223,6 +227,7 @@ module.exports = class AnimationsPlugin {
 
                     /**@type {sendingPerformance}*/
                     enabled: 'onsent',
+                    /**@type {name}*/
                     name: 'brick-up',
                     page: 0
                 },
@@ -295,7 +300,6 @@ module.exports = class AnimationsPlugin {
             "limit": "Limit",
             "limit_note_messages": "The maximum number of messages in the list for which the animation will be played.",
             "name": "Animation",
-            "name_mode_editing": "Editing",
             "name_mode_selecting": "Selecting",
             "name_note_buttons": "Animation of the buttons.",
             "name_note_lists": "Animation of the lists items.",
@@ -444,7 +448,7 @@ module.exports = class AnimationsPlugin {
             }
         }
 
-        BdApi.UI.showConfirmationModal(
+        BdApi.UI.alert(
             [
                 config.info.name + ' - ' + trn.view.changelog,
                 React.createElement('div', { style: { color: 'var(--header-secondary)', fontSize: '12px', fontWeight: 'normal' } }, 'v' + config.info.version)
@@ -1116,7 +1120,7 @@ module.exports = class AnimationsPlugin {
         \n${countStyles()}
 
         /*Custom keyframes*/
-        
+
         @keyframes custom-lists {
             ${this.settings.lists.custom.page >= 0 ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim : ''}
         }
@@ -1131,13 +1135,6 @@ module.exports = class AnimationsPlugin {
 
         @keyframes custom-messages+sending {
             ${this.settings.messages.sending.custom.page >= 0 ? this.settings.messages.sending.custom.frames[this.settings.messages.sending.custom.page]?.anim : ''}
-        }
-        
-        
-        svg[id*=help-timing-] {
-            cursor: pointer;
-            margin-right: 0;
-            margin-left: 4px;
         }
         `;
 
@@ -1343,6 +1340,7 @@ module.exports = class AnimationsPlugin {
          * @property {'right' | 'left'} [align]
          * @property {string} [width='16px']
          * @property {string} [height='16px']
+         * @property {string} [margin-right='16px']
          * @property {string} [viewBox='0 0 24 24']
          * @property {string[]} [paths=[]]
          */
@@ -1357,6 +1355,7 @@ module.exports = class AnimationsPlugin {
                     color: 'var(--header-primary)',
                     width: '16px',
                     height: '16px',
+                    'margin-right': 0,
                     align: undefined,
                     viewBox: '0 0 24 24',
                     ...svg
@@ -1377,7 +1376,7 @@ module.exports = class AnimationsPlugin {
                             position: (['right', 'left']).includes(this.state.align) ? 'absolute' : 'relative',
                             right: (this.state.align == 'right') ? '12px' : 'none',
                             left: (this.state.align == 'left') ? '12px' : 'none',
-                            'margin-right': '4px'
+                            'margin-right': this.state['margin-right'] ?? 0
                         }
                     },
                     this.state.paths.map(path => {
@@ -1438,7 +1437,7 @@ module.exports = class AnimationsPlugin {
                     }
                 },
                     [
-                        Array.isArray(button.svgs) ? button.svgs.map((svgTemp) => React.createElement(Svg, svgTemp)) : null,
+                        Array.isArray(button.svgs) ? button.svgs.map((svgTemp) => React.createElement(Svg, { ...svgTemp, 'margin-right': this.state.label ? '4px' : 0 })) : null,
                         React.createElement('span', {
                             style: {
                                 'max-width': 'none'
@@ -2554,7 +2553,7 @@ module.exports = class AnimationsPlugin {
         }
 
         setTimeout(() => {
-            let mymodal = [...(document.getElementsByClassName('bd-addon-modal') ?? [])].find(modal => { let h4 = modal.querySelector('h4'); if (h4) return h4.innerText.toLowerCase() == 'animations settings' })
+            let mymodal = document.getElementById(config.info.name + ' ' + 'settings')
             if (!mymodal) return;
 
             mymodal.querySelectorAll('svg[id*=help-timing-]').forEach(
@@ -3681,7 +3680,13 @@ module.exports = class AnimationsPlugin {
             ).render
         ]
 
-        return settings_panel
+        return React.createElement(
+            'div',
+            {
+                id: config.info.name + ' ' + 'settings'
+            },
+            settings_panel
+        )
     }
 
     start() {
@@ -4161,6 +4166,10 @@ module.exports = class AnimationsPlugin {
                 opacity: 66.66%;
                 cursor: not-allowed;
             }
+
+            svg[id*=help-timing-] {
+                cursor: pointer;
+            }
             `
 
         BdApi.clearCSS(`${config.info.name}-comp`);
@@ -4208,9 +4217,8 @@ module.exports = class AnimationsPlugin {
             }
         )
 
-        let chatOl = document.querySelector("div[class*=sidebar] + div[class*=chat] > div[class*=content] main div[class*=rapper] ol");
-        chatOl = document.querySelector("div#app-mount");
-        if(chatOl) this.MessagesObserver.observe(chatOl, { "childList": true, subtree: true }); else Logger.warning("MessagesObserver", "Element not found.");
+        let appmount = document.querySelector("div#app-mount");
+        if(appmount) this.MessagesObserver.observe(appmount, { "childList": true, subtree: true }); else Logger.warning("MessagesObserver", "Element not found.");
         let bdThemes = document.getElementsByTagName("bd-themes")[0];
         if(bdThemes) this.ThemesObserver.observe(bdThemes, { "childList": true }); else Logger.warning("ThemesSwitchesObserver", "Element not found.");
 
