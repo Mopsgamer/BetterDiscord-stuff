@@ -20,7 +20,7 @@ const config = {
         {
             type: 'removed',
             items: [
-                'The "Update" button and the "Server" button have been removed. Use the links from the plugin card.',
+                'The "Update" button and the "Server" button have been removed. Use the links from the plugin\'s card.',
                 'The plugin no longer needs Zlibrary.',
             ]
         },
@@ -78,7 +78,7 @@ const Logger = class Logger {
 
     static fastlogfn(module, message, type = "log") {
         if (!Array.isArray(message)) message = [message];
-        console[type](`%c[${config.info.name}]%c %c[${module}]%c`, "color: #3a71c1; font-weight: 700;", "", "color: #3a71c1; font-weight: 500;", "",  ...message);
+        console[type](`%c[${config.info.name}]%c %c[${module}]%c`, "color: #3a71c1; font-weight: 700;", "", "color: #3a71c1; font-weight: 500;", "", ...message);
     }
 
 }
@@ -125,8 +125,33 @@ module.exports = class AnimationsPlugin {
     constructor(meta) {
         this.patchedMessagesIds = []
 
+        this.defaultFrames = {
+            clear: {
+                anim: '',
+                start: ''
+            },
+            template: {
+                anim: '0% {\ntransform: translate(0, 100%);\n}\n\n100% {\ntransform: translate(0, 0) scale(1);\n}',
+                start: 'transform: scale(0);'
+            }
+        }
+
         let defaultSettings = {
             buttons: {
+                custom: {
+                    enabled: false,
+                    frames: [{
+                        anim: '',
+                        start: ''
+                    }, {
+                        anim: '',
+                        start: ''
+                    }, {
+                        anim: '',
+                        start: ''
+                    }],
+                    page: 0
+                },
                 delay: 0.1,
                 duration: 0.3,
                 enabled: true,
@@ -138,6 +163,20 @@ module.exports = class AnimationsPlugin {
                 timing: 'linear'
             },
             lists: {
+                custom: {
+                    enabled: false,
+                    frames: [{
+                        anim: '',
+                        start: ''
+                    }, {
+                        anim: '',
+                        start: ''
+                    }, {
+                        anim: '',
+                        start: ''
+                    }],
+                    page: 0
+                },
                 delay: 0.055,
                 duration: 0.3,
                 enabled: true,
@@ -149,6 +188,20 @@ module.exports = class AnimationsPlugin {
                 timing: 'linear'
             },
             messages: {
+                custom: {
+                    enabled: false,
+                    frames: [{
+                        anim: '',
+                        start: ''
+                    }, {
+                        anim: '',
+                        start: ''
+                    }, {
+                        anim: '',
+                        start: ''
+                    }],
+                    page: 0
+                },
                 delay: 0.055,
                 duration: 0.3,
                 enabled: true,
@@ -157,8 +210,24 @@ module.exports = class AnimationsPlugin {
                 name: 'brick-down',
                 page: 0,
                 sending: {
+                    custom: {
+                        enabled: false,
+                        frames: [{
+                            anim: '',
+                            start: ''
+                        }, {
+                            anim: '',
+                            start: ''
+                        }, {
+                            anim: '',
+                            start: ''
+                        }],
+                        page: 0
+                    },
+
                     /**@type {sendingPerformance}*/
                     enabled: 'onsent',
+                    /**@type {name}*/
                     name: 'brick-up',
                     page: 0
                 },
@@ -231,7 +300,6 @@ module.exports = class AnimationsPlugin {
             "limit": "Limit",
             "limit_note_messages": "The maximum number of messages in the list for which the animation will be played.",
             "name": "Animation",
-            "name_mode_editing": "Editing",
             "name_mode_selecting": "Selecting",
             "name_note_buttons": "Animation of the buttons.",
             "name_note_lists": "Animation of the lists items.",
@@ -297,9 +365,13 @@ module.exports = class AnimationsPlugin {
         'polygon',
         'skew-left',
         'skew-right',
+        'slide-down-left',
+        'slide-down-right',
         'slide-down',
         'slide-left',
         'slide-right',
+        'slide-up-left',
+        'slide-up-right',
         'slide-up',
         'slime',
         'wide-skew-left',
@@ -385,355 +457,697 @@ module.exports = class AnimationsPlugin {
         );
     }
 
-    animated = []
-    async resetAnimations() {
-        Logger.log('resetAnimations', 'function was called.')
-        /**
-         * @param {HTMLElement} selector
-         * @param {{delay: number, duration: number, enabled: true, name: name, page: number, sequence: 'fromFirst' | 'fromLast', timing: string}} settingsOf
-         */
-        function animate(selector, settingsOf) {
-            if (!settingsOf.enabled) return [new Promise(rs => rs())];
-            let domElems = [...document.querySelectorAll(selector) ?? []];
-            domElems.forEach(
-                async (element, index) => {
-                    element.style.transform = 'scale(0)';
+    animateChannels = () => {
+
+        if (!this.settings.lists.enabled) return;
+        var channelsListElements = document.querySelectorAll(`#channels .${FoundModules.ContentThin} > [class]`);
+        var count = channelsListElements?.length ?? 40;
+
+        if (channelsListElements?.length == 1) return setTimeout(() => this.animateChannels(), 100);
+
+        BdApi.injectCSS(`${config.info.name}-channelslist`,
+            `/*channels*/
+                    .${FoundModules.ContainerDefaultSpaceBeforeCategory},
+                    .${FoundModules.ContainerDefault}
+                    {
+                        ${this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start : `transform: scale(0);`}
+                        animation-fill-mode: forwards;
+                        animation-duration: ${this.settings.lists.duration}s;
+                        animation-timing-function: ${this.settings.lists.timing};
+                    }
+                `)
+
+        for (var i = 0, threadsCount = 0; i < count; i++) {
+            let children = channelsListElements[(this.settings.lists.sequence == "fromFirst" ? i : count - i - 1)];
+            if (!children) return;
+
+            if (children.classList.contains(FoundModules.ContainerDefault)
+                || children.classList.contains(FoundModules.ContainerDefaultSpaceBeforeCategory)
+                || children.classList.contains(FoundModules.WrapperTypeThread)
+            ) {
+                children.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                children.style.animationFillMode = 'forwards';
+                children.style.animationName = this.settings.lists.custom.enabled &&
+                    (this.settings.lists.custom.page >= 0 ?
+                        this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() != '' &&
+                        this.isValidKeyframe(this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim)
+                        : 0)
+                    ? 'custom-lists' : this.settings.lists.name;
+            }
+
+            else if (children.classList.contains(FoundModules.ContainerSpine)) {
+                var threadsForkElement = children.querySelector(`.${FoundModules.ContainerSpine} > svg`);
+                var threadsListElements = children.querySelectorAll(`.${FoundModules.ContainerDefault}`);
+
+                threadsForkElement.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                threadsForkElement.style.animationName = 'slide-right';
+
+                for (var j = 0; j < threadsListElements.length; j++) {
+                    threadsCount += (j ? 1 : 0);
+                    let thread = threadsListElements[(this.settings.lists.sequence == "fromFirst" ? j : threadsListElements.length - j - 1)];
+
+                    thread.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                    children.style.animationFillMode = 'forwards';
+                    thread.style.animationName = this.settings.lists.custom.enabled &&
+                        (this.settings.lists.custom.page >= 0 ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() : 0) != ''
+                        ? 'custom-lists' : this.settings.lists.name;
+                }
+            }
+
+        }
+
+        setTimeout(() => BdApi.clearCSS(`${config.info.name}-channelslist`), ((count * this.settings.lists.delay) + this.settings.lists.duration) * 1000)
+
+    }
+
+    animateMembers = () => {
+
+        if (!this.settings.lists.enabled) return;
+
+        var membersListElements = document.querySelectorAll(`.${FoundModules.Member}:not([class*=placeholder]), h2.${FoundModules.MembersGroup}`);
+        var count = membersListElements?.length ?? 40;
+
+        if (membersListElements?.length == 1) return setTimeout(() => this.animateMembers(), 100);
+
+        BdApi.injectCSS(`${config.info.name}-memberslist`,
+            `/*members*/
+                .${FoundModules.Member}:not([class*=placeholder]),
+                /*member-groups*/
+                h2.${FoundModules.MembersGroup}
+                {
+                    ${this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start && this.settings.lists.custom.enabled ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start : `transform: scale(0);`}
+                    animation-fill-mode: forwards;
+                    animation-duration: ${this.settings.lists.duration}s;
+                    animation-timing-function: ${this.settings.lists.timing};
+                }
+            `)
+
+        for (var i = 0; i < count; i++) {
+            let children = membersListElements[(this.settings.lists.sequence == "fromFirst" ? i : count - i - 1)];
+            if (!children) return;
+
+            children.style.animationDelay = `${(i * this.settings.lists.delay).toFixed(2)}s`;
+            children.style.animationFillMode = 'forwards';
+            children.style.animationName = this.settings.lists.custom.enabled &&
+                (this.settings.lists.custom.page >= 0 ?
+                    this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() != '' &&
+                    this.isValidKeyframe(this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim)
+                    : 0)
+                ? 'custom-lists' : this.settings.lists.name + (children.getAttribute('class').includes('offline') ? '_offline' : '');
+        }
+
+        setTimeout(() => BdApi.clearCSS(`${config.info.name}-memberslist`), ((count * this.settings.lists.delay) + this.settings.lists.duration) * 1000)
+    }
+
+    async resetAnimations(pause = 100) {
+        var createKeyFrame = function (/** @type {string} */ name, /** @type {string} */ originalName, rotate = 0, opacity = 1) {
+            var keyframes = {
+                "in":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50%;
+                            transform: scale(1.3) rotate(${rotate}deg);
+                            opacity: 0;
+                        }
+                        100% {
+                            transform-origin: 50%;
+                            transform: scale(1) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                    }`,
+                "out":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50%;
+                            transform: scale(0.7) rotate(${rotate}deg);
+                            opacity: 0;
+                        }
+                        100% {
+                            transform-origin: 50%;
+                            transform: scale(1) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                    }`,
+                "opacity":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50%;
+                            transform: scale(1) rotate(${rotate}deg);
+                            opacity: 0;
+                        }
+                        100% {
+                            transform-origin: 50%;
+                            transform: scale(1) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                    }`,
+                "slime":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50%;
+                            transform: scale(1) rotate(${rotate}deg);
+                            opacity: 0;
+                        }
+                        25% {
+                            transform-origin: 50%;
+                            transform: scale(1.3, 0.7) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                        50% {
+                            transform-origin: 50%;
+                            transform: scale(0.8, 1.2) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                        75% {
+                            transform-origin: 50%;
+                            transform: scale(1.1, 0.9) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                        100% {
+                            transform-origin: 50%;
+                            transform: scale(1) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                    }`,
+                "polygon":
+                    `@keyframes ${name} {
+                        0% {
+                            clip-path:  polygon(40% 40%, 50% 25%, 60% 40%, 75% 50%, 60% 60%, 50% 75%, 40% 60%, 25% 50%);
+                            transform: rotate(${rotate}deg);
+                        }
+                        99% {
+                            clip-path: polygon(0 0, 50% 0, 100% 0, 100% 50%, 100% 100%, 50% 100%, 0 100%, 0 50%);
+                            transform: rotate(${rotate}deg);
+                        }
+                        100% {
+                            transform: rotate(${rotate}deg);
+                        }
+                    }`,
+                "circle":
+                    `@keyframes ${name} {
+                        0% {
+                            clip-path: circle(25%);
+                            transform: rotate(${rotate}deg);
+                        }
+                        99% {
+                            clip-path: circle(100%);
+                            transform: rotate(${rotate}deg);
+                        }
+                        100% {
+                            transform: rotate(${rotate}deg);
+                        }
+                    }`,
+                "brick-up":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(0, 200%) rotate(${rotate}deg);
+                            opacity: 0;
+                        }
+                        60% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                        80% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(0, 20%) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                        100% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                    }`,
+                "brick-right":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(-200%, 0) rotate(${rotate}deg);
+                            opacity: 0;
+                        }
+                        60% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                        80% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(-20%, 0) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                        100% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                    }`,
+                "brick-left":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(200%, 0) rotate(${rotate}deg);
+                            opacity: 0;
+                        }
+                        60% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                        80% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(20%, 0) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                        100% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                    }`,
+                "brick-down":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(0, -200%) rotate(${rotate}deg);
+                            opacity: 0;
+                        }
+                        60% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                        80% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(0, -20%) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                        100% {
+                            transform-origin: 50%;
+                            transform: scale(1) translate(0, 0) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                    }`,
+                "slide-right":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 0% 50%;
+                            transform: scaleX(0) rotate(${rotate}deg);
+                        }
+                        100% {
+                            transform-origin: ${rotate != 90 ? '0% 50%' : '50%'};
+                            transform: scale(1) translate(0) rotate(${rotate}deg);
+                        }
+                    }`,
+                "slide-left":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 100% 50%;
+                            transform: scaleX(0) rotate(${rotate}deg);
+                        }
+                        100% {
+                            transform-origin: ${rotate != 90 ? '100% 50%' : '50%'};
+                            transform: scale(1) translate(0) rotate(${rotate}deg);
+                        }
+                    }`,
+                "slide-up":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50% 100%;
+                            transform: scaleY(0) rotate(${rotate}deg);
+                        }
+                        100% {
+                            transform-origin: ${rotate != 90 ? '50% 100%' : '50%'};
+                            transform: scale(1) translate(0) rotate(${rotate}deg);
+                        }
+                    }`,
+                "slide-down":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50% 0%;
+                            transform: scaleY(0) rotate(${rotate}deg);
+                        }
+                        100% {
+                            transform-origin: ${rotate != 90 ? '50% 0%' : '50%'};
+                            transform: scale(1) translate(0) rotate(${rotate}deg);
+                        }
+                    }`,
+                "slide-up-right":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 0% 100%;
+                            transform: scale(0) rotate(${rotate}deg);
+                        }
+                        100% {
+                            transform-origin: ${rotate != 90 ? '0% 100%' : '50%'};
+                            transform: scale(1) rotate(${rotate}deg) translate(0);
+                        }
+                    }`,
+                "slide-up-left":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 100% 100%;
+                            transform: scale(0) rotate(${rotate}deg);
+                        }
+                        100% {
+                            transform-origin: ${rotate != 90 ? '100% 100%' : '50%'};
+                            transform: scale(1) rotate(${rotate}deg) translate(0);
+                        }
+                    }`,
+                "slide-down-right":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 0% 0%;
+                            transform: scale(0) rotate(${rotate}deg);
+                        }
+                        100% {
+                            transform-origin: ${rotate != 90 ? '0% 0%' : '50%'};
+                            transform: scale(1) rotate(${rotate}deg) translate(0);
+                        }
+                    }`,
+                "slide-down-left":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 100% 0%;
+                            transform: scale(0) rotate(${rotate}deg);
+                        }
+                        100% {
+                            transform-origin: ${rotate != 90 ? '100% 0%' : '50%'};
+                            transform: scale(1) rotate(${rotate}deg) translate(0);
+                        }
+                    }`,
+                "skew-right":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50%;
+                            transform: skewX(-30deg) scale(1) rotate(${rotate}deg);
+                            opacity: 0;
+                        }
+                        100% {
+                            transform-origin: 50%;
+                            transform: skewX(0) scale(1) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                    }`,
+                "skew-left":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50%;
+                            transform: skewX(30deg) scale(1) rotate(${rotate}deg);
+                            opacity: 0;
+                        }
+                        100% {
+                            transform-origin: 50%;
+                            transform: skewX(0) scale(1) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                    }`,
+                "wide-skew-right":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50%;
+                            transform: skewY(15deg) scale(1) rotate(${rotate}deg);
+                            opacity: 0;
+                        }
+                        100% {
+                            transform-origin: 50%;
+                            transform: skew(0) scale(1) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                    }`,
+                "wide-skew-left":
+                    `@keyframes ${name} {
+                        0% {
+                            transform-origin: 50%;
+                            transform: skewY(-15deg) scale(1) rotate(${rotate}deg);
+                            opacity: 0;
+                        }
+                        100% {
+                            transform-origin: 50%;
+                            transform: skew(0) scale(1) rotate(${rotate}deg);
+                            opacity: ${opacity};
+                        }
+                    }`
+            }
+
+            return keyframes[originalName]
+
+        }
+
+        let keyframes = () => {
+            var result = '';
+
+            AnimationsPlugin.names.forEach(
+                animName => {
+                    result += `
+                        ${createKeyFrame(animName, animName, 0)}\n
+                        ${createKeyFrame(`${animName}_offline`, animName, 0, 0.3)}\n
+                        ${createKeyFrame(`${animName}_90`, animName, 90)}\n
+                        `
                 }
             )
 
-            function keyframes(element, key) {
-                let rotate = Number(window.getComputedStyle(element)?.transform?.match?.(/rotate\((.+)\)/)?.[0]);
-                let opacity = Number(window.getComputedStyle(element)?.opacity);
-                if (!isFinite(rotate)) rotate = 0;
-                if (!isFinite(opacity)) opacity = 1;
-                return {
-                    "in":
-                        [
-                            {
-                                transformOrigin: '50%',
-                                transform: `scale(1.3) rotate(${rotate}deg)`,
-                                opacity: 0,
-                            },
-                            {
-                                transformOrigin: '50%',
-                                transform: `rotate(${rotate}deg)`,
-                                opacity: opacity,
-                            },
-                        ],
-                    "out":
-                        [
-                            {
-                                transformOrigin: '50%',
-                                transform: `scale(0.7) rotate(${rotate}deg)`,
-                                opacity: 0,
-                            },
-                            {
-                                transformOrigin: '50%',
-                                transform: `rotate(${rotate}deg)`,
-                                opacity: opacity,
-                            },
-                        ],
-                    "opacity":
-                        [
-                            {
-                                opacity: 0
-                            },
-                            {
-                                opacity: opacity
-                            },
-                        ],
-                    "slime":
-                        [
-                            {
-                                transformOrigin: '50%',
-                                transform: `scale(1) rotate(${rotate}deg)`,
-                                opacity: 0
-                            },
-                            {
-                                transformOrigin: '50%',
-                                transform: `scale(1.3, 0.7) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                            {
-                                transformOrigin: '50%',
-                                transform: `scale(0.8, 1.2) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                            {
-                                transformOrigin: '50%',
-                                transform: `scale(1.1, 0.9) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                            {
-                                transformOrigin: '50%',
-                                transform: `scale(1) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                        ],
-                    "polygon":
-                        [
-                            {
-                                clipPath: `polygon(40% 40%, 50% 25%, 60% 40%, 75% 50%, 60% 60%, 50% 75%, 40% 60%, 25% 50%)`
-                            },
-                            {
-                                clipPath: `polygon(0 0, 50% 0, 100% 0, 100% 50%, 100% 100%, 50% 100%, 0 100%, 0 50%)`
-                            },
-                        ],
-                    "circle":
-                        [
-                            {
-                                clipPath: `circle(25%)`
-                            },
-                            {
-                                clipPath: `circle(100%)`
-                            },
-                        ],
-                    "brick-up":
-                        [
-                            {
-                                offset: 0,
-                                transformOrigin: '50%',
-                                transform: `translate(0, 200%) rotate(${rotate}deg)`,
-                                opacity: 0
-                            },
-                            {
-                                offset: 0.6,
-                                transformOrigin: '50%',
-                                transform: `translate(0, 0) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                            {
-                                offset: 0.8,
-                                transformOrigin: '50%',
-                                transform: `translate(0, 20%) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                            {
-                                offset: 1,
-                                transformOrigin: '50%',
-                                transform: `translate(0, 0) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                        ],
-                    "brick-right":
-                        [
-                            {
-                                offset: 0,
-                                transformOrigin: '50%',
-                                transform: `translate(-200%, 0) rotate(${rotate}deg)`,
-                                opacity: 0
-                            },
-                            {
-                                offset: 0.6,
-                                transformOrigin: '50%',
-                                transform: `translate(0, 0) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                            {
-                                offset: 0.8,
-                                transformOrigin: '50%',
-                                transform: `translate(-20%, 0) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                            {
-                                offset: 1,
-                                transformOrigin: '50%',
-                                transform: `translate(0, 0) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                        ],
-                    "brick-left":
-                        [
-                            {
-                                offset: 0,
-                                transformOrigin: '50%',
-                                transform: `translate(200%, 0) rotate(${rotate}deg)`,
-                                opacity: 0
-                            },
-                            {
-                                offset: 0.6,
-                                transformOrigin: '50%',
-                                transform: `translate(0, 0) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                            {
-                                offset: 0.8,
-                                transformOrigin: '50%',
-                                transform: `translate(20%, 0) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                            {
-                                offset: 1,
-                                transformOrigin: '50%',
-                                transform: `translate(0, 0) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                        ],
-                    "brick-down":
-                        [
-                            {
-                                offset: 0,
-                                transformOrigin: '50%',
-                                transform: `translate(0, -200%) rotate(${rotate}deg)`,
-                                opacity: 0
-                            },
-                            {
-                                offset: 0.6,
-                                transformOrigin: '50%',
-                                transform: `translate(0, 0) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                            {
-                                offset: 0.8,
-                                transformOrigin: '50%',
-                                transform: `translate(0, -20%) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                            {
-                                offset: 1,
-                                transformOrigin: '50%',
-                                transform: `translate(0, 0) rotate(${rotate}deg)`,
-                                opacity: opacity
-                            },
-                        ],
-                    "slide-right":
-                        [
-                            {
-                                trasformOrigin: '0% 50%',
-                                transform: `scaleX(0) rotate(${rotate}deg)`,
-                            },
-                            {
-                                trasformOrigin: `${rotate != 90 ? '0% 50%' : '50%'}`,
-                                transform: `translate(0) rotate(${rotate}deg)`,
-                            },
-                        ],
-                    "slide-left":
-                        [
-                            {
-                                trasformOrigin: '100% 50%',
-                                transform: `scaleX(0) rotate(${rotate}deg)`,
-                            },
-                            {
-                                trasformOrigin: `${rotate != 90 ? '100% 50%' : '50%'}`,
-                                transform: `translate(0) rotate(${rotate}deg)`,
-                            },
-                        ],
-                    "slide-up":
-                        [
-                            {
-                                trasformOrigin: '50% 100%',
-                                transform: `scaleY(0) rotate(${rotate}deg)`,
-                            },
-                            {
-                                trasformOrigin: `${rotate != 90 ? '50% 100%' : '50%'}`,
-                                transform: `translate(0) rotate(${rotate}deg)`,
-                            },
-                        ],
-                    "slide-down":
-                        [
-                            {
-                                trasformOrigin: '50% 0%',
-                                transform: `scaleY(0) rotate(${rotate}deg)`,
-                            },
-                            {
-                                trasformOrigin: `${rotate != 90 ? '50% 0%' : '50%'}`,
-                                transform: `translate(0) rotate(${rotate}deg)`,
-                            },
-                        ],
-                    "skew-right":
-                        [
-                            {
-                                transformOrigin: '50%',
-                                transform: `skewX(-30deg) rotate(${rotate}deg)`,
-                                opacity: 0,
-                            },
-                            {
-                                transformOrigin: '50%',
-                                transform: `rotate(${rotate}deg)`,
-                                opacity: opacity,
-                            }
-                        ],
-                    "skew-left":
-                        [
-                            {
-                                transformOrigin: '50%',
-                                transform: `skewX(30deg) rotate(${rotate}deg)`,
-                                opacity: 0,
-                            },
-                            {
-                                transformOrigin: '50%',
-                                transform: `rotate(${rotate}deg)`,
-                                opacity: opacity,
-                            }
-                        ],
-                    "wide-skew-right":
-                        [
-                            {
-                                transformOrigin: '50%',
-                                transform: `skewY(15deg) rotate(${rotate}deg)`,
-                                opacity: 0,
-                            },
-                            {
-                                transformOrigin: '50%',
-                                transform: `rotate(${rotate}deg)`,
-                                opacity: opacity,
-                            }
-                        ],
-                    "wide-skew-left":
-                        [
-                            {
-                                transformOrigin: '50%',
-                                transform: `skewY(-15deg) rotate(${rotate}deg)`,
-                                opacity: 0,
-                            },
-                            {
-                                transformOrigin: '50%',
-                                transform: `rotate(${rotate}deg)`,
-                                opacity: opacity,
-                            }
-                        ],
-                }[key]
-            }
+            return result
+        }
 
-            return domElems.map(
-                (element, index) => {
-                    return new Promise(
-                        resolve => {
-                            let kfEffect = new KeyframeEffect(
-                                element,
-                                keyframes(element, settingsOf.name),
-                                {
-                                    endDelay: 2000,
-                                    iterationComposite: 'accumulate',
-                                    duration: settingsOf.duration * 1000,
-                                    delay: index * settingsOf.delay * 1000 * 0
-                                }
-                            )
-                            let animation = new Animation(kfEffect, new DocumentTimeline)
-                            setTimeout(
-                                ()=>{
-                                    element?.style?.removeProperty('transform')
-                                    animation.play()
+        let animPrevStyles = () => {
+            let result = '';
 
-                                },index * settingsOf.delay * 1000
-                            )
+            ; (["lists", "buttons", "messages"]).forEach(type => {
+                if (!AnimationsPlugin.names.includes(this.settings[type].name)) {
+                    this.settings[type].name = this.defaultSettings[type].name;
+                    Utilities.saveSettings(config.info.name, this.settings);
+                }
+                if (this.settings[type].custom.frames.some((frame) => typeof frame == 'string')) {
+                    this.settings[type].custom.frames.forEach(
+                        (frame, index) => {
+                            if (typeof frame == 'string') this.settings[type].custom.frames[index] = {
+                                start: 'transform: scale(0);',
+                                anim: frame
+                            }
+                        }
+                    )
+                    Utilities.saveSettings(config.info.name, this.settings);
+                }
+            });
 
+            ; (["lists", "buttons"]).forEach(type => {
+                if (!AnimationsPlugin.sequences.includes(this.settings[type].sequence)) {
+                    this.settings[type].sequence = this.defaultSettings[type].sequence;
+                    Utilities.saveSettings(config.info.name, this.settings);
+                }
+            });
 
-                            animation.onfinish = animation.onremove = animation.oncancel = () => {
-                                element?.style?.removeProperty?.('transform')
-                                resolve()
+            AnimationsPlugin.names.forEach(
+                animName => {
+                    ['lists', 'messages', 'buttons'].forEach(
+                        typeName => {
+                            for (var i = 1; i < 5; i++) {
+                                result += `.animPreview[pdata="${animName},${typeName}"]:hover > .animPreviewTempsContainer > .animTempBlock:nth-child(${i})`
+                                    + ` {
+                                        transform: scale(0);
+                                        animation-name: ${animName};
+                                        animation-fill-mode: forwards;
+                                        animation-duration: 0.3s;
+                                        animation-delay: ${i * 0.2}s;
+                                    }\n`
                             }
                         }
                     )
                 }
             )
+
+            AnimationsPlugin.sequences.forEach(
+                seqName => {
+                    ['lists', 'messages', 'buttons'].forEach(
+                        typeName => {
+                            for (var i = 1; i < 5; i++) {
+                                result += `.animPreview[pdata="${seqName},${typeName}"]:hover > .animPreviewTempsContainer > .animTempBlock:${seqName == 'fromLast' ? 'nth-last-child' : 'nth-child'}(${i})`
+                                    + ` {
+                                        transform: scale(0);
+                                        animation-name: opacity;
+                                        animation-fill-mode: forwards;
+                                        animation-duration: 0;
+                                        animation-delay: ${i * 0.2}s;
+                                    }\n`
+                            }
+                        }
+                    )
+                }
+            )
+
+            return result;
         }
-        AnimationsPlugin.selectorsLists.forEach(s => animate(s, this.settings.lists))
-        AnimationsPlugin.selectorsButtons.forEach(s => animate(s, this.settings.buttons))
+
+        let nthStyles = () => {
+            let result = '';
+
+            for (var i = 1; i < 4 + 1 + 1; i++) {
+                result += `.animPreview[sequence="fromFirst"] .animTempBlock:nth-child(${i})
+                    {animation-delay:${((i - 1) * 0.06).toFixed(2)}s}\n\n`
+            }
+            for (var i = 1; i < 4 + 1 + 1; i++) {
+                result += `.animPreview[sequence="fromLast"] .animTempBlock:nth-last-child(${i})
+                    {animation-delay:${((i - 1) * 0.06).toFixed(2)}s}\n\n`
+            }
+
+            for (var i = 1; i < this.settings.messages.limit; i++) {
+                result += `.${FoundModules.MessageListItem}:nth-last-child(${i}) > .${FoundModules.Message}
+                    {animation-delay:${((i - 1) * this.settings.messages.delay).toFixed(2)}s}\n`
+            }
+
+            return result;
+        }
+
+        let countStyles = () => {
+            let result = '';
+
+            ; ((this.isValidSelector(this.settings.lists.selectors) && this.settings.lists.selectors.trim() != '') ? this.settings.lists.selectors.split(",").map(item => item.trim()) : AnimationsPlugin.selectorsLists)
+                .forEach((selector, i) => {
+                    if (!this.settings.lists.enabled) return;
+
+                    let count = 65;
+
+                    if (this.settings.lists.sequence == 'fromFirst') for (var i = 1; i < count + 1; i++) {
+                        result += `${selector}:nth-child(${i}) `
+                            + `{animation-delay: ${(i * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                    }
+                    if (this.settings.lists.sequence == 'fromLast') for (var i = 1; i < count + 1; i++) {
+                        result += `${selector}:nth-last-child(${i}) `
+                            + `{animation-delay: ${(i * this.settings.lists.delay).toFixed(2)}s}\n\n`
+                    }
+
+                })
+
+                ; ((this.isValidSelector(this.settings.buttons.selectors) && this.settings.buttons.selectors.trim() != '') ? this.settings.buttons.selectors.split(",").map(item => item.trim()) : AnimationsPlugin.selectorsButtons)
+                    .forEach(selector => {
+                        if (!this.settings.buttons.enabled) return;
+
+                        let count = 20;
+
+                        if (this.settings.buttons.sequence == 'fromFirst') for (var i = 1; i < count + 1; i++) {
+                            result += `${selector}:nth-child(${i}) `
+                                + `{animation-delay: ${(i * this.settings.buttons.delay).toFixed(2)}s}\n\n`
+                        }
+                        if (this.settings.buttons.sequence == 'fromLast') for (var i = 1; i < count + 1; i++) {
+                            result += `${selector}:nth-last-child(${i}) `
+                                + `{animation-delay: ${(i * this.settings.buttons.delay).toFixed(2)}s}\n\n`
+                        }
+
+                    })
+
+            return result;
+
+        }
+
+        this.styles = `
+
+        ${!this.settings.lists.enabled ? '' : `
+        ${this.settings.lists.selectors ? this.settings.lists.selectors : AnimationsPlugin.selectorsLists.join(', ')}
+        {
+            ${this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.start : `transform: scale(0);`}
+            animation-name: ${this.settings.lists.custom.enabled &&
+                    (this.settings.lists.custom.page >= 0 ?
+                        this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() != '' &&
+                        this.isValidKeyframe(this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim)
+                        : 0)
+                    ? 'custom-lists' : this.settings.lists.name};
+            animation-fill-mode: forwards;
+            animation-duration: ${this.settings.lists.duration}s;
+            animation-timing-function: ${this.settings.lists.timing};
+        }
+        `}
+
+        ${!this.settings.buttons.enabled ? '' : `
+        ${this.settings.buttons.selectors ? this.settings.buttons.selectors : AnimationsPlugin.selectorsButtons.join(', ')}
+        {
+            ${this.settings.buttons.custom.frames[this.settings.buttons.custom.page]?.start ? this.settings.buttons.custom.frames[this.settings.buttons.custom.page]?.start : `transform: scale(0);`}
+            animation-name: ${this.settings.buttons.custom.enabled &&
+                    (this.settings.buttons.custom.page >= 0 ?
+                        this.settings.buttons.custom.frames[this.settings.buttons.custom.page].anim.trim() != '' &&
+                        this.isValidKeyframe(this.settings.buttons.custom.frames[this.settings.buttons.custom.page].anim)
+                        : 0)
+                    ? 'custom-buttons' : this.settings.buttons.name};
+            animation-fill-mode: forwards;
+            animation-duration: ${this.settings.buttons.duration}s;
+            animation-timing-function: ${this.settings.buttons.timing};
+        }
+        `}
+
+        ${!this.settings.messages.enabled ? '' : `
+        /* messages */
+        .${FoundModules.MessageListItem} > .${FoundModules.Message}
+        {
+            ${this.settings.messages.custom.frames[this.settings.messages.custom.page]?.start ? this.settings.messages.custom.frames[this.settings.messages.custom.page]?.start : `transform: scale(0);`}
+            animation-fill-mode: forwards;
+            animation-name: ${this.settings.messages.custom.enabled &&
+                    (this.settings.messages.custom.page >= 0 ?
+                        this.settings.messages.custom.frames[this.settings.messages.custom.page].anim.trim() != '' &&
+                        this.isValidKeyframe(this.settings.messages.custom.frames[this.settings.messages.custom.page].anim)
+                        : 0)
+                    ? 'custom-messages' : this.settings.messages.name};
+            animation-duration: ${this.settings.messages.duration}s;
+            animation-timing-function: ${this.settings.messages.timing};
+        }
+
+        /*lines-forward-messages fix*/
+        .${FoundModules.DividerReplying} {z-index: 0}
+        `}
+
+        /**Non-custom**/
+
+        /*threads fork*/
+        .${FoundModules.ContainerSpine} > svg {
+            transform: scale(0);
+            transform-oringin: 100% 50%;
+            animation-timing-function: linear;
+            animation-duration: ${this.settings.lists.duration}s;
+            animation-fill-mode: forwards;
+        }
+
+        /*discord changelog video*/
+        .${FoundModules.VideoLead} {
+            animation-name: out !important;
+        }
+
+        /**Keyframes**/
+
+        ${keyframes()}
+
+        \n${animPrevStyles()}
+        \n${nthStyles()}
+        \n${countStyles()}
+
+        /*Custom keyframes*/
+
+        @keyframes custom-lists {
+            ${this.settings.lists.custom.page >= 0 ? this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim : ''}
+        }
+
+        @keyframes custom-buttons {
+            ${this.settings.buttons.custom.page >= 0 ? this.settings.buttons.custom.frames[this.settings.buttons.custom.page]?.anim : ''}
+        }
+
+        @keyframes custom-messages {
+            ${this.settings.messages.custom.page >= 0 ? this.settings.messages.custom.frames[this.settings.messages.custom.page]?.anim : ''}
+        }
+
+        @keyframes custom-messages+sending {
+            ${this.settings.messages.sending.custom.page >= 0 ? this.settings.messages.sending.custom.frames[this.settings.messages.sending.custom.page]?.anim : ''}
+        }
+        `;
+
+        BdApi.clearCSS(`${config.info.name}-main`);
+
+        await this.wait(pause > 100 ? pause : 100)
+        BdApi.injectCSS(`${config.info.name}-main`, this.styles);
+        this.animateChannels();
+        this.animateMembers();
     }
 
     closeSettings() {
-        let modalSettings = document.getElementById(config.info.name + ' ' + 'settings').closest('.bd-addon-modal')
+        let modalSettings = document.getElementById(config.info.name + ' ' + 'settings')?.closest?.('.bd-addon-modal')
         if(modalSettings) modalSettings.querySelector('.bd-addon-modal-footer > .bd-button')?.click?.()
     }
 
@@ -901,8 +1315,6 @@ module.exports = class AnimationsPlugin {
     }
 
     getSettingsPanel() {
-
-        let PluginThis = this
 
         /**
          * @type {locale}
@@ -1295,171 +1707,531 @@ module.exports = class AnimationsPlugin {
             return { class: Panel, render: result }
         }
 
-        class PreviewsPanel extends React.Component {
-            constructor(props) {
-                super(props)
-                let previewsCount = (!props?.compact ? PreviewsPanel.compactCount.box : PreviewsPanel.compactCount.inline);
-                let pageOpened = previewIndex => Math.ceil((previewIndex + 1) / previewsCount);
-                let indexOfValue = this.props.children.indexOf(props?.value);
-                indexOfValue = indexOfValue < 0 ? 0 : indexOfValue
-                this.state = {
-                    value: props?.value ?? undefined,
-                    page: props?.page ?? pageOpened(indexOfValue),
-                    compact: props?.compact ?? false,
-                }
-            }
+        /**
+         * Returns object - `class`, `render`.
+         * @param {Array<{label: string, value: string}>} previewsTemp Array with previews templates.
+         * @param {object} options Panel optinons.
+         * @param {boolean} horizontal Preview positioning.
+         * @param {string} [options.type] `*class*-name`, `*class*-sequence`, ...
+         * @param {string} [options.class] `lists`, `messages`, `buttons`
+         * @param {object} [options.custom] Editor options.
+         * @param {boolean} [options.custom.enabled] Editor availability.
+         * @param {Array<object>} [options.custom.frames] Editor frames default.
+         * @param {number} [options.custom.page] Editor page default.
+         * @param {number} [options.custom.data] Editor data `this.settings.*type*.custom`.
+         * @param {object} [options.tempBlocks] TempBlocks options.
+         * @param {string} [options.tempBlocks.count=4] TempBlocks count.
+         * @param {string} [options.tempBlocks.margin='4px'] TempBlocks margin.
+         * @param {string} [options.tempBlocks.height] TempBlock height.
+         * @param {string} [options.tempBlocks.width] TempBlock width.
+         * @param {(e:MouseEvent)=>void} [onclick]
+         * @param {string} value One of the values of `previevsTemp`
+         */
 
-            static compactCount = Object.freeze({
-                inline: 6,
-                box: 8,
-            })
+        var PreviewsPanel = (previewsTemp = [], options = {}, value, onclick) => {
 
-            render() {
-                let PanelThis = this
+            var swipeButtonsDefault = [];
+            var swipeButtonsCustom = [];
+            var previews = [];
+            var containers = [];
+            var textareas = [];
+            var openedPage = 0;
+            var containersCount = 0;
+            var previewsCountOnPage = (options?.horizontal ? 6 : 8);
 
-                let previewsCount = (!this.state.compact ? PreviewsPanel.compactCount.box : PreviewsPanel.compactCount.inline);
-                let pageOpened = previewIndex => Math.ceil((previewIndex + 1) / previewsCount)
-                let pagesCount = Math.ceil((this.props.children?.length ?? 0) / previewsCount);
+            if (options?.custom)
+                if (this.settings[options.class].custom.enabled)
+                    if (!(this.settings[options.class].custom.page >= 0 ? this.isValidKeyframe(this.settings[options.class].custom.frames[this.settings[options.class].custom.page]?.anim) : 0)) {
+                        this.settings[options.class].custom.enabled = false;
+                        Utilities.saveSettings(config.info.name, this.settings);
+                    }
+
+            previewsTemp.forEach((template, index) => {
 
                 class Preview extends React.Component {
-                    /**
-                     * @typedef {'inline' | 'box'} view
-                     * @typedef {'up' | 'down' | 'left' | 'right' | 'up-left' | 'up-right' | 'down-left' | 'down-right'} direction
-                     */
+
                     constructor(props) {
                         super(props)
-                        this.state = {
-                            active: props?.active ?? false,
-                            page: props?.page ?? pageOpened(props?.value ?? 1),
-                            value: props?.value ?? '',
-                            /**@type {direction[]}*/
-                            directions: props?.directions ?? [],
-                            /**@type {view}*/
-                            view: props?.view ?? false,
-                        }
+                        this.enabled = props.enabled
+                        this.template = props.template
+                        this.page = props.page
                     }
 
                     render() {
-                        return React.createElement(
-                            'div',
-                            {
-                                class: `animPreview ${FoundModules.CodeRedemptionRedirect} ${FoundModules.Card} ${this.state.view} ${this.state.active ? 'enabled' : ''}`,
-                                onClick: (e) => {
-                                    PanelThis.props.onChange({value: this.state.value, page: this.state.page})
-                                    PanelThis.setState({value: this.state.value})
-                                    PanelThis.forceUpdate()
+
+                        var tempBlocks = []
+                        var tempCount = ((typeof options?.tempBlocks?.count == 'number') ? options.tempBlocks.count : 4)
+
+                        for (var i = 0; i < tempCount; i++) {
+                            tempBlocks[i] = React.createElement('div', {
+                                class: 'animTempBlock',
+                                style: {
+                                    width: options?.tempBlocks?.width ?? (options?.horizontal ? '100%' : 'auto'),
+                                    height: options?.tempBlocks?.height ?? (options?.horizontal ? '26px' : '18%'),
+                                    margin: options?.tempBlocks?.margin ?? (options?.horizontal ? '0 4px' : '4px')
                                 }
-                            },
+                            })
+                        }
+
+                        return React.createElement('div', {
+                            'pdata': this.template.value + ',' + options.class,
+                            class: `animPreview ${FoundModules.CodeRedemptionRedirect} ${FoundModules.Card} ${this.enabled ? 'enabled' : ''}`,
+                            onClick: (e) => {
+                                onclick({ value: this.template.value, page: this.page });
+
+                                var sections = document.querySelectorAll(`[data-type="${options.type}"] .animPreview`);
+                                for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
+                                e.currentTarget.classList.add('enabled');
+                            }
+                        },
                             [
-                                React.createElement(
-                                    'div',
+                                React.createElement('div',
                                     {
-                                        class: `animPreviewDirectionsContainer`//todo
+                                        class: 'animPreviewTempsContainer'
                                     },
-                                    [
-                                        React.createElement(
-                                            'div',
-                                            {
-                                                class: `animPreviewTempsContainer`
-                                            },
-                                            new Array(4).fill('temp').map(
-                                                (_, index) => React.createElement(
-                                                    'div',
-                                                    {
-                                                        class: `animTempBlock`,
-                                                        style: {
-                                                            height: PanelThis.state.compact?'100%':'23px'
-                                                        }
-                                                    }
-                                                )
-                                            )
-                                        ),
-                                    ]
+                                    tempBlocks
                                 ),
-                                React.createElement(
-                                    'div',
+
+                                React.createElement('div',
                                     {
-                                        class: `animPreviewLabel`
+                                        class: 'animPreviewLabel'
                                     },
-                                    this.props.children
-                                ),
+                                    this.template.label
+                                )
                             ]
                         )
                     }
+
                 }
 
-                class CircleButtonPage extends React.Component {
+                if (value == template.value) openedPage = Math.ceil((index + 1) / previewsCountOnPage) - 1;
 
-                    constructor(props) {
-                        super(props)
-                        this.state = {
-                            page: props?.page ?? 1,
-                            active: props?.active ?? false
+                previews.push(
+                    React.createElement(Preview,
+                        {
+                            enabled: value == template.value,
+                            template: template,
+                            page: openedPage
+                        },
+                    )
+                )
+            })
+
+            class CircleButtonPage extends React.Component {
+
+                constructor(props) {
+                    super(props)
+                    this.index = props.index
+                    this.text = props.text
+                    this.enabled = props.enabled
+                    this.closest = props.closest
+                    this.selector = props.selector
+                    this.tabSelector = props.tabSelector
+                    this.onclick = props.onclick
+                }
+
+                render() {
+                    return React.createElement('div',
+                        {
+                            class: `animPageCircleButton ${FoundModules.RoundButton} ${this.enabled ? 'enabled' : ''}`,
+                            'data-page': this.index,
+                            onClick: (e) => {
+                                var selectorNodes = e.currentTarget.closest(this.closest).querySelectorAll(this.selector);
+                                var dataPage = e.currentTarget.getAttribute('data-page');
+
+                                for (var containerElem of selectorNodes) containerElem.classList.remove('show');
+
+                                selectorNodes[dataPage].classList.add('show');
+
+                                var sections = document.querySelectorAll(`[data-type="${options.type}"] ${this.tabSelector} .animPageCircleButton`);
+                                for (i = 0; i < sections.length; i++) sections[i].classList.remove('enabled');
+
+                                e.currentTarget.classList.add('enabled');
+
+                                this.onclick?.(e)
+                            }
+                        },
+                        this.text
+                    )
+                }
+            }
+
+            class CircleButton extends React.Component {
+
+                constructor(props) {
+                    super(props)
+                    this.text = props.text
+                    this.enabled = props.enabled
+                    this.onclick = props.onclick
+                }
+
+                render() {
+                    return React.createElement('div',
+                        {
+                            class: `animPageCircleButton ${FoundModules.CodeRedemptionRedirect} ${FoundModules.Card} ${this.enabled ? 'enabled' : ''}`,
+                            onClick: (e) => {
+                                this.onclick?.(e)
+                            }
+                        },
+                        this.text
+                    )
+                }
+            }
+
+            for (containersCount = 0; containersCount + 1 <= Math.ceil(previewsTemp.length / previewsCountOnPage); containersCount++) {
+                swipeButtonsDefault.push(
+                    React.createElement(CircleButtonPage,
+                        {
+                            index: containersCount,
+                            text: containersCount + 1,
+                            enabled: openedPage == containersCount,
+
+                            closest: '.animPreviewsPanel',
+                            selector: '.animPreviewsContainer',
+                            tabSelector: '.default',
+                            onclick: (e) => {
+                                var dataPage = e.currentTarget.getAttribute('data-page');
+                                this.settings[options.class].page = Number(dataPage);
+                            }
                         }
-                    }
+                    )
+                );
 
-                    render() {
-                        return React.createElement('div',
+                var pages = [];
+
+                var i = 0;
+                while (i < previewsCountOnPage) {
+                    pages.push(previews[(containersCount) * previewsCountOnPage + i])
+                    i++
+                }
+
+                containers.push(
+                    React.createElement('div',
+                        {
+                            class: `animPreviewsContainer ${(options.custom) ? (!this.settings[options.class].custom.enabled && openedPage == containersCount ? 'show' : '') : (openedPage == containersCount ? 'show' : '')} ${previewsTemp.length < previewsCountOnPage + 1 ? 'compact' : ''}`,
+                        },
+                        pages
+                    )
+                );
+
+            }
+
+            if (options.custom) {
+
+                for (var i = 0; i < this.settings[options.class].custom.frames.length; i++) {
+                    textareas.push(
+                        TextareasPanel(
                             {
-                                class: `animPageCircleButton ${FoundModules.RoundButton} ${this.state.active ? 'enabled' : ''}`,
-                                'data-page': this.index,
-                                onClick: (e) => {
-                                    if (PanelThis.state.page == this.state.page) return;
-                                    PanelThis.state.page = this.state.page
-                                    PanelThis.forceUpdate()
+                                elementsPanel: {
+                                    containersTemp: [
+                                        {
+                                            elements: [
+                                                {
+                                                    component: 'button',
+                                                    color: 'grey',
+                                                    label: trn.edit.template,
+                                                    disabled: this.eqObjects({ start: options.custom.data.frames[i].start, anim: options.custom.data.frames[i].anim }, this.defaultFrames.template),
+                                                    onclick: (e) => {
+                                                        var textareaStart = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea.start')
+                                                        var textareaAnim = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea.anim')
+
+                                                        textareaStart.value = this.defaultFrames.template.start;
+                                                        textareaAnim.value = this.defaultFrames.template.anim;
+                                                    }
+                                                },
+                                                {
+                                                    component: 'button',
+                                                    color: 'grey',
+                                                    label: trn.edit.clear,
+                                                    disabled: this.eqObjects({ start: options.custom.data.frames[i].start, anim: options.custom.data.frames[i].anim }, this.defaultFrames.clear),
+                                                    onclick: (e) => {
+                                                        var textareaStart = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea.start')
+                                                        var textareaAnim = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea.anim')
+
+                                                        textareaStart.value = '';
+                                                        textareaAnim.value = '';
+                                                    }
+                                                },
+                                                {
+                                                    component: 'button',
+                                                    color: 'blurple',
+                                                    label: trn.edit.load,
+                                                    disabled: this.eqObjects(this.settings[options.class].custom.frames[this.settings[options.class].custom.page],
+                                                        { start: options.custom.data.frames[i].start, anim: options.custom.data.frames[i].anim }),
+                                                    onclick: (e) => {
+                                                        var textareaStart = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea.start')
+                                                        var textareaAnim = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea.anim')
+
+                                                        textareaStart.value = this.settings[options.class].custom.frames[this.settings[options.class].custom.page].start
+                                                        textareaAnim.value = this.settings[options.class].custom.frames[this.settings[options.class].custom.page].anim
+                                                    }
+                                                },
+                                                {
+                                                    component: 'button',
+                                                    color: 'blurple',
+                                                    label: trn.edit.save,
+                                                    disabled: this.eqObjects(this.settings[options.class].custom.frames[this.settings[options.class].custom.page],
+                                                        { start: options.custom.data.frames[i].start, anim: options.custom.data.frames[i].anim }),
+                                                    onclick: (e) => {
+                                                        var textareaStart = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea.start')
+                                                        var textareaAnim = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea.anim')
+
+                                                        this.settings[options.class].custom.frames[this.settings[options.class].custom.page] =
+                                                        {
+                                                            start: textareaStart.value,
+                                                            anim: textareaAnim.value
+                                                        }
+
+                                                        Utilities.saveSettings(config.info.name, this.settings);
+                                                        if (
+                                                            this.isValidCSS(this.settings[options.class].custom.frames[this.settings[options.class].custom.page].start) &&
+                                                            this.isValidKeyframe(this.settings[options.class].custom.frames[this.settings[options.class].custom.page].anim)
+                                                        ) this.resetAnimations();
+                                                    }
+                                                },
+                                            ]
+                                        }
+                                    ],
+                                    options: {
+                                        widthAll: '100%',
+                                        marginAll: '0 8px'
+                                    }
+                                },
+                                textareas: [
+                                    {
+                                        height: '72px',
+                                        class: 'start',
+                                        invalid: !('invalid keyframe', this.isValidCSS(options.custom.data.frames[i].start) || options.custom.data.frames[i].start == ""),
+                                        value: options.custom.data.frames[i].start,
+                                        placeholder: `transform: scale(0);`,
+                                        onchange: (e) => {
+
+                                            var textareaStart = e.currentTarget
+                                            var textareaAnim = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea.anim')
+
+                                            if (this.isValidCSS(textareaStart.value) || textareaStart.value == "") {
+                                                textareaStart.classList.add('valid');
+                                                textareaStart.classList.remove('invalid');
+                                            } else {
+                                                textareaStart.classList.add('invalid');
+                                                textareaStart.classList.remove('valid');
+                                            }
+
+                                            options.custom?.onchange?.(e)
+                                        }
+                                    },
+                                    {
+                                        height: '250px',
+                                        class: 'anim',
+                                        invalid: !(this.isValidKeyframe(options.custom.data.frames[i].anim) || options.custom.data.frames[i].anim == ""),
+                                        value: options.custom.data.frames[i].anim,
+                                        placeholder: `0% {\n\ttransform: translate(0, 100%);\n}\n\n100% {\n\ttransform: transform(0, 0) scale(1);\n}`,
+                                        onchange: (e) => {
+
+                                            var textareaStart = e.currentTarget.closest('.animTextareasPanel').querySelector('.animTextarea.start')
+                                            var textareaAnim = e.currentTarget
+
+                                            if (this.isValidKeyframe(textareaAnim.value) || textareaAnim.value == "") {
+                                                textareaAnim.classList.add('valid');
+                                                textareaAnim.classList.remove('invalid');
+                                            } else {
+                                                textareaAnim.classList.add('invalid');
+                                                textareaAnim.classList.remove('valid');
+                                            }
+
+                                            options.custom?.onchange?.(e)
+                                        }
+                                    }
+                                ],
+                                class: `${this.settings[options.class].custom.enabled && i == this.settings[options.class].custom.page ? 'show' : ''}`,
+                                onchange: (e) => {
+                                    var textareaStart = e.currentTarget.closest('.animTextareasPanel.show').querySelector('.animTextarea.start')
+                                    var textareaAnim = e.currentTarget.closest('.animTextareasPanel.show').querySelector('.animTextarea.anim')
+                                    this.defaultFrames.values = {
+                                        start: textareaStart.value,
+                                        anim: textareaAnim.value
+                                    }
+                                    var buttons = e.currentTarget.closest('.animTextareasPanel.show').querySelectorAll('.elementsContainer > .animButton')
+
+                                    buttons[0].classList.toggle('disabled', this.eqObjects(this.defaultFrames.values, this.defaultFrames.template))
+                                    buttons[1].classList.toggle('disabled', this.eqObjects(this.defaultFrames.values, this.defaultFrames.clear))
+                                    buttons[2].classList.toggle('disabled', this.eqObjects(this.settings[options.class].custom.frames[this.settings[options.class].custom.page], this.defaultFrames.values))
+                                    buttons[3].classList.toggle('disabled', this.eqObjects(this.settings[options.class].custom.frames[this.settings[options.class].custom.page], this.defaultFrames.values))
+                                },
+                                onclick: (e) => {
+                                    var textareaStart = e.currentTarget.closest('.animTextareasPanel.show').querySelector('.animTextarea.start')
+                                    var textareaAnim = e.currentTarget.closest('.animTextareasPanel.show').querySelector('.animTextarea.anim')
+                                    this.defaultFrames.values = {
+                                        start: textareaStart.value,
+                                        anim: textareaAnim.value
+                                    }
+                                    var buttons = e.currentTarget.closest('.animTextareasPanel.show').querySelectorAll('.elementsContainer > .animButton')
+
+                                    buttons[0].classList.toggle('disabled', this.eqObjects(this.defaultFrames.values, this.defaultFrames.template))
+                                    buttons[1].classList.toggle('disabled', this.eqObjects(this.defaultFrames.values, this.defaultFrames.clear))
+                                    buttons[2].classList.toggle('disabled', this.eqObjects(this.settings[options.class].custom.frames[this.settings[options.class].custom.page], this.defaultFrames.values))
+                                    buttons[3].classList.toggle('disabled', this.eqObjects(this.settings[options.class].custom.frames[this.settings[options.class].custom.page], this.defaultFrames.values))
                                 }
                             },
-                            this.props.children
+                        ).render
+                    );
+
+                    swipeButtonsCustom.push(
+                        React.createElement(CircleButtonPage,
+                            {
+                                index: i,
+                                text: i + 1,
+                                enabled: this.settings[options.class].custom.page == i,
+
+                                closest: '.animPreviewsPanel',
+                                selector: '.animTextareasPanel',
+                                tabSelector: '.custom',
+                                onclick: (e) => {
+                                    var dataPage = e.currentTarget.getAttribute('data-page');
+                                    this.settings[options.class].custom.page = Number(dataPage);
+                                }
+                            }
                         )
-                    }
+                    );
                 }
 
-                return React.createElement(
-                    'div',
-                    {
-                        class: `animPreviewsPanel`
-                    },
-                    [
-                        React.createElement(
-                            'div',
-                            {
-                                class: `animPreviewsContainer ${pagesCount==1?'compact':''}`
-                            },
-                            typeof this.props.children[0] != 'object' ? null :
-                            this.props.children.map(
-                                (preview, index) =>
-                                    React.createElement(
-                                        Preview,
-                                        {
-                                            active: preview?.value == PanelThis.state.value,
-                                            page: pageOpened(index),
-                                            value: preview?.value,
-                                            view: this.state.compact ? 'inline' : 'box',
-                                        },
-                                        preview.label
-                                    )
-                            ).filter((relem, index) => pageOpened(index) == PanelThis.state.page )
-                        ),
-                        pagesCount==1?null:React.createElement(
-                            'div',
-                            {
-                                class: `animPageButtons`
-                            },
-                            new Array(pagesCount).fill(pagesCount).map(
-                                (pagesCount, index) =>
-                                React.createElement(
-                                    CircleButtonPage,
-                                    {
-                                        page: index + 1,
-                                        active: index+1 == PanelThis.state.page
-                                    },
-                                    index + 1
-                                )
-                            )
-                        )
-                    ]
-                )
             }
+
+            class ActionButton extends React.Component {
+
+                constructor(props) {
+                    super(props)
+                    this.isEditing = props.isEditing
+                    this.onclick = props.onclick
+                }
+
+                render() {
+                    return React.createElement('div',
+                        {
+                            class: `animPreviewActionButton ${FoundModules.CodeRedemptionRedirect} ${FoundModules.Card} ${this.isEditing ? 'editing' : 'selecting'}`,
+                            onClick: this.onclick
+                        },
+
+                        React.createElement('div',
+                            {
+                                class: `switchActionButton`
+                            },
+                            [
+                                React.createElement('div', {
+                                    class: 'switchActionButtonLabel'
+                                },
+                                    trn.stng.name_mode_selecting
+                                ),
+                                React.createElement("svg", {
+                                    width: "24",
+                                    height: "24",
+                                    viewBox: "3 2 19 19"
+                                },
+                                    React.createElement("path", {
+                                        style: { fill: "none" },
+                                        d: "M0 0h24v24H0z"
+                                    }),
+                                    React.createElement("path", {
+                                        d: options.horizontal ? "M 4 18 h 17 v -3 H 4 v 3 z M 4 10 v 3 h 17 v -3 h -17 M 4 5 v 3 h 17 V 5 H 4 z" : "M4 11h5V5H4v6zm0 7h5v-6H4v6zm6 0h5v-6h-5v6zm6 0h5v-6h-5v6zm-6-7h5V5h-5v6zm6-6v6h5V5h-5z"
+                                    })
+                                )
+                            ]
+                        ),
+                        React.createElement('div',
+                            {
+                                class: `switchActionButton`
+                            },
+                            [
+                                React.createElement('div', {
+                                    class: 'switchActionButtonLabel'
+                                },
+                                    trn.stng.name_mode_editing
+                                ),
+                                React.createElement("svg", {
+                                    width: "24",
+                                    height: "24",
+                                    viewBox: "0 1 22 22"
+                                },
+                                    React.createElement("path", {
+                                        d: "M19.2929 9.8299L19.9409 9.18278C21.353 7.77064 21.353 5.47197 19.9409 4.05892C18.5287 2.64678 16.2292 2.64678 14.817 4.05892L14.1699 4.70694L19.2929 9.8299ZM12.8962 5.97688L5.18469 13.6906L10.3085 18.813L18.0201 11.0992L12.8962 5.97688ZM4.11851 20.9704L8.75906 19.8112L4.18692 15.239L3.02678 19.8796C2.95028 20.1856 3.04028 20.5105 3.26349 20.7337C3.48669 20.9569 3.8116 21.046 4.11851 20.9704Z",
+                                    })
+                                )
+                            ]
+                        )
+                    )
+                }
+
+            }
+
+            var result = React.createElement('div',
+                {
+                    class: `animPreviewsPanel ${options.horizontal ? 'horizontal' : 'vertical'}`,
+                    'data-type': options.type
+                },
+                [
+                    options.custom ? React.createElement('div',
+                        {
+                            class: 'animPreviewsActions'
+                        },
+                        React.createElement(ActionButton, {
+                            isEditing: this.settings[options.class].custom.enabled,
+                            onclick: async (e) => {
+
+                                this.settings[options.class].custom.enabled = !this.settings[options.class].custom.enabled;
+                                Utilities.saveSettings(config.info.name, this.settings);
+                                if (
+                                    this.isValidCSS(this.settings[options.class].custom.frames[this.settings[options.class].custom.page].start) &&
+                                    this.isValidKeyframe(this.settings[options.class].custom.frames[this.settings[options.class].custom.page].anim)
+                                ) this.resetAnimations();
+
+                                var switcher = e.currentTarget;
+                                var panel = switcher.closest('.animPreviewsPanel');
+                                var all = panel.querySelectorAll(`.animPreviewsContainer, .animTextareasPanel`);
+                                all.forEach(elem => elem.classList.remove('show'));
+
+                                if (this.settings[options.class].custom.enabled) {
+                                    switcher.classList.add('editing')
+                                    switcher.classList.remove('selecting')
+                                    if (this.settings[options.class].custom.page >= 0) panel.getElementsByClassName(`animTextareasPanel`)[this.settings[options.class].custom.page].classList.add('show');
+                                    panel.getElementsByClassName('animPageButtons default')[0].classList.remove('show');
+                                    panel.getElementsByClassName('animPageButtons custom')[0].classList.add('show');
+                                } else {
+                                    switcher.classList.remove('editing')
+                                    switcher.classList.add('selecting')
+                                    if (this.settings[options.class].page >= 0) panel.getElementsByClassName(`animPreviewsContainer`)[this.settings[options.class].page].classList.add('show');
+                                    panel.getElementsByClassName('animPageButtons default')[0].classList.add('show');
+                                    panel.getElementsByClassName('animPageButtons custom')[0].classList.remove('show');
+                                }
+
+                            }
+                        })
+                    ) : null,
+                    ...containers,
+                    ...textareas,
+                    containers.length > 1 ?
+                        React.createElement('div',
+                            {
+                                class: `animPageButtons default ${options.custom ? (!this.settings[options.class].custom.enabled ? 'show' : '') : 'show'}`,
+                            },
+                            swipeButtonsDefault
+                        ) : null,
+                    React.createElement('div',
+                        {
+                            class: `animPageButtons custom ${options.custom ? (this.settings[options.class].custom.enabled ? 'show' : '') : 'show'}`,
+                        },
+                        swipeButtonsCustom
+                    ),
+                ]
+            )
+
+
+            class Panel extends React.Component {
+                render() {
+                    return result
+                }
+            }
+
+            return { class: Panel, render: result };
         }
 
         /**
@@ -1806,7 +2578,7 @@ module.exports = class AnimationsPlugin {
                         }
                     }
                 )
-                mymodal.querySelectorAll('.animPreviewsPanel .animPreview.box').forEach(
+                mymodal.querySelectorAll('.animPreviewsPanel.vertical .animPreview').forEach(
                     prev => {
                         let labelv = prev.querySelector('.animPreviewLabel')
                         if (labelv.offsetHeight < labelv.scrollHeight) {
@@ -1814,7 +2586,7 @@ module.exports = class AnimationsPlugin {
                         }
                     }
                 )
-                mymodal.querySelectorAll('.animPreviewsPanel .animPreview.inline').forEach(
+                mymodal.querySelectorAll('.animPreviewsPanel.horizontal .animPreview').forEach(
                     prev => {
                         let labelh = prev.querySelector('.animPreviewLabel')
                         if (labelh.offsetWidth < labelh.scrollWidth) {
@@ -2001,15 +2773,7 @@ module.exports = class AnimationsPlugin {
                             ).render,
 
                             Field(trn.stng.name, trn.stng.name_note_lists,
-                                React.createElement(PreviewsPanel,
-                                    {
-                                        value: this.settings.lists.name,
-                                        onChange: (e) => {
-                                            this.settings.lists.name = e.value;
-                                            this.settings.lists.page = e.page;
-                                            Utilities.saveSettings(config.info.name, this.settings);
-                                        }
-                                    },
+                                PreviewsPanel(
                                     [
                                         { label: trn.name.in, value: 'in' },
                                         { label: trn.name.out, value: 'out' },
@@ -2025,28 +2789,48 @@ module.exports = class AnimationsPlugin {
                                         { label: trn.name.slide_left, value: 'slide-left' },
                                         { label: trn.name.slide_up, value: 'slide-up' },
                                         { label: trn.name.slide_down, value: 'slide-down' },
+                                        { label: trn.name.slide_up_right, value: 'slide-up-right' },
+                                        { label: trn.name.slide_up_left, value: 'slide-up-left' },
+                                        { label: trn.name.slide_down_right, value: 'slide-down-right' },
+                                        { label: trn.name.slide_down_left, value: 'slide-down-left' },
                                         { label: trn.name.skew_right, value: 'skew-right' },
                                         { label: trn.name.skew_left, value: 'skew-left' },
                                         { label: trn.name.wide_skew_right, value: 'wide-skew-right' },
                                         { label: trn.name.wide_skew_left, value: 'wide-skew-left' },
-                                    ]
-                                )
+                                    ],
+                                    {
+                                        type: 'lists-name',
+                                        class: 'lists',
+                                        custom: {
+                                            data: this.settings.lists.custom,
+                                        }
+                                    },
+                                    this.settings.lists.name,
+                                    (e) => {
+                                        this.settings.lists.name = e.value;
+                                        this.settings.lists.page = e.page;
+                                        Utilities.saveSettings(config.info.name, this.settings);
+                                        this.resetAnimations()
+                                    }).render
                             ).render,
 
                             Field(trn.stng.sequence, trn.stng.sequence_note_lists,
-                                React.createElement(PreviewsPanel,
-                                    {
-                                        value: this.settings.lists.sequence,
-                                        onChange: (e) => {
-                                            this.settings.lists.sequence = e.value;
-                                            Utilities.saveSettings(config.info.name, this.settings);
-                                        }
-                                    },
+                                PreviewsPanel(
                                     [
                                         { label: trn.seq.from_first, value: 'fromFirst' },
                                         { label: trn.seq.from_last, value: 'fromLast' },
-                                    ]
-                                )
+                                    ],
+                                    {
+                                        type: 'lists-sequence',
+                                        class: 'lists'
+                                    },
+                                    this.settings.lists.sequence,
+                                    (e) => {
+                                        this.settings.lists.sequence = e.value;
+                                        Utilities.saveSettings(config.info.name, this.settings);
+                                        this.resetAnimations()
+                                    }
+                                ).render
                             ).render,
 
                             Field(trn.stng.timing, trn.stng.timing_note_lists,
@@ -2233,16 +3017,7 @@ module.exports = class AnimationsPlugin {
                             ).render,
 
                             Field(trn.stng.name, trn.stng.name_note_buttons,
-                                React.createElement(PreviewsPanel,
-                                    {
-                                        compact: true,
-                                        value: this.settings.buttons.name,
-                                        onChange: (e) => {
-                                            this.settings.buttons.name = e.value;
-                                            this.settings.buttons.page = e.page;
-                                            Utilities.saveSettings(config.info.name, this.settings);
-                                        }
-                                    },
+                                PreviewsPanel(
                                     [
                                         { label: trn.name.in, value: 'in' },
                                         { label: trn.name.out, value: 'out' },
@@ -2258,28 +3033,51 @@ module.exports = class AnimationsPlugin {
                                         { label: trn.name.slide_left, value: 'slide-left' },
                                         { label: trn.name.slide_up, value: 'slide-up' },
                                         { label: trn.name.slide_down, value: 'slide-down' },
+                                        { label: trn.name.slide_up_right, value: 'slide-up-right' },
+                                        { label: trn.name.slide_up_left, value: 'slide-up-left' },
+                                        { label: trn.name.slide_down_right, value: 'slide-down-right' },
+                                        { label: trn.name.slide_down_left, value: 'slide-down-left' },
                                         { label: trn.name.skew_right, value: 'skew-right' },
                                         { label: trn.name.skew_left, value: 'skew-left' },
                                         { label: trn.name.wide_skew_right, value: 'wide-skew-right' },
                                         { label: trn.name.wide_skew_left, value: 'wide-skew-left' },
-                                    ]
-                                )
+                                    ],
+                                    {
+                                        type: 'buttons-name',
+                                        class: 'buttons',
+                                        horizontal: true,
+                                        custom: {
+                                            data: this.settings.buttons.custom,
+                                        }
+                                    },
+                                    this.settings.buttons.name,
+                                    (e) => {
+                                        this.settings.buttons.name = e.value;
+                                        this.settings.buttons.page = e.page;
+                                        Utilities.saveSettings(config.info.name, this.settings);
+                                        this.resetAnimations()
+                                    }
+                                ).render
                             ).render,
 
                             Field(trn.stng.sequence, trn.stng.sequence_note_buttons,
-                                React.createElement(PreviewsPanel,
-                                    {
-                                        value: this.settings.buttons.sequence,
-                                        onChange: (e) => {
-                                            this.settings.buttons.sequence = e.value;
-                                            Utilities.saveSettings(config.info.name, this.settings);
-                                        }
-                                    },
+                                PreviewsPanel(
                                     [
                                         { label: trn.seq.from_first, value: 'fromFirst' },
                                         { label: trn.seq.from_last, value: 'fromLast' },
-                                    ]
-                                )
+                                    ],
+                                    {
+                                        horizontal: true,
+                                        type: 'buttons-sequence',
+                                        class: 'buttons'
+                                    },
+                                    this.settings.buttons.sequence,
+                                    (e) => {
+                                        this.settings.buttons.sequence = e.value;
+                                        Utilities.saveSettings(config.info.name, this.settings);
+                                        this.resetAnimations()
+                                    }
+                                ).render
                             ).render,
 
                             Field(trn.stng.timing, trn.stng.timing_note_buttons,
@@ -2468,15 +3266,7 @@ module.exports = class AnimationsPlugin {
                                     content: [
 
                                         Field(trn.stng.name, trn.stng.name_note_messages,
-                                            React.createElement(PreviewsPanel,
-                                                {
-                                                    value: this.settings.messages.name,
-                                                    onChange: (e) => {
-                                                        this.settings.messages.name = e.value;
-                                                        this.settings.messages.page = e.page;
-                                                        Utilities.saveSettings(config.info.name, this.settings);
-                                                    }
-                                                },
+                                            PreviewsPanel(
                                                 [
                                                     { label: trn.name.in, value: 'in' },
                                                     { label: trn.name.out, value: 'out' },
@@ -2492,12 +3282,30 @@ module.exports = class AnimationsPlugin {
                                                     { label: trn.name.slide_left, value: 'slide-left' },
                                                     { label: trn.name.slide_up, value: 'slide-up' },
                                                     { label: trn.name.slide_down, value: 'slide-down' },
+                                                    { label: trn.name.slide_up_right, value: 'slide-up-right' },
+                                                    { label: trn.name.slide_up_left, value: 'slide-up-left' },
+                                                    { label: trn.name.slide_down_right, value: 'slide-down-right' },
+                                                    { label: trn.name.slide_down_left, value: 'slide-down-left' },
                                                     { label: trn.name.skew_right, value: 'skew-right' },
                                                     { label: trn.name.skew_left, value: 'skew-left' },
                                                     { label: trn.name.wide_skew_right, value: 'wide-skew-right' },
                                                     { label: trn.name.wide_skew_left, value: 'wide-skew-left' },
-                                                ]
-                                            )
+                                                ],
+                                                {
+                                                    type: 'messages-name',
+                                                    class: 'messages',
+                                                    custom: {
+                                                        data: this.settings.messages.custom,
+                                                    }
+                                                },
+                                                this.settings.messages.name,
+                                                (e) => {
+                                                    this.settings.messages.name = e.value;
+                                                    this.settings.messages.page = e.page;
+                                                    Utilities.saveSettings(config.info.name, this.settings);
+                                                    this.resetAnimations()
+                                                }
+                                            ).render
                                         ).render,
 
                                         Field(trn.stng.timing, trn.stng.timing_note_messages,
@@ -2693,15 +3501,7 @@ module.exports = class AnimationsPlugin {
                                         ).render,
 
                                         Field(trn.stng.name, trn.stng.name_note_messages_sending,
-                                            React.createElement(PreviewsPanel,
-                                                {
-                                                    value: this.settings.messages.sending.name,
-                                                    onChange: (e) => {
-                                                        this.settings.messages.sending.name = e.value;
-                                                        this.settings.messages.sending.page = e.page;
-                                                        Utilities.saveSettings(config.info.name, this.settings);
-                                                    }
-                                                },
+                                            PreviewsPanel(
                                                 [
                                                     { label: trn.name.in, value: 'in' },
                                                     { label: trn.name.out, value: 'out' },
@@ -2717,12 +3517,30 @@ module.exports = class AnimationsPlugin {
                                                     { label: trn.name.slide_left, value: 'slide-left' },
                                                     { label: trn.name.slide_up, value: 'slide-up' },
                                                     { label: trn.name.slide_down, value: 'slide-down' },
+                                                    { label: trn.name.slide_up_right, value: 'slide-up-right' },
+                                                    { label: trn.name.slide_up_left, value: 'slide-up-left' },
+                                                    { label: trn.name.slide_down_right, value: 'slide-down-right' },
+                                                    { label: trn.name.slide_down_left, value: 'slide-down-left' },
                                                     { label: trn.name.skew_right, value: 'skew-right' },
                                                     { label: trn.name.skew_left, value: 'skew-left' },
                                                     { label: trn.name.wide_skew_right, value: 'wide-skew-right' },
                                                     { label: trn.name.wide_skew_left, value: 'wide-skew-left' },
-                                                ]
-                                            )
+                                                ],
+                                                {
+                                                    type: 'messages-name',
+                                                    class: 'messages',
+                                                    custom: {
+                                                        data: this.settings.messages.sending.custom,
+                                                    }
+                                                },
+                                                this.settings.messages.name,
+                                                (e) => {
+                                                    this.settings.messages.sending.name = e.value;
+                                                    this.settings.messages.sending.page = e.page;
+                                                    Utilities.saveSettings(config.info.name, this.settings);
+                                                    this.resetAnimations()
+                                                }
+                                            ).render
                                         ).render
                                     ]
                                 }
@@ -2980,10 +3798,10 @@ module.exports = class AnimationsPlugin {
                 overflow: hidden;
             }
 
-            .animPreviewsContainer {
+            .animPreviewsContainer, .animPreviewsPanel .animTextareasPanel {
                 display: flex;
                 flex-wrap: wrap;
-                justify-content: space-evenly;
+                justify-content: space-evenly; 
                 align-content: space-evenly;
                 height: 0;
                 margin: 0;
@@ -2994,6 +3812,11 @@ module.exports = class AnimationsPlugin {
                 overflow: hidden;
                 transition: 0.5s opacity;
             }
+
+            .animPreviewsPanel .animTextareasPanel {
+                padding: 0 18px;
+            }
+
             .animTextarea {
                 display: block;
                 font-size: 0.875rem;
@@ -3011,7 +3834,7 @@ module.exports = class AnimationsPlugin {
                 font-family: Consolas, monopoly;
             }
 
-            .animPreviewsContainer {
+            .animPreviewsContainer.show, .animPreviewsPanel .animTextareasPanel.show {
                 opacity: 1;
                 border: 1px solid var(--background-tertiary);
                 height: 420px;
@@ -3022,13 +3845,84 @@ module.exports = class AnimationsPlugin {
                 padding: 10px 0;
             }
 
+            .animPreviewsActions {
+                width: fit-content;
+                margin: 0 auto;
+            }
+
+            .animPreviewActionButton {
+                display: inline-block;
+                min-width: 10px;
+                width: fit-content;
+                margin: 5px auto 5px auto;
+                padding: 0;
+                color: var(--interactive-normal);
+                text-align: center;
+                text-transform: capitalize;
+                font-size: 18px;
+                border-radius: 3px;
+                transition: 0.2s;
+                overflow: hidden;
+            }
+
+            .animPreviewActionButton:hover {
+                border-color: var(--deprecated-text-input-border-hover);
+            }
+
+            .switchActionButton {
+                display: inline-flex;
+                justify-content: space-between;
+                line-height: 125%;
+                width: 180px;
+                padding: 3px 8px;
+                transition: 0.2s background;
+                background-size: cover;
+                background: linear-gradient(90deg, transparent 0%, var(--brand-experiment) 0%, var(--brand-experiment) 100%, transparent 100%) no-repeat;
+            }
+
+            .switchActionButton > svg {
+                fill: var(--interactive-normal);
+            }
+
+            .selecting .switchActionButton:nth-child(1), .editing .switchActionButton:nth-child(2) {
+                color: white;
+                background-position-x: 0;
+            }
+
+            .selecting .switchActionButton:nth-child(1) > svg, .editing .switchActionButton:nth-child(2) > svg {
+                fill: white;
+            }
+
+            .editing .switchActionButton:nth-child(1) {
+                background-position-x: 200px;
+            }
+
+            .selecting .switchActionButton:nth-child(2) {
+                background-position-x: -200px;
+            }
+
+            .animPreviewActionButton .switchActionButton:nth-child(n+2) {
+                border-left: 1px solid var(--background-tertiary);
+            }
+
+            .animPreviewActionButton:hover .switchActionButton:nth-child(n+2) {
+                border-left: 1px solid var(--deprecated-text-input-border-hover);
+            }
+
+            .switchActionButtonLabel {
+                display: inline-block;
+                overflow: hidden;
+                width: 100%;
+                text-overflow: ellipsis;
+            }
+
             .animPageButtons {
                 margin: 0 auto;
                 width: fit-content;
                 display: none;
             }
 
-            .animPageButtons {
+            .animPageButtons.show {
                 display: block;
             }
 
@@ -3057,7 +3951,7 @@ module.exports = class AnimationsPlugin {
                 overflow: hidden;
             }
 
-            .animPreview.box {
+            .vertical .animPreview {
                 display: inline-flex;
                 box-sizing: border-box;
                 width: 120px;
@@ -3068,12 +3962,12 @@ module.exports = class AnimationsPlugin {
                 justify-content: space-evenly;
             }
 
-            .animPreview.inline {
+            .horizontal .animPreview {
                 display: inline-flex;
                 box-sizing: border-box;
                 width: calc(100% - 26px);
                 height: 45px;
-                padding: 7px;
+                padding: 5px;
                 transition: 0.2s;
                 flex-direction: row;
                 justify-content: space-evenly;
@@ -3092,12 +3986,7 @@ module.exports = class AnimationsPlugin {
                 background-color: var(--brand-experiment);
             }
 
-            .animPreviewDirectionsContainer {
-                display: grid;
-                height: 100%;
-            }
-
-            .animPreview.box .animPreviewTempsContainer {
+            .vertical .animPreviewTempsContainer {
                 display: flex;
                 width: 100%;
                 height: 100%;
@@ -3106,31 +3995,28 @@ module.exports = class AnimationsPlugin {
                 justify-content: space-evenly;
             }
 
-            .animPreview.inline .animPreviewTempsContainer {
+            .horizontal .animPreviewTempsContainer {
                 display: flex;
                 width: 100%;
-                height: 100%;
+                height: 26px;
                 flex-direction: row;
                 flex-wrap: nowrap;
                 justify-content: space-between;
             }
 
-            .animPreview.box .animTempBlock {
+            .vertical .animPreview .animTempBlock {
                 border-radius: 3pt;
                 background-color: var(--interactive-normal)
             }
-            .animPreview.box .animTempBlock + .animTempBlock {
-                margin-top: 7px;
-            }
 
-            .animPreview.inline .animTempBlock {
+            .horizontal .animPreview .animTempBlock {
                 border-radius: 3pt;
                 background-color: var(--interactive-normal);
                 display: inline-block;
-                width: 80px;
             }
-            .animPreview.inline .animTempBlock + .animTempBlock {
-                margin-left: 10px;
+
+            .vertical .animPreview.enabled .animTempBlock {
+                background-color: #fff;
             }
 
             .animPreview.enabled .animTempBlock {
@@ -3147,7 +4033,7 @@ module.exports = class AnimationsPlugin {
                 padding: 0 4px;
             }
 
-            .animPreview.box .animPreviewLabel {
+            .vertical .animPreview .animPreviewLabel {
                 height: 58px;
                 width: auto;
                 bottom: 6pt;
@@ -3155,7 +4041,7 @@ module.exports = class AnimationsPlugin {
                 text-align: center;
             }
 
-            .animPreview.inline .animPreviewLabel {
+            .horizontal .animPreview .animPreviewLabel {
                 height: 26px;
                 width: 50%;
                 display: inline-block;
@@ -3315,13 +4201,6 @@ module.exports = class AnimationsPlugin {
             }
         )
 
-        // on switching
-        this.SwitchingObserver = new MutationObserver(
-            (event) => {
-                event.node
-            }
-        )
-
         // on themes switch
         this.ThemesObserver = new MutationObserver(
             (event) => {
@@ -3349,10 +4228,16 @@ module.exports = class AnimationsPlugin {
 
         clearInterval(this.animateInterval)
 
+        BdApi.clearCSS(`${config.info.name}-main`);
         BdApi.clearCSS(`${config.info.name}-comp`);
 
         this.MessagesObserver?.disconnect?.()
         this.ThemesObserver?.disconnect?.()
         this.closeSettings()
+    }
+
+    onSwitch() {
+        this.animateChannels()
+        this.animateMembers()
     }
 }
