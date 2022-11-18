@@ -300,6 +300,7 @@ module.exports = class AnimationsPlugin {
             "limit": "Limit",
             "limit_note_messages": "The maximum number of messages in the list for which the animation will be played.",
             "name": "Animation",
+            "name_mode_editing": "Editing",
             "name_mode_selecting": "Selecting",
             "name_note_buttons": "Animation of the buttons.",
             "name_note_lists": "Animation of the lists items.",
