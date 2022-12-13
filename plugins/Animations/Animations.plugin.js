@@ -47,12 +47,37 @@ const config = {
 
 let BdApi = window.BdApi;
 
-    /**@type {import("@types/react")}*/ const React = BdApi.React;
-    /**@type {import("@types/react-dom")}*/ const ReactDOM = BdApi.ReactDOM;
+/**@type {import("@types/react")}*/ const React = BdApi.React;
+/**@type {import("@types/react-dom")}*/ const ReactDOM = BdApi.ReactDOM;
 const { Patcher, Webpack, Data } = BdApi;
 const Utilities = {
     loadSettings: (pluginName, defaultSettings) => Data.load(pluginName, 'settings') ?? defaultSettings,
     saveSettings: (pluginName, data) => Data.save(pluginName, 'settings', data),
+    /**
+     * Deep merge two objects.
+     * @param target
+     * @param ...sources
+     */
+    mergeDeep(target, ...sources) {
+        function isObject(item) {
+            return (item && typeof item === 'object' && !Array.isArray(item));
+        }
+        if (!sources.length) return target;
+        const source = sources.shift();
+
+        if (isObject(target) && isObject(source)) {
+            for (const key in source) {
+                if (isObject(source[key])) {
+                    if (!target[key]) Object.assign(target, { [key]: {} });
+                    this.mergeDeep(target[key], source[key]);
+                } else {
+                    Object.assign(target, { [key]: source[key] });
+                }
+            }
+        }
+
+        return this.mergeDeep(target, ...sources);
+    }
 }
 const ModulesPack = {
     find: (comparefn) => BdApi.findModule(comparefn),
@@ -240,6 +265,7 @@ module.exports = class AnimationsPlugin {
 
         /**@type defaultSettings */
         this.settings = Utilities.loadSettings(config.info.name, this.defaultSettings);
+        this.settings = Utilities.mergeDeep(Object.assign({}, this.defaultSettings), this.settings)
     }
 
     static strings = {
@@ -3693,6 +3719,7 @@ module.exports = class AnimationsPlugin {
     start() {
 
         if (Object.keys(WarnModules).length) Logger.warning("ModuleFinder", WarnModules)
+        this.settings = Utilities.mergeDeep(Object.assign({}, this.defaultSettings), this.settings)
 
         let Textcolors = {
             red: '#ed4245',
