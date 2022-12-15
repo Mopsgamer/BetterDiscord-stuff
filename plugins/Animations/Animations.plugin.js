@@ -526,8 +526,10 @@ module.exports = class AnimationsPlugin {
                 var threadsForkElement = children.querySelector(`.${FoundModules.ContainerSpine} > svg`);
                 var threadsListElements = children.querySelectorAll(`.${FoundModules.ContainerDefault}`);
 
-                threadsForkElement.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
-                threadsForkElement.style.animationName = 'slide-right';
+                if (threadsForkElement) {
+                    threadsForkElement.style.animationDelay = `${((i + threadsCount) * this.settings.lists.delay).toFixed(2)}s`;
+                    threadsForkElement.style.animationName = 'slide-right';
+                }
 
                 for (var j = 0; j < threadsListElements.length; j++) {
                     threadsCount += (j ? 1 : 0);
