@@ -1000,7 +1000,7 @@
 	},
 	"fr": {
 		"edit": {
-			"clear": "Nettoyer n'importe que zone de texte",
+			"clear": "Effacer",
 			"default": "Défaut",
 			"load": "Charger",
 			"save": "Sauvegarder",
@@ -3328,8 +3328,5 @@
 			"update_older": "更新",
 			"update_searching": "搜尋更新..."
 		}
-	},
-	"about": {
-		"generated": "2022-12-08T23:14:44.029Z"
 	}
 }
