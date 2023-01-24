@@ -1,8 +1,9 @@
 /**
  * @name Animations
  * @description This plugin is designed to animate different objects (lists, buttons, panels, etc.) with the ability to set delays, durations, types and sequences of these animations.
- * @version 1.3.11
+ * @version 1.3.12
  * @author Mops
+ * @authorLink https://github.com/Mopsgamer/
  * @authorId 538010208023347200
  * @website https://github.com/Mopsgamer/BetterDiscord-codes/blob/main/plugins/Animations
  * @source https://raw.githubusercontent.com/Mopsgamer/BetterDiscord-codes/main/plugins/Animations/Animations.plugin.js
@@ -18,16 +19,9 @@ const config = {
     /**@type {ChangelogStruct[]}*/
     changelog: [
         {
-            type: 'removed',
-            items: [
-                'The "Update" button and the "Server" button have been removed. Use the links from the plugin\'s card.',
-                'The plugin no longer needs Zlibrary.',
-            ]
-        },
-        {
             type: 'fixed',
             items: [
-                'A few fixes after the major Discord update. Nothing new.',
+                'A few fixes.',
             ]
         },
     ],
@@ -41,7 +35,7 @@ const config = {
         ],
         invite: "PWtAHjBXtG",
         name: "Animations",
-        version: "1.3.11"
+        version: "1.3.12"
     },
 };
 
@@ -583,6 +577,16 @@ module.exports = class AnimationsPlugin {
                     this.isValidKeyframe(this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim)
                     : 0)
                 ? 'custom-lists' : this.settings.lists.name + (children.getAttribute('class').includes('offline') ? '_offline' : '');
+            let member_observer = new MutationObserver((mutations, observer) => {
+                if (!BdApi.Plugins.isEnabled(config.info.name)) observer.disconnect();
+                children.style.animationName = this.settings.lists.custom.enabled &&
+                (this.settings.lists.custom.page >= 0 ?
+                    this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim?.trim?.() != '' &&
+                    this.isValidKeyframe(this.settings.lists.custom.frames[this.settings.lists.custom.page]?.anim)
+                    : 0)
+                ? 'custom-lists' : this.settings.lists.name + (children.getAttribute('class').includes('offline') ? '_offline' : '');
+            })
+            member_observer.observe(children, { attributes: true })
         }
 
         setTimeout(() => BdApi.clearCSS(`${config.info.name}-memberslist`), ((count * this.settings.lists.delay) + this.settings.lists.duration) * 1000)
@@ -1566,7 +1570,7 @@ module.exports = class AnimationsPlugin {
          */
 
         /**
-         * @typedef {ElementsPanelOptions} 
+         * @typedef {ElementsPanelOptions}
          * @property {string} [widthAll] The width of each button, if the template does not specify a different width.
          * @property {string} [heightAll] The height of each button, if the template does not specify a different height.
          * @property {string} [align="flex-start"] `justify-content` css value for each button container.
@@ -3789,7 +3793,6 @@ module.exports = class AnimationsPlugin {
                 color: var(--header-primary);
                 transition: 0.2s;
                 text-align: center;
-                font-family: Whitney, "Helvetica Neue", Helvetica, Arial, sans-serif;
                 font-size: 14px;
             }
 
@@ -3801,7 +3804,7 @@ module.exports = class AnimationsPlugin {
                 box-shadow: inset 0 0 0 1px var(--brand-experiment);
             }
             .animTab.selected {
-                color: white;
+                color: var(--white-500);
                 background-color: var(--brand-experiment);
             }
 
@@ -3831,7 +3834,7 @@ module.exports = class AnimationsPlugin {
             .animPreviewsContainer, .animPreviewsPanel .animTextareasPanel {
                 display: flex;
                 flex-wrap: wrap;
-                justify-content: space-evenly; 
+                justify-content: space-evenly;
                 align-content: space-evenly;
                 height: 0;
                 margin: 0;
